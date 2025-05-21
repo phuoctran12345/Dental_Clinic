@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/index.html</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/user_homepage.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/user_tuvan.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/user_lichkham.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/user_taikhoan.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Controller/AvatarServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Controller/LoginServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Controller/LogoutServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/includes/footer.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/includes/header.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/includes/sidebars.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Model/DBConnection.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Model/DatabaseInfo.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Model/User.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Model/HospitalDB.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/login.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/js/script.js</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/demo.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/signup.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/src/java/Controller/SignUpServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/imgs/logo.png</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/WebApplication1/web/user_datlich.jsp</file>
+        </group>
+    </open-files>
+</project-private>
