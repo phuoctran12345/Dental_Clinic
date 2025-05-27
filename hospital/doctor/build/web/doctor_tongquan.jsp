@@ -270,6 +270,10 @@
             .view-all:hover {
                 text-decoration: underline;
             }
+            
+            
+            
+            
             /*trạng thái*/
 
 
@@ -420,7 +424,7 @@
             .consultation-item {
                 display: flex;
                 align-items: center;
-                margin-bottom: 16px;
+                margin-bottom: 30px;
             }
 
             .consultation-avatar {
@@ -460,6 +464,7 @@
 
 
             .booking-title {
+                text-align: center;
                 font-size: 18px;
                 font-weight: bold;
                 color: #0f172a;
@@ -470,7 +475,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding-bottom: 12px;
+                padding-top: 25px;
                 margin-bottom: 12px;
                 border-bottom: 1px solid #f1f5f9;
             }

@@ -29,3 +29,61 @@ VALUES (1,
 
 
 		select*from Doctors;
+
+CREATE TABLE Patients (
+    patient_id INT IDENTITY(1,1) PRIMARY KEY,  -- ID tự tăng
+    id INT NOT NULL UNIQUE,               -- Khóa ngoại liên kết Users (cần tạo FK sau)
+    full_name NVARCHAR(255) NOT NULL,             -- Họ tên (mã hóa AES-256)
+    phone NVARCHAR(20) NULL,                       -- Số điện thoại (mã hóa AES-256)
+    date_of_birth DATE NULL,                       -- Ngày sinh (mã hóa AES-256)
+    gender NVARCHAR(10) NULL CHECK (gender IN ('male','female','other')), -- Giới tính
+    created_at DATETIME DEFAULT GETDATE()         -- Thời gian tạo hồ sơ
+);
+CREATE TABLE TimeSlot (
+    slot_id INT PRIMARY KEY IDENTITY,
+    start_time TIME,
+    end_time TIME
+);
+CREATE TABLE DoctorSchedule (
+    schedule_id INT PRIMARY KEY IDENTITY,
+    doctor_id BIGINT FOREIGN KEY REFERENCES Doctors(doctor_id),
+    work_date DATE,
+    slot_id INT FOREIGN KEY REFERENCES timeSlot(slot_id)
+);
+CREATE TABLE Appointment (
+    appointment_id INT PRIMARY KEY IDENTITY,
+    patient_id INT FOREIGN KEY REFERENCES Patients(patient_id),
+    doctor_id BIGINT FOREIGN KEY REFERENCES Doctors(doctor_id),
+    work_date DATE,
+    slot_id INT FOREIGN KEY REFERENCES TimeSlot(slot_id),
+    status NVARCHAR(50) DEFAULT N'Đã đặt', -- 'Đã đặt', 'Hoàn tất', 'Đã hủy'
+    reason NVARCHAR(MAX)
+);
+INSERT INTO Patients (id, full_name, phone, date_of_birth, gender)
+VALUES 
+(2, N'Trần Thị Mai', '0987654321', '1990-03-12', 'female'),
+(3, N'Lê Văn An', '0912345678', '1982-11-08', 'male'),
+(4, N'Phạm Hồng Minh', '0909988776', '1995-05-22', 'other');
+
+
+INSERT INTO TimeSlot (start_time, end_time)
+VALUES 
+('08:00', '08:30'),
+('08:30', '09:00'),
+('09:00', '09:30'),
+('09:30', '10:00'),
+('10:00', '10:30');
+
+INSERT INTO DoctorSchedule (doctor_id, work_date, slot_id)
+VALUES 
+(1, '2025-05-01', 1),
+(1, '2025-05-01', 2),
+(1, '2025-05-01', 3);
+
+INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason)
+VALUES 
+(2, 1, '2025-06-01', 1, N'Đã đặt', N'Khám định kỳ'),
+(3, 1, '2025-06-01', 2, N'Đã đặt', N'Đau ngực'),
+(4, 1, '2025-06-01', 3, N'Đã đặt', N'Tái khám sau điều trị');
+
+SELECT * FROM Appointment;

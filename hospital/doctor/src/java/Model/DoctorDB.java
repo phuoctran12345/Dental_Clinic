@@ -13,6 +13,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashSet;
+import java.util.Set;
 
 
 
@@ -71,23 +73,29 @@ public class DoctorDB implements DatabaseInfo{
         }
         return -1;
     }
-//     public static void main(String[] args) {
-//    Connection conn = getConnect();
-//    if (conn != null) {
-//        System.out.println("✅ Kết nối database thành công!");
-//
-//        // Test lấy thông tin bác sĩ có userId = 1
-//        Dortor doctor = getDoctorInfo(1);
-//        if (doctor != null) {
-//            System.out.println("Thông tin bác sĩ:");
-//            System.out.println("Họ tên: " + doctor.getFullName());
-//            System.out.println("Chuyên khoa: " + doctor.getSpecialty());
-//        } else {
-//            System.out.println("❌ Không tìm thấy bác sĩ với userId = 1");
-//        }
-//    } else {
-//        System.out.println("❌ Kết nối database thất bại!");
-//    }
+     public static Set<Integer> getWorkDaysOfDoctor(long doctorId, int year, int month) {
+        Set<Integer> workDays = new HashSet<>();
+        String sql = "SELECT DISTINCT DAY(work_date) AS day FROM DoctorSchedule " +
+                     "WHERE doctor_id = ? AND YEAR(work_date) = ? AND MONTH(work_date) = ?";
+
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, doctorId);
+            ps.setInt(2, year);
+            ps.setInt(3, month);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                workDays.add(rs.getInt("day"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return workDays;
+    }
+
 }
 
      

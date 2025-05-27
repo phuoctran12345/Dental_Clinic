@@ -84,6 +84,17 @@
                 color: white;
                 transition: 0.2s;
             }
+            .menu_item.active {
+                background-color: #f1f1f1;
+                font-weight: bold;
+                color: #007bff;
+            }
+            .menu_item.active i {
+                background-color: #00BFFF;
+                color: white;
+            }
+
+
 
 
             .menu_item i {
@@ -176,6 +187,10 @@
                 padding: 2px 0;
                 transition: color 0.2s;
             }
+            .dropdown_list a.active {
+                color: #00BFFF;
+                font-weight: bold;
+            }
 
 
             .dropdown_list a:hover {
@@ -205,6 +220,10 @@
             .menu_group.open .menu_item {
                 background-color: #f1f1f1; /* Nền sáng */
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ */
+            }
+            .menu_group.open .menu_item i{
+                background-color: #00BFFF;
+                color: white;
             }
 
             .menu_group.open .dropdown_list {
@@ -246,9 +265,9 @@
 
                 </div>
                 <div class="dropdown_list">
-                    <a href="#">• Trong ngày</a>
-                    <a href="#">• Bị huỷ bỏ</a>
-                    <a href="#">• Kết quả khám</a>
+                    <a href="doctor_trongngay.jsp">• Trong ngày</a>
+                    <a href="doctor_bihuy.jsp">• Bị huỷ bỏ</a>
+                    <a href="doctor_ketqua.jsp">• Kết quả khám</a>
                 </div>
             </div>
 
@@ -261,24 +280,12 @@
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">
-                    <a href="#">• Gần đây</a>
-                    <a href="#">• Cập nhật lịch</a>
-                    <a href="#">• Lịch đã đặt</a>
-                    <a href="#">• Tái khám</a>
+                    <a href="doctor_lichtrongthang.jsp">• Lịch làm</a>
+                    <a href="doctor_dangkilich.jsp">• Đăng kí lịch</a>
+                    <a href="doctor_taikham.jsp">• Tái khám</a>
                 </div>
             </div>
 
-            <div class="menu_group">
-                <div class="menu_item" onclick="toggleDropdown(this)">
-                    <i class="fa-solid fa-calendar-week"></i>
-                    <span>Tổng Kho</span>
-                    <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
-                </div>
-                <div class="dropdown_list">
-                    <a href="#">• Kho dịch vụ</a>
-                    <a href="#">• Kho thuốc</a>
-                </div>
-            </div>
 
             <div class="menu_group">
                 <div class="menu_item" onclick="toggleDropdown(this)">
@@ -287,8 +294,8 @@
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">
-                    <a href="#">• Phòng chờ</a>
-                    <a href="#">• Trò chuyện</a>
+                    <a href="doctor_phongcho.jsp">• Phòng chờ</a>
+                    <a href="doctor_trochuyen.jsp">• Trò chuyện</a>
 
                 </div>
             </div>
@@ -300,8 +307,8 @@
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">
-                    <a href="#">• Trang cá nhân</a>
-                    <a href="#">• Cài đặt</a>
+                    <a href="doctor_trangcanhan.jsp">• Trang cá nhân</a>
+                    <a href="doctor_caidat.jsp">• Cài đặt</a>
 
                 </div>
             </div>
@@ -320,24 +327,39 @@
                     // Mở menu_group hiện tại
                     el.parentElement.classList.toggle('open');
                 }
-//                document.addEventListener("DOMContentLoaded", () => {
-//                    const currentPath = window.location.pathname.split("/").pop(); // lấy tên file
-//                    const menuLinks = document.querySelectorAll(".menu_item");
-//
-//                    menuLinks.forEach(link => {
-//                        if (link.getAttribute("href") === currentPath) {
-//                            link.classList.add("active");
-//                        } else {
-//                            link.classList.remove("active");
-//                        }
-//                    });
-//                });
 
+                document.addEventListener("DOMContentLoaded", () => {
+                    const currentPage = window.location.pathname.split("/").pop(); // Lấy tên file hiện tại
+
+                    // Xóa active ở tất cả menu_item, dropdown_list a trước (nếu có)
+
+                    // Tìm và đánh dấu menu_item chính active
+                    const menuItems = document.querySelectorAll(".menu_item");
+                    menuItems.forEach(item => {
+                        const link = item.querySelector("a");
+                        if (link) {
+                            const linkPage = link.getAttribute("href");
+                            if (linkPage === currentPage) {
+                                item.classList.add("active");
+                            }
+                        }
+                    });
+
+                    // Tìm và đánh dấu dropdown_list a active và mở dropdown cha
+                    const subLinks = document.querySelectorAll(".dropdown_list a");
+                    subLinks.forEach(link => {
+                        const linkPage = link.getAttribute("href");
+                        if (linkPage === currentPage) {
+                            link.classList.add("active");
+                            const menuGroup = link.closest(".menu_group");
+                            if (menuGroup) {
+                                menuGroup.classList.add("open"); // Mở dropdown cha
+                            }
+                        }
+                    });
+                });
 
             </script>
-
-
-
 
 
         </div>
