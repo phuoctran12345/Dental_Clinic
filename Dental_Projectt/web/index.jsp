@@ -1,3 +1,9 @@
+<%-- 
+    Document   : index
+    Created on : May 26, 2025, 4:11:36 PM
+    Author     : lebao
+--%>
+
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <html lang="vi">
@@ -7,6 +13,40 @@
         <title>HAPPY Smile - Phòng khám nha khoa tư nhân chuyên nghiệp</title>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            :root {
+                --bg-color: #f0f7ff;
+                --header-bg: #fff;
+                --text-color: #333;
+                --card-bg: #fff;
+                --shadow-color: rgba(0,0,0,0.2);
+                --secondary-bg: #fafcfc;
+                --news-card-bg: #fff;
+                --testimonial-bg: #f0f3f5;
+                --footer-bg: linear-gradient(135deg, #3c5bba, #183ba1, #4664bd);
+                --copyright-bg: #18376b;
+                --btn-bg: #0432b5;
+                --btn-hover-bg: #527aeb;
+                --link-color: #3b82f6;
+                --highlight-text: #3b82f6;
+            }
+
+            [data-theme="dark"] {
+                --bg-color: #1a1a1a;
+                --header-bg: #2c2c2c;
+                --text-color: #e0e0e0;
+                --card-bg: #333;
+                --shadow-color: rgba(255,255,255,0.1);
+                --secondary-bg: #2c2c2c;
+                --news-card-bg: #333;
+                --testimonial-bg: #444;
+                --footer-bg: linear-gradient(135deg, #2a4066, #1c2526, #3a4a6b);
+                --copyright-bg: #1c2526;
+                --btn-bg: #2563eb;
+                --btn-hover-bg: #3b82f6;
+                --link-color: #60a5fa;
+                --highlight-text: #60a5fa;
+            }
+
             * {
                 margin: 0;
                 padding: 0;
@@ -15,14 +55,16 @@
             }
 
             body {
-                background: #f0f7ff;
+                background: var(--bg-color);
                 padding-top: 120px;
+                color: var(--text-color);
+                transition: background 0.3s ease, color 0.3s ease;
             }
 
             .header {
-                background: #fff;
+                background: var(--header-bg);
                 padding: 10px 25px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                box-shadow: 0 2px 5px var(--shadow-color);
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -34,7 +76,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-top: -20px;
+                margin-top: -5px;
             }
 
             .logo {
@@ -43,10 +85,9 @@
                 transition: transform 0.3s ease;
             }
 
-
             .logo img {
-                width: 90px;
-                height: 90px;
+                width: 80px;
+                height: 80px;
                 object-fit: contain;
                 margin-right: 15px;
                 background: transparent;
@@ -56,13 +97,13 @@
             .logo h1 {
                 font-size: 48px;
                 font-weight: 700;
-                color: #3b82f6;
+                color: var(--highlight-text);
                 text-transform: uppercase;
                 line-height: 1.2;
             }
 
             .logo span {
-                color: #3b82f6;
+                color: var(--highlight-text);
                 font-weight: 400;
                 font-size: 34px;
                 text-transform: none;
@@ -73,6 +114,7 @@
                 padding-right: 50px;
                 gap: 20px;
                 margin-top: 0;
+                align-items: center;
             }
 
             .auth-btn {
@@ -83,36 +125,59 @@
                 border-radius: 5px;
                 transition: all 0.3s ease;
             }
+
             .auth-btn.register {
-                background: #fff;
-                color: #3b82f6;
+                background: var(--header-bg);
+                color: var(--highlight-text);
             }
 
             .auth-btn.register:hover {
-                background: #3b82f6;
-                color: white;
+                background: var(--link-color);
+                color: #fff;
                 transform: translateY(-2px);
-                box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            }
-
-            .auth-btn.login:hover {
-                background: #3b82f6;
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+                box-shadow: 0 3px 8px var(--shadow-color);
             }
 
             .auth-btn.login {
-                background: #fff;
-                color: #3b82f6;
-                border: 1px solid #3b82f6;
+                background: var(--header-bg);
+                color: var(--highlight-text);
+                border: 1px solid var(--link-color);
             }
 
             .auth-btn.login:hover {
-                background: #3b82f6;
-                color: white;
+                background: var(--link-color);
+                color: #fff;
                 transform: translateY(-2px);
-                box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+                box-shadow: 0 3px 8px var(--shadow-color);
+            }
+
+            .theme-toggle {
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+                color: var(--highlight-text);
+                transition: color 0.3s ease;
+            }
+
+            .theme-toggle:hover {
+                color: var(--link-color);
+            }
+
+            .language-selector {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .language-selector select {
+                padding: 8px;
+                border-radius: 5px;
+                border: 1px solid var(--link-color);
+                background: var(--header-bg);
+                color: var(--text-color);
+                font-size: 16px;
+                cursor: pointer;
             }
 
             .nav {
@@ -148,7 +213,7 @@
                 position: absolute;
                 width: 0;
                 height: 1px;
-                background-color: #3b82f6;
+                background-color: var(--link-color);
                 bottom: 0;
                 left: 15px;
                 transition: width 0.3s ease;
@@ -159,7 +224,7 @@
             }
 
             .nav ul li a:hover, .nav ul li a.active {
-                color: #3b82f6;
+                color: var(--link-color);
                 font-weight: bold;
             }
 
@@ -192,7 +257,7 @@
             .btn {
                 display: inline-block;
                 padding: 15px 30px;
-                background-color: #0432b5;
+                background-color: var(--btn-bg);
                 color: white;
                 text-decoration: none;
                 border-radius: 20px;
@@ -201,23 +266,24 @@
             }
 
             .btn:hover {
-                background-color: #527aeb;
+                background-color: var(--btn-hover-bg);
                 transform: translateY(-3px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                box-shadow: 0 5px 15px var(--shadow-color);
             }
 
             .services {
                 padding: 50px;
                 text-align: center;
+                background: var(--bg-color);
             }
 
             .services h3 {
                 font-size: 40px;
                 margin-bottom: 40px;
-                background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+                background: linear-gradient(135deg, #1e3a8a, var(--link-color));
                 -webkit-background-clip: text;
                 background-clip: text;
-                color: #3b82f6;
+                color: var(--highlight-text);
             }
 
             .service-container {
@@ -233,16 +299,15 @@
             }
 
             .service-item {
-                background-color: white;
+                background-color: var(--card-bg);
                 padding: 20px;
                 border-radius: 10px;
                 text-align: center;
                 flex: 1;
                 max-width: 220px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                box-shadow: 0 5px 15px var(--shadow-color);
                 transition: all 0.3s ease;
             }
-
 
             .service-icon {
                 width: 100px;
@@ -257,17 +322,17 @@
 
             .about {
                 padding: 50px;
-                background-color: #fafcfc;
+                background-color: var(--secondary-bg);
                 text-align: center;
             }
 
             .about h3 {
                 font-size: 40px;
                 margin-bottom: 40px;
-                background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+                background: linear-gradient(135deg, #1e3a8a, var(--link-color));
                 -webkit-background-clip: text;
                 background-clip: text;
-                color: #3b82f6;
+                color: var(--highlight-text);
             }
 
             .about-content {
@@ -285,7 +350,7 @@
             }
 
             .about-text p {
-                color: black;
+                color: var(--text-color);
                 line-height: 1.5;
                 margin-bottom: 20px;
                 font-size: 18px;
@@ -299,12 +364,12 @@
             .about-image img {
                 max-width: 100%;
                 border-radius: 10px;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                box-shadow: 0 10px 20px var(--shadow-color);
                 border: 3px solid #1e3a8a;
             }
 
             .team {
-                background: #fafcfc;
+                background: var(--secondary-bg);
                 padding: 50px;
                 text-align: center;
             }
@@ -312,10 +377,10 @@
             .team h3 {
                 font-size: 40px;
                 margin-bottom: 40px;
-                background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+                background: linear-gradient(135deg, #1e3a8a, var(--link-color));
                 -webkit-background-clip: text;
                 background-clip: text;
-                color: #3b82f6;
+                color: var(--highlight-text);
             }
 
             .team-slider {
@@ -327,18 +392,18 @@
             }
 
             .doctor-card {
-                background-color: white;
+                background-color: var(--card-bg);
                 border-radius: 10px;
                 overflow: hidden;
                 width: 100%;
                 max-width: 280px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                box-shadow: 0 5px 15px var(--shadow-color);
                 transition: transform 0.3s ease;
             }
 
             .doctor-card:hover {
                 transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                box-shadow: 0 10px 20px var(--shadow-color);
             }
 
             .doctor-image {
@@ -370,7 +435,7 @@
             }
 
             .testimonials {
-                background: #fafcfc;
+                background: var(--secondary-bg);
                 padding: 50px;
                 text-align: center;
             }
@@ -378,10 +443,10 @@
             .testimonials h3 {
                 font-size: 40px;
                 margin-bottom: 40px;
-                background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+                background: linear-gradient(135deg, #1e3a8a, var(--link-color));
                 -webkit-background-clip: text;
                 background-clip: text;
-                color: #3b82f6;
+                color: var(--highlight-text);
             }
 
             .testimonial-slider {
@@ -394,7 +459,7 @@
             }
 
             .testimonial-card {
-                background-color: #f0f3f5;
+                background-color: var(--testimonial-bg);
                 padding: 30px;
                 border-radius: 10px;
                 min-width: 300px;
@@ -426,7 +491,7 @@
             }
 
             .author-info h4 {
-                color: black;
+                color: var(--text-color);
                 margin-bottom: 5px;
             }
 
@@ -438,15 +503,16 @@
             .news {
                 padding: 50px;
                 text-align: center;
+                background: var(--bg-color);
             }
 
             .news h3 {
                 font-size: 40px;
                 margin-bottom: 40px;
-                background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+                background: linear-gradient(135deg, #1e3a8a, var(--link-color));
                 -webkit-background-clip: text;
                 background-clip: text;
-                color: #3b82f6;
+                color: var(--highlight-text);
             }
 
             .news-grid {
@@ -457,17 +523,17 @@
             }
 
             .news-card {
-                background-color: white;
+                background-color: var(--news-card-bg);
                 border-radius: 10px;
                 overflow: hidden;
                 width: 350px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+                box-shadow: 0 5px 15px var(--shadow-color);
                 transition: transform 0.3s ease;
             }
 
             .news-card:hover {
                 transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                box-shadow: 0 10px 20px var(--shadow-color);
             }
 
             .news-image {
@@ -492,7 +558,7 @@
             }
 
             .news-title {
-                color: #333;
+                color: var(--text-color);
                 font-size: 20px;
                 margin-bottom: 12px;
                 line-height: 1.4;
@@ -506,7 +572,7 @@
             }
 
             .news-link {
-                color: #3b82f6;
+                color: var(--link-color);
                 text-decoration: none;
                 font-size: 15px;
                 font-weight: 500;
@@ -518,13 +584,13 @@
 
             .contact {
                 padding: 50px;
-                background-color: #fafcfc;
+                background-color: var(--secondary-bg);
                 text-align: center;
             }
 
             .contact h2 {
                 font-size: 40px;
-                color: #3b82f6;
+                color: var(--highlight-text);
                 margin-bottom: 40px;
                 font-weight: bold;
             }
@@ -548,7 +614,7 @@
                 border: 2px solid #ddd;
                 border-radius: 10px;
                 overflow: hidden;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                box-shadow: 0 5px 15px var(--shadow-color);
             }
 
             .map iframe {
@@ -560,33 +626,33 @@
             .contact-info {
                 flex: 1;
                 padding: 30px;
-                background: #ffffff;
+                background: var(--card-bg);
                 border: 1px solid #e0e0e0;
                 border-radius: 15px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 12px var(--shadow-color);
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
                 text-align: center;
                 font-size: 16px;
                 justify-content: center;
-                color: #333;
+                color: var(--text-color);
             }
 
             .contact-info h3 {
                 font-size: 32px;
-                color: #256ee6;
+                color: var(--highlight-text);
                 font-weight: 700;
                 letter-spacing: 0.5px;
                 margin-bottom: 15px;
             }
 
             .contact-info .highlight-hours {
-                background-color: #f8f9fa;
+                background-color: var(--testimonial-bg);
                 padding: 12px 20px;
                 border-radius: 8px;
                 font-weight: 500;
-                color: #333;
+                color: var(--text-color);
                 font-size: 18px;
                 text-align: center;
                 line-height: 1.6;
@@ -611,7 +677,7 @@
             .contact-btn {
                 display: inline-block;
                 padding: 14px 40px;
-                background: linear-gradient(135deg, #256ee6, #3b82f6);
+                background: linear-gradient(135deg, #256ee6, var(--link-color));
                 color: white;
                 text-decoration: none;
                 border-radius: 8px;
@@ -626,7 +692,7 @@
             .contact-btn:hover {
                 background: linear-gradient(135deg, #1453ba, #2563eb);
                 transform: translateY(-2px) scale(1.02);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                box-shadow: 0 5px 15px var(--shadow-color);
             }
 
             .contact-form {
@@ -634,8 +700,8 @@
                 border: 2px solid #ddd;
                 border-radius: 10px;
                 padding: 20px;
-                background-color: #fff;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                background-color: var(--card-bg);
+                box-shadow: 0 5px 15px var(--shadow-color);
                 max-width: 1200px;
                 margin-left: auto;
                 margin-right: auto;
@@ -658,10 +724,12 @@
                 border: 1px solid #ddd;
                 border-radius: 5px;
                 font-size: 14px;
+                background: var(--card-bg);
+                color: var(--text-color);
             }
 
             .submit-btn {
-                background: linear-gradient(135deg, #1453ba, #3b82f6);
+                background: linear-gradient(135deg, #1453ba, var(--link-color));
                 color: white;
                 border: none;
                 font-size: 17px;
@@ -677,7 +745,7 @@
             }
 
             .footer {
-                background: linear-gradient(135deg, #3c5bba, #183ba1, #4664bd);
+                background: var(--footer-bg);
                 padding: 30px;
                 text-align: justify;
             }
@@ -726,7 +794,7 @@
                 text-align: center;
                 padding: 20px 0;
                 color: white;
-                background-color: #18376b;
+                background-color: var(--copyright-bg);
                 font-size: 14px;
             }
 
@@ -770,6 +838,15 @@
                     font-size: 12px;
                 }
 
+                .theme-toggle {
+                    font-size: 14px;
+                }
+
+                .language-selector select {
+                    padding: 6px;
+                    font-size: 12px;
+                }
+
                 .nav {
                     justify-content: center;
                 }
@@ -782,7 +859,6 @@
                     flex-wrap: wrap;
                     justify-content: center;
                 }
-
 
                 .nav ul li a {
                     font-size: 12px;
@@ -1114,6 +1190,15 @@
                     font-size: 16px;
                 }
 
+                .theme-toggle {
+                    font-size: 16px;
+                }
+
+                .language-selector select {
+                    padding: 7px;
+                    font-size: 14px;
+                }
+
                 .nav ul {
                     gap: 20px;
                 }
@@ -1215,37 +1300,45 @@
                     <h1>HAPPY <span>Smile</span></h1>
                 </div>
                 <div class="auth-buttons">
-                    <a href="#" class="auth-btn login">Đăng nhập</a>
-                    <a href="#" class="auth-btn register">Đăng ký</a>
+                    <a href="login.jsp" class="auth-btn login" data-lang="login">Đăng nhập</a>
+                    <a href="signup.jsp" class="auth-btn register" data-lang="register">Đăng ký</a>
+                    <button class="theme-toggle" id="theme-toggle">🌙</button>
+                    <div class="language-selector">
+                        <select id="language-switcher">
+                            <option value="vi">Tiếng Việt</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <nav class="nav">
                 <ul>
-                    <li><a href="#hero" class="active">Tổng quan</a></li>
-                    <li><a href="#services">Dịch vụ</a></li>
-                    <li><a href="#team">Đội ngũ bác sĩ</a></li>
-                    <li><a href="#news">Tin tức</a></li>
-                    <li><a href="#contact">Liên hệ</a></li>
+                    <li><a href="#hero" class="active" data-lang="overview">Tổng quan</a></li>
+                    <li><a href="#services" data-lang="services">Dịch vụ</a></li>
+                    <li><a href="#team" data-lang="team">Đội ngũ bác sĩ</a></li>
+                    <li><a href="#news" data-lang="news">Tin tức</a></li>
+                    <li><a href="#contact" data-lang="contact">Liên hệ</a></li>
                 </ul>
             </nav>
         </header>
 
         <section class="hero" id="hero">
             <div class="hero-content">
-                <h2>Phòng khám nha khoa</h2>
-                <h3>HAPPY SMILE</h3>
-                <a href="#" class="btn">Đặt lịch khám ngay</a>
+                <h2 data-lang="hero-subtitle">Phòng khám nha khoa</h2>
+                <h3 data-lang="hero-title">HAPPY SMILE</h3>
+                <a href="#" class="btn" data-lang="book-appointment">Đặt lịch khám ngay</a>
             </div>
         </section>
 
         <section class="about" id="about">
-            <h3>CHÚNG TÔI LÀ AI?</h3>
+            <h3 data-lang="about-title">CHÚNG TÔI LÀ AI?</h3>
             <div class="about-content">
                 <div class="about-text">
-                    <p>HAPPY Smile là phòng khám nha khoa tư nhân chuyên nghiệp tại Việt Nam, với sứ mệnh mang đến dịch vụ chăm sóc răng miệng chất lượng cao và nụ cười khỏe mạnh cho mọi khách hàng.</p>
-                    <p>Với đội ngũ bác sĩ giàu kinh nghiệm, được đào tạo bài bản trong và ngoài nước, cùng trang thiết bị hiện đại, chúng tôi cam kết mang đến những phương pháp điều trị tiên tiến và hiệu quả nhất.</p>
-                    <p>Tại HAPPY Smile, chúng tôi không chỉ chữa trị các vấn đề răng miệng mà còn hướng đến việc phòng ngừa, tư vấn và chăm sóc sức khỏe răng miệng lâu dài cho khách hàng.</p>
-                    <p>Hãy đến với chúng tôi để trải nghiệm dịch vụ nha khoa chất lượng trong một không gian thoải mái, thân thiện và chuyên nghiệp.</p>
+                    <p data-lang="about-text-1">HAPPY Smile là phòng khám nha khoa tư nhân chuyên nghiệp tại Việt Nam, với sứ mệnh mang đến dịch vụ chăm sóc răng miệng chất lượng cao và nụ cười khỏe mạnh cho mọi khách hàng.</p>
+                    <p data-lang="about-text-2">Với đội ngũ bác sĩ giàu kinh nghiệm, được đào tạo bài bản trong và ngoài nước, cùng trang thiết bị hiện đại, chúng tôi cam kết mang đến những phương pháp điều trị tiên tiến và hiệu quả nhất.</p>
+                    <p data-lang="about-text-3">Tại HAPPY Smile, chúng tôi không chỉ chữa trị các vấn đề răng miệng mà còn hướng đến việc phòng ngừa, tư vấn và chăm sóc sức khỏe răng miệng lâu dài cho khách hàng.</p>
+                    <p data-lang="about-text-4">Hãy đến với chúng tôi để trải nghiệm dịch vụ nha khoa chất lượng trong một không gian thoải mái, thân thiện và chuyên nghiệp.</p>
                 </div>
                 <div class="about-image">
                     <img src="img/bacsii.png" alt="Phòng khám HAPPY Smile">
@@ -1254,49 +1347,49 @@
         </section>
 
         <section class="services" id="services">
-            <h3>DỊCH VỤ NHA KHOA</h3>
+            <h3 data-lang="services-title">DỊCH VỤ NHA KHOA</h3>
             <div class="service-container">
                 <div class="service-row">
                     <div class="service-item">
                         <img src="img/icon1.jpg" alt="Khám tổng quát" class="service-icon">
-                        <p>Khám tổng quát</p>
+                        <p data-lang="service-general-checkup">Khám tổng quát</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon2.jpg" alt="Trám răng" class="service-icon">
-                        <p>Trám răng</p>
+                        <p data-lang="service-filling">Trám răng</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon3.jpg" alt="Tẩy trắng răng" class="service-icon">
-                        <p>Tẩy trắng răng</p>
+                        <p data-lang="service-whitening">Tẩy trắng răng</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon4.jpg" alt="Bọc răng sứ" class="service-icon">
-                        <p>Bọc răng sứ</p>
+                        <p data-lang="service-veneers">Bọc răng sứ</p>
                     </div>
                 </div>
                 <div class="service-row">
                     <div class="service-item">
                         <img src="img/icon5.jpg" alt="Niềng răng" class="service-icon">
-                        <p>Niềng răng</p>
+                        <p data-lang="service-braces">Niềng răng</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon6.jpg" alt="Nhổ răng" class="service-icon">
-                        <p>Nhổ răng</p>
+                        <p data-lang="service-extraction">Nhổ răng</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon7.jpg" alt="Cấy ghép implant" class="service-icon">
-                        <p>Cấy ghép implant</p>
+                        <p data-lang="service-implant">Cấy ghép implant</p>
                     </div>
                     <div class="service-item">
                         <img src="img/icon8.jpg" alt="Điều trị nha chu" class="service-icon">
-                        <p>Điều trị nha chu</p>
+                        <p data-lang="service-periodontal">Điều trị nha chu</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="team" id="team">
-            <h3>ĐỘI NGŨ BÁC SĨ</h3>
+            <h3 data-lang="team-title">ĐỘI NGŨ BÁC SĨ</h3>
             <div class="team-slider">
                 <div class="doctor-card">
                     <div class="doctor-image">
@@ -1304,7 +1397,7 @@
                     </div>
                     <div class="doctor-info">
                         <h4>Bs. Nguyễn Văn A</h4>
-                        <p>Chuyên gia Implant</p>
+                        <p data-lang="doctor-implant">Chuyên gia Implant</p>
                     </div>
                 </div>
                 <div class="doctor-card">
@@ -1313,7 +1406,7 @@
                     </div>
                     <div class="doctor-info">
                         <h4>Bs. Trần Thị B</h4>
-                        <p>Chuyên gia Chỉnh nha</p>
+                        <p data-lang="doctor-orthodontics">Chuyên gia Chỉnh nha</p>
                     </div>
                 </div>
                 <div class="doctor-card">
@@ -1322,7 +1415,7 @@
                     </div>
                     <div class="doctor-info">
                         <h4>Bs. Lê Văn C</h4>
-                        <p>Chuyên gia Phục hình</p>
+                        <p data-lang="doctor-restoration">Chuyên gia Phục hình</p>
                     </div>
                 </div>
                 <div class="doctor-card">
@@ -1331,39 +1424,39 @@
                     </div>
                     <div class="doctor-info">
                         <h4>Bs. Phạm Thị D</h4>
-                        <p>Chuyên gia Nha chu</p>
+                        <p data-lang="doctor-periodontal">Chuyên gia Nha chu</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="testimonials">
-            <h3>CẢM NHẬN TỪ KHÁCH HÀNG</h3>
+            <h3 data-lang="testimonials-title">CẢM NHẬN TỪ KHÁCH HÀNG</h3>
             <div class="testimonial-slider">
                 <div class="testimonial-card">
-                    <p class="testimonial-text">Tôi đã điều trị niềng răng tại HAPPY Smile và rất hài lòng với kết quả. Các bác sĩ rất tận tâm, tư vấn chi tiết và quá trình điều trị rất chuyên nghiệp. Giờ đây tôi có thể tự tin cười mà không cần phải che miệng nữa.</p>
+                    <p class="testimonial-text" data-lang="testimonial-1">Tôi đã điều trị niềng răng tại HAPPY Smile và rất hài lòng với kết quả. Các bác sĩ rất tận tâm, tư vấn chi tiết và quá trình điều trị rất chuyên nghiệp. Giờ đây tôi có thể tự tin cười mà không cần phải che miệng nữa.</p>
                     <div class="testimonial-author">
                         <div class="author-info">
                             <h4>Nguyễn Thị Minh</h4>
-                            <p>Khách hàng niềng răng</p>
+                            <p data-lang="testimonial-author-1">Khách hàng niềng răng</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <p class="testimonial-text">Dịch vụ bọc răng sứ tại HAPPY Smile thực sự xuất sắc. Bác sĩ tư vấn rất tỉ mỉ, lựa chọn loại răng sứ phù hợp với gương mặt tôi. Kết quả vượt ngoài mong đợi, trông rất tự nhiên và đẹp. Tôi sẽ giới thiệu bạn bè đến đây.</p>
+                    <p class="testimonial-text" data-lang="testimonial-2">Dịch vụ bọc răng sứ tại HAPPY Smile thực sự xuất sắc. Bác sĩ tư vấn rất tỉ mỉ, lựa chọn loại răng sứ phù hợp với gương mặt tôi. Kết quả vượt ngoài mong đợi, trông rất tự nhiên và đẹp. Tôi sẽ giới thiệu bạn bè đến đây.</p>
                     <div class="testimonial-author">
                         <div class="author-info">
                             <h4>Trần Văn Hoàng</h4>
-                            <p>Khách hàng bọc răng sứ</p>
+                            <p data-lang="testimonial-author-2">Khách hàng bọc răng sứ</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <p class="testimonial-text">Mình thường xuyên đến HAPPY Smile để khám và vệ sinh răng định kỳ. Môi trường phòng khám sạch sẽ, hiện đại và thân thiện. Các bác sĩ và nhân viên rất chuyên nghiệp và chu đáo. Chất lượng dịch vụ xứng đáng với giá tiền.</p>
+                    <p class="testimonial-text" data-lang="testimonial-3">Mình thường xuyên đến HAPPY Smile để khám và vệ sinh răng định kỳ. Môi trường phòng khám sạch sẽ, hiện đại và thân thiện. Các bác sĩ và nhân viên rất chuyên nghiệp và chu đáo. Chất lượng dịch vụ xứng đáng với giá tiền.</p>
                     <div class="testimonial-author">
                         <div class="author-info">
                             <h4>Võ Hoàng Gia Linh</h4>
-                            <p>Khách hàng thường xuyên</p>
+                            <p data-lang="testimonial-author-3">Khách hàng thường xuyên</p>
                         </div>
                     </div>
                 </div>
@@ -1371,7 +1464,7 @@
         </section>
 
         <section class="news" id="news">
-            <h3>TIN TỨC NHA KHOA</h3>
+            <h3 data-lang="news-title">TIN TỨC NHA KHOA</h3>
             <div class="news-grid">
                 <div class="news-card">
                     <div class="news-image">
@@ -1379,9 +1472,9 @@
                     </div>
                     <div class="news-content">
                         <div class="news-date">17/05/2025</div>
-                        <h4 class="news-title">5 Cách chăm sóc răng miệng hiệu quả tại nhà</h4>
-                        <p class="news-excerpt">Chăm sóc răng miệng đúng cách không chỉ giúp bạn có hàm răng trắng sáng mà còn phòng ngừa nhiều bệnh lý...</p>
-                        <a href="#" class="news-link">Xem thêm</a>
+                        <h4 class="news-title" data-lang="news-title-1">5 Cách chăm sóc răng miệng hiệu quả tại nhà</h4>
+                        <p class="news-excerpt" data-lang="news-excerpt-1">Chăm sóc răng miệng đúng cách không chỉ giúp bạn có hàm răng trắng sáng mà còn phòng ngừa nhiều bệnh lý...</p>
+                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
                 <div class="news-card">
@@ -1390,9 +1483,9 @@
                     </div>
                     <div class="news-content">
                         <div class="news-date">10/05/2025</div>
-                        <h4 class="news-title">Những điều cần biết về niềng răng trong suốt</h4>
-                        <p class="news-excerpt">Niềng răng trong suốt đang là xu hướng được nhiều người lựa chọn nhờ tính thẩm mỹ cao và thuận tiện...</p>
-                        <a href="#" class="news-link">Xem thêm</a>
+                        <h4 class="news-title" data-lang="news-title-2">Những điều cần biết về niềng răng trong suốt</h4>
+                        <p class="news-excerpt" data-lang="news-excerpt-2">Niềng răng trong suốt đang là xu hướng được nhiều người lựa chọn nhờ tính thẩm mỹ cao và thuận tiện...</p>
+                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
                 <div class="news-card">
@@ -1401,21 +1494,20 @@
                     </div>
                     <div class="news-content">
                         <div class="news-date">05/05/2025</div>
-                        <h4 class="news-title">Phòng ngừa sâu răng cho trẻ em hiệu quả</h4>
-                        <p class="news-excerpt">Trẻ em là đối tượng dễ bị sâu răng. Hãy cùng tìm hiểu các biện pháp phòng ngừa sâu răng hiệu quả...</p>
-                        <a href="#" class="news-link">Xem thêm</a>
+                        <h4 class="news-title" data-lang="news-title-3">Phòng ngừa sâu răng cho trẻ em hiệu quả</h4>
+                        <p class="news-excerpt" data-lang="news-excerpt-3">Trẻ em là đối tượng dễ bị sâu răng. Hãy cùng tìm hiểu các biện pháp phòng ngừa sâu răng hiệu quả...</p>
+                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="contact" id="contact">
-            <h2>ĐỊA CHỈ - THÔNG TIN - LIÊN HỆ</h2>
-            <p>Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng, Việt Nam</p>
+            <h2 data-lang="contact-title">ĐỊA CHỈ - THÔNG TIN - LIÊN HỆ</h2>
+            <p data-lang="contact-address">Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng, Việt Nam</p>
             <div class="contact-container">
                 <div class="map">
-                    <!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.738711613779!2d108.25104871463337!3d15.978921588939292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108997dc971f%3A0x1295cb3d313469c9!2zVHLGsOG7nW5gIMSQ4bqhaSBo4buNYyBGUFQgxJDJoCBO4bq1bmc!5e0!3m2!1svi!2s!4v1650010000000!5m2!1svi!2s" allowfullscreen="" loading="lazy"></iframe>-->
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.8561681211877!2d108.2583163749275!3d15.968885884696162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142116949840599%3A0x365b35580f52e8d5!2sFPT%20University%20Danang!5e0!3m2!1sen!2s!4v1748240468982!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.738711613779!2d108.25104871463337!3d15.978921588939292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108997dc971f%3A0x1295cb3d313469c9!2zVHLGsOG7nW5gIMSQ4bqhaSBo4buNYyBGUFQgxJDJoCBO4bq1bmc!5e0!3m2!1svi!2s!4v1650010000000!5m2!1svi!2s" allowfullscreen="" loading="lazy"></iframe>
                 </div>
                 <div class="contact-info">
                     <h3>NHA KHOA HAPPY SMILE</h3>
@@ -1428,107 +1520,405 @@
             </div>
             <div class="contact-form">
                 <div class="form-group">
-                    <label for="name">Họ và tên</label>
+                    <label for="name" data-lang="form-name">Họ và tên</label>
                     <input type="text" id="name" class="form-control" placeholder="Họ và tên" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email hoặc số điện thoại</label>
+                    <label for="email" data-lang="form-email">Email hoặc số điện thoại</label>
                     <input type="text" id="email" class="form-control" placeholder="Email hoặc số điện thoại" required>
                 </div>
                 <div class="form-group">
-                    <label for="gender">Giới tính</label>
+                    <label for="gender" data-lang="form-gender">Giới tính</label>
                     <select id="gender" class="form-control" required>
-                        <option value="">Chọn giới tính</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
+                        <option value="" data-lang="form-gender-select">Chọn giới tính</option>
+                        <option value="male" data-lang="form-gender-male">Nam</option>
+                        <option value="female" data-lang="form-gender-female">Nữ</option>
+                        <option value="other" data-lang="form-gender-other">Khác</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="age">Tuổi</label>
+                    <label for="age" data-lang="form-age">Tuổi</label>
                     <input type="number" id="age" class="form-control" placeholder="Tuổi" required>
                 </div>
                 <div class="form-group">
-                    <label for="message">Nội dung</label>
+                    <label for="message" data-lang="form-message">Nội dung</label>
                     <textarea id="message" class="form-control" placeholder="Nhập nội dung" required></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Gửi thông tin</button>
+                <button type="submit" class="submit-btn" data-lang="form-submit">Gửi thông tin</button>
             </div>
         </section>
 
         <footer class="footer">
             <div class="footer-container">
                 <div class="footer-col">
-                    <h4>HAPPY SMILE</h4>
-                    <p>Phòng khám nha khoa tư nhân chuyên về răng, miệng, và cấy ghép implant. Chúng tôi cam kết mang đến dịch vụ chất lượng với giá cả hợp lý.</p>
-                    <p>Địa chỉ: Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng</p>
-                    <p>Hotline: 0123 456 789</p>
-                    <p>Email: support@happysmile.com</p>
-                    <p>Website: happysmile.com.vn</p>
+                    <h4 data-lang="footer-title">HAPPY SMILE</h4>
+                    <p data-lang="footer-about">Phòng khám nha khoa tư nhân chuyên về răng, miệng, và cấy ghép implant. Chúng tôi cam kết mang đến dịch vụ chất lượng với giá cả hợp lý.</p>
+                    <p data-lang="footer-address">Địa chỉ: Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng</p>
+                    <p data-lang="footer-hotline">Hotline: 0123 456 789</p>
+                    <p data-lang="footer-email">Email: support@happysmile.com</p>
+                    <p data-lang="footer-website">Website: happysmile.com.vn</p>
                 </div>
                 <div class="footer-col">
-                    <h4>DỊCH VỤ</h4>
+                    <h4 data-lang="footer-services-title">DỊCH VỤ</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Khám tổng quát</a></li>
-                        <li><a href="#">Tẩy trắng răng</a></li>
-                        <li><a href="#">Bọc răng sứ</a></li>
-                        <li><a href="#">Niềng răng</a></li>
-                        <li><a href="#">Cấy ghép Implant</a></li>
-                        <li><a href="#">Điều trị nha chu</a></li>
+                        <li><a href="#" data-lang="service-general-checkup">Khám tổng quát</a></li>
+                        <li><a href="#" data-lang="service-whitening">Tẩy trắng răng</a></li>
+                        <li><a href="#" data-lang="service-veneers">Bọc răng sứ</a></li>
+                        <li><a href="#" data-lang="service-braces">Niềng răng</a></li>
+                        <li><a href="#" data-lang="service-implant">Cấy ghép Implant</a></li>
+                        <li><a href="#" data-lang="service-periodontal">Điều trị nha chu</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>TRỢ GIÚP</h4>
+                    <h4 data-lang="footer-help-title">TRỢ GIÚP</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Hướng dẫn đặt lịch</a></li>
-                        <li><a href="#">Hướng dẫn thanh toán</a></li>
-                        <li><a href="#">Quy trình khám bệnh</a></li>
-                        <li><a href="#">Câu hỏi thường gặp</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#" data-lang="footer-help-booking">Hướng dẫn đặt lịch</a></li>
+                        <li><a href="#" data-lang="footer-help-payment">Hướng dẫn thanh toán</a></li>
+                        <li><a href="#" data-lang="footer-help-process">Quy trình khám bệnh</a></li>
+                        <li><a href="#" data-lang="footer-help-faq">Câu hỏi thường gặp</a></li>
+                        <li><a href="#" data-lang="footer-help-privacy">Chính sách bảo mật</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>HỢP TÁC</h4>
+                    <h4 data-lang="footer-cooperation-title">HỢP TÁC</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Tài khoản</a></li>
-                        <li><a href="#">Liên hệ</a></li>
-                        <li><a href="#">Tuyển dụng</a></li>
-                        <li><a href="#">Đối tác bảo hiểm</a></li>
-                        <li><a href="#">Cơ sở đào tạo</a></li>
+                        <li><a href="#" data-lang="footer-cooperation-account">Tài khoản</a></li>
+                        <li><a href="#" data-lang="footer-cooperation-contact">Liên hệ</a></li>
+                        <li><a href="#" data-lang="footer-cooperation-recruitment">Tuyển dụng</a></li>
+                        <li><a href="#" data-lang="footer-cooperation-insurance">Đối tác bảo hiểm</a></li>
+                        <li><a href="#" data-lang="footer-cooperation-training">Cơ sở đào tạo</a></li>
                     </ul>
                 </div>
             </div>
         </footer>
 
-        <div class="copyright">
+        <div class="copyright" data-lang="copyright">
             Bản quyền thuộc về HAPPY Smile © 2025. All Rights Reserved.
         </div>
 
         <script>
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('.nav ul li a').forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault(); // Prevent default anchor behavior
-                    const targetId = this.getAttribute('href').substring(1); // Get the target section ID
-                    const targetSection = document.getElementById(targetId);
+// Translations object
+            const translations = {
+                vi: {
+                    "login": "Đăng nhập",
+                    "register": "Đăng ký",
+                    "overview": "Tổng quan",
+                    "services": "Dịch vụ",
+                    "team": "Đội ngũ bác sĩ",
+                    "news": "Tin tức",
+                    "contact": "Liên hệ",
+                    "hero-subtitle": "Phòng khám nha khoa",
+                    "hero-title": "HAPPY SMILE",
+                    "book-appointment": "Đặt lịch khám ngay",
+                    "about-title": "CHÚNG TÔI LÀ AI?",
+                    "about-text-1": "HAPPY Smile là phòng khám nha khoa tư nhân chuyên nghiệp tại Việt Nam, với sứ mệnh mang đến dịch vụ chăm sóc răng miệng chất lượng cao và nụ cười khỏe mạnh cho mọi khách hàng.",
+                    "about-text-2": "Với đội ngũ bác sĩ giàu kinh nghiệm, được đào tạo bài bản trong và ngoài nước, cùng trang thiết bị hiện đại, chúng tôi cam kết mang đến những phương pháp điều trị tiên tiến và hiệu quả nhất.",
+                    "about-text-3": "Tại HAPPY Smile, chúng tôi không chỉ chữa trị các vấn đề răng miệng mà còn hướng đến việc phòng ngừa, tư vấn và chăm sóc sức khỏe răng miệng lâu dài cho khách hàng.",
+                    "about-text-4": "Hãy đến với chúng tôi để trải nghiệm dịch vụ nha khoa chất lượng trong một không gian thoải mái, thân thiện và chuyên nghiệp.",
+                    "services-title": "DỊCH VỤ NHA KHOA",
+                    "service-general-checkup": "Khám tổng quát",
+                    "service-filling": "Trám răng",
+                    "service-whitening": "Tẩy trắng răng",
+                    "service-veneers": "Bọc răng sứ",
+                    "service-braces": "Niềng răng",
+                    "service-extraction": "Nhổ răng",
+                    "service-implant": "Cấy ghép implant",
+                    "service-periodontal": "Điều trị nha chu",
+                    "team-title": "ĐỘI NGŨ BÁC SĨ",
+                    "doctor-implant": "Chuyên gia Implant",
+                    "doctor-orthodontics": "Chuyên gia Chỉnh nha",
+                    "doctor-restoration": "Chuyên gia Phục hình",
+                    "doctor-periodontal": "Chuyên gia Nha chu",
+                    "testimonials-title": "CẢM NHẬN TỪ KHÁCH HÀNG",
+                    "testimonial-1": "Tôi đã điều trị niềng răng tại HAPPY Smile và rất hài lòng với kết quả. Các bác sĩ rất tận tâm, tư vấn chi tiết và quá trình điều trị rất chuyên nghiệp. Giờ đây tôi có thể tự tin cười mà không cần phải che miệng nữa.",
+                    "testimonial-author-1": "Khách hàng niềng răng",
+                    "testimonial-2": "Dịch vụ bọc răng sứ tại HAPPY Smile thực sự xuất sắc. Bác sĩ tư vấn rất tỉ mỉ, lựa chọn loại răng sứ phù hợp với gương mặt tôi. Kết quả vượt ngoài mong đợi, trông rất tự nhiên và đẹp. Tôi sẽ giới thiệu bạn bè đến đây.",
+                    "testimonial-author-2": "Khách hàng bọc răng sứ",
+                    "testimonial-3": "Mình thường xuyên đến HAPPY Smile để khám và vệ sinh răng định kỳ. Môi trường phòng khám sạch sẽ, hiện đại và thân thiện. Các bác sĩ và nhân viên rất chuyên nghiệp và chu đáo. Chất lượng dịch vụ xứng đáng với giá tiền.",
+                    "testimonial-author-3": "Khách hàng thường xuyên",
+                    "news-title": "TIN TỨC NHA KHOA",
+                    "news-title-1": "5 Cách chăm sóc răng miệng hiệu quả tại nhà",
+                    "news-excerpt-1": "Chăm sóc răng miệng đúng cách không chỉ giúp bạn có hàm răng trắng sáng mà còn phòng ngừa nhiều bệnh lý...",
+                    "news-title-2": "Những điều cần biết về niềng răng trong suốt",
+                    "news-excerpt-2": "Niềng răng trong suốt đang là xu hướng được nhiều người lựa chọn nhờ tính thẩm mỹ cao và thuận tiện...",
+                    "news-title-3": "Phòng ngừa sâu răng cho trẻ em hiệu quả",
+                    "news-excerpt-3": "Trẻ em là đối tượng dễ bị sâu răng. Hãy cùng tìm hiểu các biện pháp phòng ngừa sâu răng hiệu quả...",
+                    "read-more": "Xem thêm",
+                    "contact-title": "ĐỊA CHỈ - THÔNG TIN - LIÊN HỆ",
+                    "contact-address": "Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng, Việt Nam",
+                    "contact-info-title": "NHA KHOA HAPPY SMILE",
+                    "contact-hours-open": "Thời gian <span class='open-text'>Mở cửa</span>: Từ thứ 2 đến thứ 7, 7:00 AM - 6:00 PM",
+                    "contact-hours-closed": "Thời gian nghỉ trong tuần: Chủ nhật <span class='closed-text'>Đóng cửa</span>",
+                    "contact-btn": "Chốt lịch Đồng giá",
+                    "form-name": "Họ và tên",
+                    "form-email": "Email hoặc số điện thoại",
+                    "form-gender": "Giới tính",
+                    "form-gender-select": "Chọn giới tính",
+                    "form-gender-male": "Nam",
+                    "form-gender-female": "Nữ",
+                    "form-gender-other": "Khác",
+                    "form-age": "Tuổi",
+                    "form-message": "Nội dung",
+                    "form-submit": "Gửi thông tin",
+                    "footer-title": "HAPPY SMILE",
+                    "footer-about": "Phòng khám nha khoa tư nhân chuyên về răng, miệng, và cấy ghép implant. Chúng tôi cam kết mang đến dịch vụ chất lượng với giá cả hợp lý.",
+                    "footer-address": "Địa chỉ: Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng",
+                    "footer-hotline": "Hotline: 0123 456 789",
+                    "footer-email": "Email: support@happysmile.com",
+                    "footer-website": "Website: happysmile.com.vn",
+                    "footer-services-title": "DỊCH VỤ",
+                    "footer-help-title": "TRỢ GIÚP",
+                    "footer-help-booking": "Hướng dẫn đặt lịch",
+                    "footer-help-payment": "Hướng dẫn thanh toán",
+                    "footer-help-process": "Quy trình khám bệnh",
+                    "footer-help-faq": "Câu hỏi thường gặp",
+                    "footer-help-privacy": "Chính sách bảo mật",
+                    "footer-cooperation-title": "HỢP TÁC",
+                    "footer-cooperation-account": "Tài khoản",
+                    "footer-cooperation-contact": "Liên hệ",
+                    "footer-cooperation-recruitment": "Tuyển dụng",
+                    "footer-cooperation-insurance": "Đối tác bảo hiểm",
+                    "footer-cooperation-training": "Cơ sở đào tạo",
+                    "copyright": "Bản quyền thuộc về HAPPY Smile © 2025. All Rights Reserved."
+                },
+                en: {
+                    "login": "Login",
+                    "register": "Register",
+                    "overview": "Overview",
+                    "services": "Services",
+                    "team": "Our Team",
+                    "news": "News",
+                    "contact": "Contact",
+                    "hero-subtitle": "Dental Clinic",
+                    "hero-title": "HAPPY SMILE",
+                    "book-appointment": "Book an Appointment",
+                    "about-title": "WHO WE ARE",
+                    "about-text-1": "HAPPY Smile is a professional private dental clinic in Vietnam, dedicated to providing high-quality dental care and healthy smiles for all our clients.",
+                    "about-text-2": "With a team of experienced dentists trained both domestically and internationally, along with state-of-the-art equipment, we are committed to delivering the most advanced and effective treatment methods.",
+                    "about-text-3": "At HAPPY Smile, we not only treat dental issues but also focus on prevention, consultation, and long-term oral health care for our clients.",
+                    "about-text-4": "Visit us to experience quality dental services in a comfortable, friendly, and professional environment.",
+                    "services-title": "DENTAL SERVICES",
+                    "service-general-checkup": "General Checkup",
+                    "service-filling": "Dental Filling",
+                    "service-whitening": "Teeth Whitening",
+                    "service-veneers": "Porcelain Veneers",
+                    "service-braces": "Braces",
+                    "service-extraction": "Tooth Extraction",
+                    "service-implant": "Dental Implant",
+                    "service-periodontal": "Periodontal Treatment",
+                    "team-title": "OUR TEAM",
+                    "doctor-implant": "Implant Specialist",
+                    "doctor-orthodontics": "Orthodontics Specialist",
+                    "doctor-restoration": "Restoration Specialist",
+                    "doctor-periodontal": "Periodontal Specialist",
+                    "testimonials-title": "CLIENT TESTIMONIALS",
+                    "testimonial-1": "I had my braces treatment at HAPPY Smile and am very satisfied with the results. The doctors were dedicated, provided detailed consultations, and the treatment process was very professional. Now I can smile confidently without covering my mouth.",
+                    "testimonial-author-1": "Braces Client",
+                    "testimonial-2": "The porcelain veneer service at HAPPY Smile was outstanding. The doctors were meticulous in their consultations, choosing the right veneers for my face. The results exceeded my expectations, looking very natural and beautiful. I will recommend my friends to come here.",
+                    "testimonial-author-2": "Veneers Client",
+                    "testimonial-3": "I regularly visit HAPPY Smile for checkups and cleanings. The clinic environment is clean, modern, and friendly. The doctors and staff are very professional and attentive. The service quality is worth the price.",
+                    "testimonial-author-3": "Regular Client",
+                    "news-title": "DENTAL NEWS",
+                    "news-title-1": "5 Effective Ways to Care for Your Teeth at Home",
+                    "news-excerpt-1": "Proper dental care not only helps you achieve a bright smile but also prevents many oral diseases...",
+                    "news-title-2": "What You Need to Know About Clear Aligners",
+                    "news-excerpt-2": "Clear aligners are a popular choice due to their high aesthetics and convenience...",
+                    "news-title-3": "Effective Ways to Prevent Tooth Decay in Children",
+                    "news-excerpt-3": "Children are prone to tooth decay. Let’s explore effective prevention methods...",
+                    "read-more": "Read More",
+                    "contact-title": "ADDRESS - INFORMATION - CONTACT",
+                    "contact-address": "FPT City Urban Area, Ngu Hanh Son, Da Nang, Vietnam",
+                    "contact-info-title": "HAPPY SMILE DENTAL",
+                    "contact-hours-open": "Opening Hours: Monday to Saturday, 7:00 AM - 6:00 PM",
+                    "contact-hours-closed": "Closed on Sundays",
+                    "contact-btn": "Book Fixed-Price Appointment",
+                    "form-name": "Full Name",
+                    "form-email": "Email or Phone Number",
+                    "form-gender": "Gender",
+                    "form-gender-select": "Select Gender",
+                    "form-gender-male": "Male",
+                    "form-gender-female": "Female",
+                    "form-gender-other": "Other",
+                    "form-age": "Age",
+                    "form-message": "Message",
+                    "form-submit": "Submit",
+                    "footer-title": "HAPPY SMILE",
+                    "footer-about": "A private dental clinic specializing in teeth, oral health, and dental implants. We are committed to providing quality services at reasonable prices.",
+                    "footer-address": "Address: FPT City Urban Area, Ngu Hanh Son, Da Nang",
+                    "footer-hotline": "Hotline: 0123 456 789",
+                    "footer-email": "Email: support@happysmile.com",
+                    "footer-website": "Website: happysmile.com.vn",
+                    "footer-services-title": "SERVICES",
+                    "footer-help-title": "HELP",
+                    "footer-help-booking": "Booking Guide",
+                    "footer-help-payment": "Payment Guide",
+                    "footer-help-process": "Treatment Process",
+                    "footer-help-faq": "FAQs",
+                    "footer-help-privacy": "Privacy Policy",
+                    "footer-cooperation-title": "COOPERATION",
+                    "footer-cooperation-account": "Account",
+                    "footer-cooperation-contact": "Contact",
+                    "footer-cooperation-recruitment": "Recruitment",
+                    "footer-cooperation-insurance": "Insurance Partners",
+                    "footer-cooperation-training": "Training Facilities",
+                    "copyright": "Copyright © 2025 HAPPY Smile. All Rights Reserved."
+                },
+                ja: {
+                    "login": "ログイン",
+                    "register": "登録",
+                    "overview": "概要",
+                    "services": "サービス",
+                    "team": "私たちのチーム",
+                    "news": "ニュース",
+                    "contact": "連絡先",
+                    "hero-subtitle": "歯科クリニック",
+                    "hero-title": "HAPPY SMILE",
+                    "book-appointment": "今すぐ予約",
+                    "about-title": "私たちは誰ですか？",
+                    "about-text-1": "HAPPY Smileは、ベトナムのプロフェッショナルな民間歯科クリニックで、高品質の歯科ケアと健康な笑顔をお客様に提供することを使命としています。",
+                    "about-text-2": "国内外で訓練を受けた経験豊富な歯科医師チームと最新の設備により、最も先進的で効果的な治療法をお約束します。",
+                    "about-text-3": "HAPPY Smileでは、口腔の問題の治療だけでなく、予防、相談、長期的な口腔健康ケアにも重点を置いています。",
+                    "about-text-4": "快適でフレンドリーかつプロフェッショナルな環境で、質の高い歯科サービスを体験してください。",
+                    "services-title": "歯科サービス",
+                    "service-general-checkup": "一般検診",
+                    "service-filling": "詰め物",
+                    "service-whitening": "歯のホワイトニング",
+                    "service-veneers": "セラミックベニア",
+                    "service-braces": "矯正",
+                    "service-extraction": "抜歯",
+                    "service-implant": "インプラント",
+                    "service-periodontal": "歯周病治療",
+                    "team-title": "私たちのチーム",
+                    "doctor-implant": "インプラント専門医",
+                    "doctor-orthodontics": "矯正専門医",
+                    "doctor-restoration": "修復専門医",
+                    "doctor-periodontal": "歯周病専門医",
+                    "testimonials-title": "お客様の声",
+                    "testimonial-1": "HAPPY Smileで矯正治療を受け、結果に非常に満足しています。医師は熱心で、詳細な相談を提供し、治療プロセスは非常にプロフェッショナルでした。今では口を隠さずに自信を持って笑えます。",
+                    "testimonial-author-1": "矯正のお客様",
+                    "testimonial-2": "HAPPY Smileのセラミックベニアサービスは本当に素晴らしかったです。医師は丁寧に相談し、私の顔に合ったベニアを選んでくれました。結果は期待以上で、とても自然で美しいです。友達にもここを勧めます。",
+                    "testimonial-author-2": "ベニアのお客様",
+                    "testimonial-3": "HAPPY Smileに定期的に検診とクリーニングのために通っています。クリニックの環境は清潔でモダン、フレンドリーです。医師とスタッフは非常にプロフェッショナルで丁寧です。サービスの質は価格に見合っています。",
+                    "testimonial-author-3": "定期的なお客様",
+                    "news-title": "歯科ニュース",
+                    "news-title-1": "自宅で効果的に歯をケアする5つの方法",
+                    "news-excerpt-1": "正しい歯のケアは、白い歯を手に入れるだけでなく、多くの口腔疾患を予防します...",
+                    "news-title-2": "透明な矯正について知っておくべきこと",
+                    "news-excerpt-2": "透明な矯正は、審美性が高く便利なため、多くの人に選ばれるトレンドです...",
+                    "news-title-3": "子供の虫歯を効果的に予防する方法",
+                    "news-excerpt-3": "子供は虫歯になりやすいです。効果的な予防方法を探ってみましょう...",
+                    "read-more": "もっと見る",
+                    "contact-title": "住所 - 情報 - 連絡先",
+                    "contact-address": "ベトナム、ダナン、グーハンソン、FPTシティ都市エリア",
+                    "contact-info-title": "HAPPY SMILE歯科",
+                    "contact-hours-open": "営業時間：月曜日から土曜日、7:00 AM - 6:00 PM",
+                    "contact-hours-closed": "日曜日は休業",
+                    "contact-btn": "固定価格で予約",
+                    "form-name": "氏名",
+                    "form-email": "メールまたは電話番号",
+                    "form-gender": "性別",
+                    "form-gender-select": "性別を選択",
+                    "form-gender-male": "男性",
+                    "form-gender-female": "女性",
+                    "form-gender-other": "その他",
+                    "form-age": "年齢",
+                    "form-message": "メッセージ",
+                    "form-submit": "送信",
+                    "footer-title": "HAPPY SMILE",
+                    "footer-about": "歯、口腔、インプラントを専門とする民間歯科クリニック。リーズナブルな価格で高品質のサービスを提供します。",
+                    "footer-address": "住所：FPTシティ都市エリア、グーハンソン、ダナン",
+                    "footer-hotline": "ホットライン：0123 456 789",
+                    "footer-email": "メール：support@happysmile.com",
+                    "footer-website": "ウェブサイト：happysmile.com.vn",
+                    "footer-services-title": "サービス",
+                    "footer-help-title": "ヘルプ",
+                    "footer-help-booking": "予約ガイド",
+                    "footer-help-payment": "支払いガイド",
+                    "footer-help-process": "治療プロセス",
+                    "footer-help-faq": "よくある質問",
+                    "footer-help-privacy": "プライバシーポリシー",
+                    "footer-cooperation-title": "協力",
+                    "footer-cooperation-account": "アカウント",
+                    "footer-cooperation-contact": "連絡先",
+                    "footer-cooperation-recruitment": "採用",
+                    "footer-cooperation-insurance": "保険のパートナー",
+                    "footer-cooperation-training": "トレーニング施設",
+                    "copyright": "© 2025 HAPPY Smile. All Rights Reserved."
+                }
+            };
 
-                    if (targetSection) {
-                        // Calculate the offset to account for fixed header
-                        const headerHeight = document.querySelector('.header').offsetHeight;
-                        const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-
-                        // Smooth scroll to the target position
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-
-                        // Update active link
-                        document.querySelectorAll('.nav ul li a').forEach(l => l.classList.remove('active'));
-                        this.classList.add('active');
+// Function to update page content based on selected language
+            function updateLanguage(lang) {
+                // Update all elements with data-lang attributes
+                document.querySelectorAll('[data-lang]').forEach(element => {
+                    const key = element.getAttribute('data-lang');
+                    if (translations[lang] && translations[lang][key]) {
+                        // Handle elements with HTML content (e.g., contact-hours-open)
+                        if (element.innerHTML.includes('<span')) {
+                            element.innerHTML = translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
                     }
                 });
+
+                // Update placeholder attributes for form inputs
+                document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-lang');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.placeholder = translations[lang][key];
+                    }
+                });
+
+                // Update select options
+                document.querySelectorAll('#gender option').forEach(option => {
+                    const key = option.getAttribute('data-lang');
+                    if (translations[lang] && translations[lang][key]) {
+                        option.textContent = translations[lang][key];
+                    }
+                });
+
+                // Update the language selector to reflect the current language
+                document.getElementById('language-switcher').value = lang;
+            }
+
+// Initialize language from session
+            <%
+                String language = (String) session.getAttribute("language");
+                if (language == null) {
+                    language = "vi"; // Default to Vietnamese
+                }
+            %>
+            const currentLang = '<%= language%>';
+            updateLanguage(currentLang);
+
+// Handle language switcher change event
+            document.getElementById('language-switcher').addEventListener('change', function () {
+                const selectedLang = this.value;
+                // Update content immediately
+                updateLanguage(selectedLang);
+                // Send request to LanguageServlet to update session
+                fetch(`LanguageServlet?lang=${selectedLang}`, {
+                    method: 'GET'
+                }).catch(error => {
+                    console.error('Error updating language:', error);
+                });
             });
+
+            // Theme toggle functionality
+            document.getElementById('theme-toggle').addEventListener('click', function () {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                this.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                // Save theme preference in localStorage
+                localStorage.setItem('theme', newTheme);
+            });
+
+// Initialize theme from localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-toggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
         </script>
     </body>
 </html>
