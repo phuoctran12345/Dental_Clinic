@@ -134,7 +134,7 @@
             <h3>Thêm khung giờ cho <span id="selectedDateLabel"></span></h3>
             <label>Bắt đầu: <input type="time" id="startTime"></label>
             <label>Kết thúc: <input type="time" id="endTime"></label>
-            <label>Khoảng giữa (phút): <input type="number" id="interval" value="30" min="5"></label>
+            
             <button onclick="generateTimeSlots()">Tạo</button>
             <button onclick="closeTimeForm()">Hủy</button>
 

@@ -7,18 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="/include/header.jsp" %>
 <%@ include file="/include/menu.jsp" %>
-<%@ page import="Model.DoctorDB" %>
-<%@ page import="Model.Dortor" %>
 
-<%
-    session.setAttribute("user_id", 1);
-    // Lấy userId từ session
-    Integer userId = (Integer) session.getAttribute("user_id");
-    Dortor doctor = null;
-    if (userId != null) {
-        doctor = DoctorDB.getDoctorInfo(userId);
-    }
-%>
 
 
 <!DOCTYPE html>
@@ -613,15 +602,14 @@
                     <button class="settings-btn">Cài đặt ⚙️</button>
                 </div>
                 <div class="card-body">
-                    <% if (doctor != null) { %>
-                        <h2 class="doctor-name"><%= doctor.getFullName() %></h2>
-                        <p><i class="fa-solid fa-venus-mars"></i> Giới tính: <%= doctor.getGender() %></p>
+                    
+                        <h2 class="doctor-name">toan</h2>
+                        <p><i class="fa-solid fa-venus-mars"></i> Giới tính: </p>
                         <p><i class="fa-solid fa-user-doctor"></i> Chức vụ: Thạc Sĩ - Bác sĩ</p>
-                        <p><i class="fa-solid fa-stethoscope"></i> Chuyên khoa: <%= doctor.getSpecialty() %></p>
-                        <p><i class="fa-solid fa-phone"></i> Số điện thoại: <%= doctor.getPhone() %></p>
-                    <% } else { %>
-                        <h2 class="doctor-name">Không tìm thấy thông tin bác sĩ</h2>
-                    <% } %>
+                        <p><i class="fa-solid fa-stethoscope"></i> Chuyên khoa: </p>
+                        <p><i class="fa-solid fa-phone"></i> Số điện thoại: </p>
+                   
+                        
                 </div>
             </div>
 

@@ -30,6 +30,19 @@ public class DBConnection {
     }
 
     // ✅ Hàm main để test kết nối
-    
+//    public static void main(String[] args) {
+//    Connection conn = getConnection();
+//    if (conn != null) {
+//        System.out.println("✅ Kết nối database thành công!");
+//        try {
+//            conn.close(); // Đóng kết nối sau khi kiểm tra
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    } else {
+//        System.out.println("❌ Kết nối database thất bại!");
+//    }
+//}
+
 
 }

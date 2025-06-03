@@ -280,7 +280,7 @@
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">
-                    <a href="doctor_lichtrongthang.jsp">• Lịch làm</a>
+                    <a href="doctor-schedule?action=list">• Lịch làm</a>
                     <a href="doctor_dangkilich.jsp">• Đăng kí lịch</a>
                     <a href="doctor_taikham.jsp">• Tái khám</a>
                 </div>
