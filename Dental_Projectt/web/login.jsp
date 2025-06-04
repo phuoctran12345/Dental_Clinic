@@ -164,8 +164,10 @@
                 <% if (request.getParameter("error") != null) { %>
                 <p class="error-message">Email hoặc mật khẩu không đúng!</p>
                 <% }%>
+                
                 <!-- Ghi chú: Nút gửi form đăng nhập -->
-                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                
                 <!-- Ghi chú: Liên kết đăng ký and quên mật khẩu -->
                 <p class="text-center mt-3">
                     <a href="signup.jsp">Đăng ký</a> | <a href="#">Quên mật khẩu?</a>

@@ -24,6 +24,22 @@
         <servlet-name>PatientInfo</servlet-name>
         <servlet-class>Controller.PatientInfo</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UserHompageServlet</servlet-name>
+        <servlet-class>Controller.UserHompageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DocterScheduleServlet</servlet-name>
+        <servlet-class>Controller.DocterScheduleServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookingPageServlet</servlet-name>
+        <servlet-class>Controller.BookingPageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ConfirmServlet</servlet-name>
+        <servlet-class>Controller.ConfirmServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AvatarServlet</servlet-name>
         <url-pattern>/AvatarServlet</url-pattern>
@@ -47,5 +63,21 @@
     <servlet-mapping>
         <servlet-name>PatientInfo</servlet-name>
         <url-pattern>/PatientInfo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserHompageServlet</servlet-name>
+        <url-pattern>/UserHompageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DocterScheduleServlet</servlet-name>
+        <url-pattern>/DocterScheduleServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookingPageServlet</servlet-name>
+        <url-pattern>/BookingPageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConfirmServlet</servlet-name>
+        <url-pattern>/ConfirmServlet</url-pattern>
     </servlet-mapping>
 </web-app>

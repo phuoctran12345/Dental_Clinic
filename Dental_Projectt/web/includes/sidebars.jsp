@@ -1,4 +1,4 @@
-<%-- 
+<%--  
     Document   : user_homepage
     Created on : May 16, 2025, 11:32:55 AM
     Author     : Home
@@ -14,8 +14,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <style>
-            
-
 
 
             *{
@@ -23,13 +21,13 @@
                 padding : 0;
                 box-sizing: border-box;
                 font-family: 'Segoe UI', sans-serif;
-                
+
             }
 
             body{
                 width: 100vw;
                 height: 100vh;
-                background-color: #f8f9fb;
+                background-color: white;
             }
             .menu-toggle {
                 position: fixed;
@@ -55,31 +53,31 @@
                 flex-direction: column;
                 gap: 20px;
                 transition: transform 0.3s;
-                background-color: #f8f9fb;
-
-
+                background-color: white;
             }
 
             .menu_header{
-                font-size: 13px;
+                font-size: 18px;
                 padding-bottom: 10px;
-                margin-bottom: 20px;
+                margin-bottom: 10px;
                 padding-right: 50px;
                 padding-left: 15px;
             }
 
             .menu_header h2{
-                color: #00BFFF;
+                color: #4E80EE;
             }
 
-            .menu_item{
+            .menu_item {
                 display: flex;
                 align-items: center;
                 padding: 14px;
                 border-radius: 8px;
-                transition: all 0.1s;
                 cursor: pointer;
                 color: #333;
+                background-color: white;  /* nền trắng cho rõ hiệu ứng */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* bóng nhẹ mặc định */
+                transition: box-shadow 0.3s ease, transform 0.2s ease;
             }
 
             .menu_item:hover{
@@ -107,10 +105,10 @@
                 box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* đổ bóng */
 
             }
-          
-            
+
+
             .menu_item:hover i {
-                background-color: #00BFFF;
+                background-color: #4E80EE;
                 color: white;
                 transition: 0.2s;
             }
@@ -120,7 +118,7 @@
             .menu_item span{
                 font-weight: 500;
                 margin-left: 20px;
-                transition: all 0.2s ease;  
+                transition: all 0.2s ease;
 
             }
 
@@ -132,10 +130,10 @@
                 transform: translateX(-10px);
                 color: #333;
             }
-            
+
             .header-sidebar {
                 display: flex;
-                border-bottom: 2px solid #00BFFF;
+                border-bottom: 2px solid #4E80EE;
                 /* canh theo chiều cao cho đều nhau */
             }
 
@@ -147,7 +145,8 @@
             a{
                 text-decoration: none;
                 color: black;
-            }.my-icon{
+            }
+            .my-icon{
                 padding-bottom: 100px;
             }
         </style>
@@ -163,39 +162,38 @@
 
             <div class="header-sidebar">
                 <div class="logo-menu">
-                    <img src="imgs/logo.png" alt="Logo" width="40" />
+                    <img src="img/logo.png" alt="Logo" width="60" />
                 </div>
                 <div class="menu_header">           
                     <h2>HAPPY SMILE  </h2>
                 </div>
             </div>
-           
-                <a href="user_homepage.jsp" class="menu_item">
+
+            <a href="UserHompageServlet" class="menu_item">
                 <i class="fa-solid fa-house "></i>
                 <span>Home</span>
-                </a>
-           
-          
-                <a href="user_datlich.jsp" class="menu_item">
+            </a>
+
+
+            <a href="BookingPageServlet" class="menu_item">
                 <i class="fa-solid fa-calendar-days"></i>
                 <span>Lịch Khám</span>
-                </a>
-         
-            
-                <a href="user_tuvan.jsp" class="menu_item">
+            </a>
+
+
+            <a href="user_tuvan.jsp" class="menu_item">
                 <i class="fa-solid fa-headset"></i>
                 <span>Tư Vấn</span>
-                </a>
-          
-         
-                <a href="user_taikhoan.jsp" class="menu_item">
+            </a>
+
+
+            <a href="user_taikhoan.jsp" class="menu_item">
                 <i class="fa-solid fa-circle-user"></i>
                 <span>Tài Khoản</span>
-                </a>
-          
+            </a>
+
 
         </div>
     </body>
 </html>
-                <script src="js/script.js"></script>
-
+<script src="js/script.js"></script>

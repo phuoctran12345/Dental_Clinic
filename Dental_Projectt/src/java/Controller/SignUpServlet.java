@@ -4,7 +4,7 @@
  */
 package Controller;
 
-import Model.HospitalDB;
+import Model.DoctorDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -69,7 +69,8 @@ public class SignUpServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("passwordHash");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -85,13 +86,13 @@ public class SignUpServlet extends HttpServlet {
         }
 
         // Kiểm tra khách hàng đã tồn tại chưa
-        if (HospitalDB.isPatientExists(email)) {
+        if (DoctorDB.isPatientExists(email)) {
             response.sendRedirect("signup.jsp?error=exists");
             return;
         }
 
         // Gọi DAO để thêm khách hàng mới (có thể mã hóa mật khẩu ở đây nếu cần)
-        int id = HospitalDB.registerPatient(email, password);
+        int id = DoctorDB.registerPatient(email, password);
         if (id > 0) {
             HttpSession session = request.getSession();
             session.setAttribute("id", id);

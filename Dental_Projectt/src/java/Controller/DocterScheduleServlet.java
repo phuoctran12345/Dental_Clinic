@@ -4,20 +4,23 @@
  */
 package Controller;
 
+import Model.DoctorSchedule;
+import Model.Doctors;
+import Model.DoctorDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
- * @author Home
+ * @author Asus
  */
-public class LogoutServlet extends HttpServlet {
+public class DocterScheduleServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +39,10 @@ public class LogoutServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LogoutServlet</title>");
+            out.println("<title>Servlet DocterScheduleServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LogoutServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DocterScheduleServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,17 +57,32 @@ public class LogoutServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Lấy session hiện tại (nếu có)
-        if (session != null) {
-            session.invalidate(); // Xóa session
-        }
-        
-        
-        request.getRequestDispatcher("index.jsp").forward(request, response); 
-    }
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+        throws ServletException, IOException {
 
+    try {
+        int doctorId = Integer.parseInt(request.getParameter("doctor_id"));
+        
+        // Lấy danh sách lịch làm việc còn trống của bác sĩ
+        List<DoctorSchedule> availableSchedules = DoctorDB.getAvailableSchedulesByDoctor(doctorId);
+        request.setAttribute("availableSchedules", availableSchedules);
+
+        // Lấy thông tin bác sĩ
+        Doctors doctor = DoctorDB.getDoctorById(doctorId);
+        request.setAttribute("doctor", doctor);
+
+        // Forward sang trang JSP hiển thị lịch
+        request.getRequestDispatcher("user_datlich.jsp").forward(request, response);
+        
+    } catch (SQLException e) {
+        // Bọc SQLException trong ServletException
+        throw new ServletException("Lỗi khi lấy dữ liệu bác sĩ hoặc lịch làm việc", e);
+    } catch (NumberFormatException e) {
+        // Trường hợp doctor_id không hợp lệ
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Doctor ID không hợp lệ");
+    }
+}
     /**
      * Handles the HTTP <code>POST</code> method.
      *

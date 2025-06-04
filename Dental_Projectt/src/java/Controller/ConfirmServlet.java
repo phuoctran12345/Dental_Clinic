@@ -4,6 +4,9 @@
  */
 package Controller;
 
+
+import Model.DoctorDB;
+import Model.Patients;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,13 +14,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 
 /**
  *
  * @author Home
  */
-public class LogoutServlet extends HttpServlet {
+public class ConfirmServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +38,10 @@ public class LogoutServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LogoutServlet</title>");
+            out.println("<title>Servlet ConfirmServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LogoutServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ConfirmServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,14 +57,9 @@ public class LogoutServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Lấy session hiện tại (nếu có)
-        if (session != null) {
-            session.invalidate(); // Xóa session
-        }
-        
-        
-        request.getRequestDispatcher("index.jsp").forward(request, response); 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -76,7 +73,32 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+
+        // Lấy dữ liệu từ form
+        int scheduleId = Integer.parseInt(request.getParameter("schedule_id"));
+        String workDate = request.getParameter("work_date");
+        String startTime = request.getParameter("start_time");
+
+        // Lấy thông tin bệnh nhân từ session
+        HttpSession session = request.getSession();
+        System.out.println("Session ID tại servlet: " + session.getId());
+        Patients patient = (Patients) session.getAttribute("patient");
+        if (patient == null) {
+            System.out.println("Không tìm thấy patient trong session");
+        }
+
+        int patientId = patient.getPatientId();
+
+        // Gọi DAO để lưu vào bảng Appointment
+        boolean success = DoctorDB.insertAppointment(scheduleId, patientId, workDate, startTime);
+
+        if (success) {
+            request.setAttribute("message", "Đặt lịch thành công!");
+        } else {
+            request.setAttribute("message", "Đặt lịch thất bại. Vui lòng thử lại.");
+        }
+
+        request.getRequestDispatcher("datlich-thanhcong.jsp").forward(request, response);
     }
 
     /**

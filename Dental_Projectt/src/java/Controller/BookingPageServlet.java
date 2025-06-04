@@ -4,6 +4,10 @@
  */
 package Controller;
 
+import Model.Appointment;
+import Model.DoctorDB;
+import Model.Doctors;
+import Model.Patients;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,13 +15,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
- * @author Home
+ * @author Asus
  */
-public class LogoutServlet extends HttpServlet {
+public class BookingPageServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,10 +40,10 @@ public class LogoutServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LogoutServlet</title>");
+            out.println("<title>Servlet BookingPageServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LogoutServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet BookingPageServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,15 +59,43 @@ public class LogoutServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false); // Lấy session hiện tại (nếu có)
-        if (session != null) {
-            session.invalidate(); // Xóa session
-        }
-        
-        
-        request.getRequestDispatcher("index.jsp").forward(request, response); 
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+
+    HttpSession session = request.getSession(false);
+    if (session == null || session.getAttribute("patient") == null) {
+        response.sendRedirect("login.jsp");
+        return;
     }
+
+    Patients patient = (Patients) session.getAttribute("patient");
+
+    // Lấy danh sách lịch hẹn của bệnh nhân
+    List<Appointment> appointment = DoctorDB.getAppointmentsByPatientId(patient.getPatientId());
+    request.setAttribute("appointment", appointment);
+
+    // Lấy từ khóa tìm kiếm (nếu có)
+    String keyword = request.getParameter("keyword");
+    String specialty = request.getParameter("specialty");
+
+    List<Doctors> doctors;
+    if ((keyword != null && !keyword.isEmpty()) || (specialty != null && !specialty.isEmpty())) {
+        // Nếu có keyword hoặc chuyên khoa => lọc
+        doctors = DoctorDB.filterDoctors(keyword, specialty);
+    } else {
+        // Nếu không lọc gì => lấy toàn bộ
+        doctors = DoctorDB.getAllDoctors();
+    }
+
+    request.setAttribute("doctors", doctors);
+
+    // Lấy danh sách chuyên khoa để đổ dropdown
+    List<String> specialties = DoctorDB.getAllSpecialties();
+    request.setAttribute("specialties", specialties);
+
+    request.getRequestDispatcher("user_datlich_bacsi.jsp").forward(request, response);
+}
+
 
     /**
      * Handles the HTTP <code>POST</code> method.

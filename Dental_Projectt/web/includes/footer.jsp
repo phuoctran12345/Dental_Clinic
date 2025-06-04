@@ -19,10 +19,10 @@
                 <input type="checkbox" id="menu-toggle" hidden>
 
 <footer class="footer" style="background-color: #0077cc; color: white; text-align: center; padding-left: 200px; padding-bottom: 30px; padding-top: 30px;">
-    <p><strong>P-Dental Clinic</strong></p>
-    <p>Địa chỉ: 123 Đường Sức Khỏe, Quận 1, TP.HCM</p>
-    <p>Hotline: 0909 123 456</p>
-    <p>Email: lienhe@pdental.vn</p>
-    <p>&copy; 2025 P-Dental. Tất cả quyền được bảo lưu.</p>
+    <p><strong>HAPPY SMILE</strong></p>
+    <p>Địa chỉ: Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng</p>
+    <p>Hotline: 0123 456 789</p>
+    <p>Email: support@happysmile.com</p>
+    <p>&copy; 2025 Happy Smile. Tất cả quyền được bảo lưu.</p>
 </footer>
 

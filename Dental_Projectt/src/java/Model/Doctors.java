@@ -8,39 +8,56 @@ import java.util.Date;
 
 /**
  *
- * @author Home
+ * @author ASUS
  */
 public class Doctors {
+    private long doctorId;
+    private long userId;
 
-    private int doctorId;    // patient_id (auto-increment)
-    private int id;       // id liên kết User (không null)
-    private String fullName;   // full_name (mã hóa AES-256 ở tầng service)
-    private String phone;      // phone (mã hóa AES-256)
+    private String fullName;
+    private String phone;
     private String address;
-    private Date dateOfBirth;  // date_of_birth (mã hóa AES-256)
-    private String gender;     // gender ('male', 'female', 'other')
+    private Date dateOfBirth;
+
+    private String gender;
     private String specialty;
     private String licenseNumber;
-    private Date createdAt;    // created_at
     private String status;
+    private Date createdAt;
+    private String avatar;
 
     public Doctors() {
     }
 
-    public int getDoctorId() {
+    public Doctors(long doctorId, long userId, String fullName, String phone, String address, Date dateOfBirth, String gender, String specialty, String licenseNumber, String status, Date createdAt, String avatar) {
+        this.doctorId = doctorId;
+        this.userId = userId;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.address = address;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.specialty = specialty;
+        this.licenseNumber = licenseNumber;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.avatar = avatar;
+    }
+
+    public long getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(int doctorId) {
+    public void setDoctorId(long doctorId) {
         this.doctorId = doctorId;
     }
 
-    public int getId() {
-        return id;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getFullName() {
@@ -99,14 +116,6 @@ public class Doctors {
         this.licenseNumber = licenseNumber;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -115,25 +124,25 @@ public class Doctors {
         this.status = status;
     }
 
-    public Doctors(int doctorId, int id, String fullName, String phone, String address, Date dateOfBirth, String gender, String specialty, String licenseNumber, Date createdAt, String status) {
-        this.doctorId = doctorId;
-        this.id = id;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.address = address;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.specialty = specialty;
-        this.licenseNumber = licenseNumber;
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-        this.status = status;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override
     public String toString() {
-        return "Doctors{" + "doctorId=" + doctorId + ", id=" + id + ", fullName=" + fullName + ", phone=" + phone + ", address=" + address + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", specialty=" + specialty + ", licenseNumber=" + licenseNumber + ", createdAt=" + createdAt + ", status=" + status + '}';
+        return "Doctors{" + "doctorId=" + doctorId + ", userId=" + userId + ", fullName=" + fullName + ", phone=" + phone + ", address=" + address + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", specialty=" + specialty + ", licenseNumber=" + licenseNumber + ", status=" + status + ", createdAt=" + createdAt + ", avatar=" + avatar + '}';
     }
-
-   
-   
+    
 }

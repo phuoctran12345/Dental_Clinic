@@ -4,7 +4,7 @@
  */
 package Controller;
 
-import Model.HospitalDB;
+import Model.DoctorDB;
 import Model.Patients;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -68,7 +68,7 @@ public class PatientInfo extends HttpServlet {
         }
 
         // Gọi DAO để lấy thông tin bệnh nhân
-        Patients patient = HospitalDB.getPatientByUserId(id);
+        Patients patient = DoctorDB.getPatientByUserId(id);
         request.setAttribute("patient", patient);
 
         // Chuyển đến trang JSP

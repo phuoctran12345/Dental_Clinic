@@ -4,7 +4,7 @@
  */
 package Controller;
 
-import Model.HospitalDB;
+import Model.DoctorDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -87,7 +87,7 @@ public class RegisterInformation extends HttpServlet {
         String gender = request.getParameter("gender");
 
         // Gọi DAO để lưu thông tin bệnh nhân
-        boolean success = HospitalDB.savePatientInfo(id, fullName, phone, dateOfBirth, gender);
+        boolean success = DoctorDB.savePatientInfo(id, fullName, phone, dateOfBirth, gender);
 
         if (success) {
             response.sendRedirect("login.jsp");

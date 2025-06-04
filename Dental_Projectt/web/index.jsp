@@ -229,7 +229,7 @@
             }
 
             .hero {
-                background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('img/banner2.jpg') no-repeat center center fixed;
+                background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('img/nen2.jpg') no-repeat center center fixed;
                 color: #112ff2;
                 padding: 100px 0;
                 text-align: center;

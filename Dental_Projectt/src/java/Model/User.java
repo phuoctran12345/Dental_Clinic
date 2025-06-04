@@ -7,24 +7,23 @@ package Model;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- *
- * @author Home
- */
+
 public class User implements Serializable{
-    private int id;
+    private int userId;
     private String passwordHash;
     private String email;
     private String role; // 'ADMIN', 'DOCTOR', 'PATIENT', 'STAFF'
     private Date createdAt;
-    private String avatar;
 
-    public int getId() {
-        return id;
+    public User() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getPasswordHash() {
@@ -59,27 +58,24 @@ public class User implements Serializable{
         this.createdAt = createdAt;
     }
 
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public User(int id, String passwordHash, String email, String role, Date createdAt, String avatar) {
-        this.id = id;
+    public User(int userId, String passwordHash, String email, String role, Date createdAt) {
+        this.userId = userId;
         this.passwordHash = passwordHash;
         this.email = email;
         this.role = role;
         this.createdAt = createdAt;
-        this.avatar = avatar;
     }
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", passwordHash=" + passwordHash + ", email=" + email + ", role=" + role + ", createdAt=" + createdAt + ", avatar=" + avatar + '}';
+        return "User{" + "userId=" + userId + ", passwordHash=" + passwordHash + ", email=" + email + ", role=" + role + ", createdAt=" + createdAt + '}';
     }
 
-    
+    public int getId() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setAvatar(String base64WithHeader) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

@@ -1,152 +1,405 @@
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.List"%>
 <%@page import="Model.Doctors"%>
 <%@page contentType="text/html" pageEncoding="utf-8" %>
 
 <%@ include file="/includes/header.jsp" %>
-
 <%@ include file="/includes/sidebars.jsp" %>
-
-
 
 <!DOCTYPE html>
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Dashboard Layout</title>
+        <title>Dashboard P-Clinic</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
         <style>
+            :root {
+                --primary: #4F46E5;
+                --primary-light: #6366F1;
+                --secondary: #10B981;
+                --danger: #EF4444;
+                --warning: #F59E0B;
+                --gray-100: #F3F4F6;
+                --gray-200: #E5E7EB;
+                --gray-500: #6B7280;
+                --gray-700: #374151;
+                --white: #FFFFFF;
+            }
 
             body {
-
-                padding-top: 10px;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f8f9fb;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                background: #F9FAFB;
                 margin: 0;
-                width: 100%;
-
-
+                padding: 0;
+                color: var(--gray-700);
             }
 
-            .dashboard {
-                padding-left: 270px;
-                padding-top: 15px;
+            .dashboard-container {
+                padding: 24px 24px 24px 280px;
+                max-width: 1900px;
+                margin: 0 auto;
+            }
+
+            .dashboard-header {
+                margin-bottom: 24px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 28px;
+                font-weight: 700;
+                color: var(--gray-700);
+                margin: 0;
+            }
+
+            .dashboard-header p {
+                color: var(--gray-500);
+                margin: 8px 0 0;
+            }
+
+            .dashboard-grid {
                 display: grid;
-                grid-template-columns: 1.5fr 1fr;
-                grid-template-rows: repeat(3, 220px); /* Mỗi hàng cao 220px */
-                gap: 20px;
-                padding-right: 10px;
-                padding-bottom: 50px;
-                box-sizing: border-box;
-                min-height: 100vh;
-
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
             }
 
-            .dashboard > div {
-                border-radius: 12px;
+            .card {
+                background: var(--white);
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                border: 1px solid var(--gray-200);
                 padding: 20px;
-                box-shadow: 0 0 10px #ddd;
-                overflow: auto; /* Nếu nội dung dài thì cuộn */
+                transition: transform 0.2s, box-shadow 0.2s;
             }
 
-            .calendar {
-                background: linear-gradient(90deg,rgba(33, 24, 217, 1) 0%, rgba(52, 52, 186, 1) 0%, rgba(0, 212, 255, 1) 100%);
-                color: white;
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .card-title {
+                font-size: 18px;
+                font-weight: 600;
+                margin: 0;
+                color: var(--gray-700);
+            }
+
+            .card-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--white);
+            }
+
+            /* Calendar Card */
+            .calendar-card {
+                grid-column: span 4;
+                background: #4E80EE ;
+                color: var(--white);
+            }
+
+            .calendar-card .card-header {
+                border-bottom-color: rgba(255,255,255,0.2);
+            }
+
+            .calendar-card .card-title {
+                color: var(--white);
+            }
+
+            .calendar-date {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .calendar-time {
+                font-size: 16px;
+                opacity: 0.9;
+            }
+
+            /* Visit Count Card */
+            .visit-card {
+                grid-column: span 2;
+            }
+
+            .visit-card .card-icon {
+                background: var(--secondary);
             }
 
             .visit-count {
-                font-size: 28px;
-                font-weight: bold;
+                font-size: 32px;
+                font-weight: 700;
                 text-align: center;
+                margin: 16px 0;
+                color: var(--gray-700);
             }
 
-            .user-info {
-                background: #f0f8ff;
+            .visit-label {
+                text-align: center;
+                color: var(--gray-500);
+                font-size: 14px;
             }
 
-            .calendar h2,
-            .doctors-slider h3,
-            .user-info h3,
-            .recent-visits h3,
-            .consultations h3 {
-                margin-bottom: 10px;
+            /* Doctor Card */
+            .doctor-card {
+                grid-column: span 6;
             }
 
-            .calendar p {
-                font-size: 20px;
-                line-height: 1.6;
+            .doctor-card .card-icon {
+                background: var(--warning);
             }
-            #menu-toggle:checked ~.dashboard {
-                transform: translateX(-125px);
-                transition: transform 0.3s ease;
+
+            .doctor-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
             }
-            .dashboard {
-                transition: transform 0.3s ease;
+
+            .doctor-info p {
+                margin: 8px 0;
+                font-size: 14px;
+            }
+
+            .doctor-info span {
+                font-weight: 500;
+                color: var(--gray-700);
+            }
+
+            .status-active {
+                color: var(--secondary);
+                font-weight: 500;
+            }
+
+            /* User Info Card */
+            .user-card {
+                grid-column: span 4;
+            }
+
+            .user-card .card-icon {
+                background: var(--primary);
+            }
+
+            .user-info p {
+                margin: 12px 0;
+                font-size: 14px;
+            }
+
+            .user-info span {
+                font-weight: 500;
+            }
+
+            /* Recent Visits Card */
+            .visits-card {
+                grid-column: span 8;
+            }
+
+            .visits-card .card-icon {
+                background: var(--danger);
+            }
+
+            .visit-item {
+                padding: 12px 0;
+                border-bottom: 1px solid var(--gray-200);
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .visit-item:last-child {
+                border-bottom: none;
+            }
+
+            .visit-date {
+                color: var(--gray-500);
+                font-size: 13px;
+            }
+
+            /* Consultations Card */
+            .consult-card {
+                grid-column: span 12;
+            }
+
+            .consult-card .card-icon {
+                background: var(--primary-light);
+            }
+
+            .consult-content {
+                padding: 16px;
+                background: var(--gray-100);
+                border-radius: 6px;
+                font-size: 14px;
+            }
+
+            /* Responsive */
+            @media (max-width: 1200px) {
+                .dashboard-container {
+                    padding-left: 24px;
+                }
+
+                .calendar-card {
+                    grid-column: span 6;
+                }
+
+                .visit-card {
+                    grid-column: span 3;
+                }
+
+                .doctor-card {
+                    grid-column: span 6;
+                }
+
+                .user-card {
+                    grid-column: span 6;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .calendar-card,
+                .visit-card,
+                .doctor-card,
+                .user-card,
+                .visits-card,
+                .consult-card {
+                    grid-column: span 1;
+                }
             }
         </style>
     </head>
     <body>
-        <input type="checkbox" id="menu-toggle" hidden>
-
-        <div class="dashboard">
-
-            <div class="calendar">
-                <h2>Lịch khám sắp tới</h2>
-                <p><strong>28</strong> Tháng 2 2024<br>07:30 AM</p>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Xin chào, Mai Ngân</h1>
+                <p>Thông tin tổng quan về tình trạng khám chữa bệnh của bạn</p>
             </div>
 
-            <div class="visit-count">
-                <p>Số lần bạn khám tại P-Clinic</p>
-                <div>02</div>
+            <div class="dashboard-grid">
+                <!-- Calendar Card -->
+                <div class="card calendar-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Lịch khám sắp tới</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <div class="calendar-date">28 Tháng 2 2024</div>
+                    <div class="calendar-time">07:30 AM</div>
+                </div>
+
+                <!-- Visit Count Card -->
+                <div class="card visit-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Số lần khám</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                    <div class="visit-count">02</div>
+                    <div class="visit-label">tại P-Clinic</div>
+                </div>
+
+                <!-- Doctor Card -->
+                <div class="card doctor-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bác sĩ đang trực</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                    </div>
+                    <div class="doctor-info">
+                        <div>
+                            <p>Bác sĩ: <span>Châu Lê</span></p>
+                            <p>Chuyên môn: <span>Răng sâu</span></p>
+                        </div>
+                        <div>
+                            <p>Số điện thoại: <span>00624746072</span></p>
+                            <p>Giá khám: <span>168.000đ</span></p>
+                            <p>Trạng thái: <span class="status-active">Đang trực</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Info Card -->
+                <div class="card user-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Thông tin cá nhân</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="user-info">
+
+                        <%    Patients patient = (Patients) session.getAttribute("patient");
+                            if (patient != null) {
+                        %>
+                        <p><strong>Họ tên:</strong> <%= patient.getFullName()%></p>
+                        <p><strong>Điện thoại:</strong> <%= patient.getPhone()%></p>
+                        <%
+                            Date dob = patient.getDateOfBirth(); // có thể là java.sql.Date
+                            String formattedDob = "--";
+                            if (dob != null) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                                formattedDob = sdf.format(dob);
+                            }
+                        %>
+                        <p><strong>Ngày sinh:</strong> <%= formattedDob%></p>
+                        <p><strong>Giới tính:</strong> <%= patient.getGender()%></p>
+                        <%
+                        } else {
+                        %>
+                        <p>Không tìm thấy hồ sơ bệnh nhân.</p>
+                        <%
+                            }
+                        %>
+                    </div>
+                </div>
+
+                <!-- Recent Visits Card -->
+                <div class="card visits-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Đã khám gần đây</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                    </div>
+                    <div class="visit-item">
+                        <span>Khám răng sâu</span>
+                        <span class="visit-date">17/09/2024</span>
+                    </div>
+                    <div class="visit-item">
+                        <span>Khám nội tổng quát</span>
+                        <span class="visit-date">12/07/2023</span>
+                    </div>
+                </div>
+
+                <!-- Consultations Card -->
+                <div class="card consult-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Đang chờ tư vấn</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                    </div>
+                    <div class="consult-content">
+                        Thông tin tư vấn sẽ được hiển thị tại đây khi có yêu cầu.
+                    </div>
+                </div>
             </div>
-
-            <%                List<Doctors> doctors = (List<Doctors>) request.getAttribute("doctors");
-                if (doctors != null) {
-                    for (Doctors doc : doctors) {
-            %>
-            <div class="doctor-card">
-                <h3><strong>Bác Sĩ Đang Trực</strong></h3>
-                <p> Bác Sĩ : <%= doc.getFullName()%></p>
-                <p>Chuyên môn: <%= doc.getSpecialty()%></p>
-                <p>Số Điện thoại: <%= doc.getPhone()%></p>
-                <p>Giá Khám: 50k</p>
-                <p>
-                    <span>Trạng Thái:</span>
-                    <i style="color:green;" class="fa-solid fa-circle fa-fade"></i>                    
-                    <span style="color: green;"><%= doc.getStatus()%></span>
-                </p>
-
-            </div>
-            <%
-                }
-            } else {
-            %>
-            <p>Không có bác sĩ nào đang trực.</p>
-            <%
-                }
-            %>
-
-
-            <div class="user-info">
-                <h3>Namae Wa Nan Desu Ka</h3>
-                <p>Giới tính: Nữ</p>
-                <p>Ngày sinh: 02/05/2002</p>
-                <p>Số điện thoại: 0752789222</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...</p>
-            </div>
-
-            <div class="recent-visits">
-                <h3>Đã khám gần đây</h3>
-                <p>Danh sách các lần khám gần nhất</p>
-                <p>Khám nội tổng quát - 27/02/2024</p>
-                <p>Khám tim mạch - 12/07/2023</p>
-            </div>
-
-            <div class="consultations">
-                <h3>Đang chờ tư vấn</h3>
-                <p>Thông tin tư vấn...</p>
-            </div>
-
         </div>
-
     </body>
 </html>

@@ -5,7 +5,7 @@
 package Controller;
 
 import Model.Doctors;
-import Model.HospitalDB;
+import Model.DoctorDB;
 import Model.Patients;
 import Model.User;
 import java.io.IOException;
@@ -73,27 +73,27 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+   protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
         String passwordHash = request.getParameter("password_hash");
-        User user = HospitalDB.getUserByEmailAndPassword(email, passwordHash);
+        User user = DoctorDB.getUserByEmailAndPassword(email, passwordHash);
 
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-            Patients patient = HospitalDB.getPatientByUserId(user.getId());
+            Patients patient = DoctorDB.getPatientByUserId(user.getUserId());
             session.setAttribute("patient", patient);
 
-            List<Doctors> doctors = HospitalDB.getAllDoctors();
+            List<Doctors> doctors = DoctorDB.getAllDoctorsOnline();
             request.setAttribute("doctors", doctors);
             
             String role = user.getRole();  // Lấy role từ user
 
-            if ("DOCTOR".equalsIgnoreCase(role)) {
-                request.getRequestDispatcher("doctor_homepage.jsp").forward(request, response);
-            } else if ("PATIENT".equalsIgnoreCase(role)) {
+            if ("doctor".equalsIgnoreCase(role)) {
+                request.getRequestDispatcher("user_homepage.jsp").forward(request, response);
+            } else if ("patient".equalsIgnoreCase(role)) {
                 request.getRequestDispatcher("user_homepage.jsp").forward(request, response);
             } else {
                 // Role không xác định, chuyển hướng về trang lỗi hoặc đăng nhập

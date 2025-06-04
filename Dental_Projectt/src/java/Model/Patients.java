@@ -8,23 +8,21 @@ import java.util.Date;
 
 /**
  *
- * @author Home
+ * @author ASUS
  */
 public class Patients {
 
     private int patientId;    // patient_id (auto-increment)
-    private int id;       // id liên kết User (không null)
+    private int userId;       // id liên kết User (không null)
     private String fullName;   // full_name (mã hóa AES-256 ở tầng service)
     private String phone;      // phone (mã hóa AES-256)
     private Date dateOfBirth;  // date_of_birth (mã hóa AES-256)
     private String gender;     // gender ('male', 'female', 'other')
     private Date createdAt;    // created_at
+    private String avatar;
 
     public Patients() {
-    }
-    
-    
-    
+    }    
 
     public int getPatientId() {
         return patientId;
@@ -34,12 +32,12 @@ public class Patients {
         this.patientId = patientId;
     }
 
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getFullName() {
@@ -82,21 +80,27 @@ public class Patients {
         this.createdAt = createdAt;
     }
 
-    public Patients(int patientId, int id, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt) {
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public Patients(int patientId, int userId, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt, String avatar) {
         this.patientId = patientId;
-        this.id = id;
+        this.userId = userId;
         this.fullName = fullName;
         this.phone = phone;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.createdAt = createdAt;
+        this.avatar = avatar;
     }
 
     @Override
     public String toString() {
-        return "Patients{" + "patientId=" + patientId + ", id=" + id + ", fullName=" + fullName + ", phone=" + phone + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", createdAt=" + createdAt + '}';
+        return "Patients{" + "patientId=" + patientId + ", userId=" + userId + ", fullName=" + fullName + ", phone=" + phone + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", createdAt=" + createdAt + ", avatar=" + avatar + '}';
     }
-    
-    
-
 }
