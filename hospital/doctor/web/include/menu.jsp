@@ -307,8 +307,8 @@
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">
-                    <a href="doctor_trangcanhan.jsp">• Trang cá nhân</a>
-                    <a href="doctor_caidat.jsp">• Cài đặt</a>
+                    <a href="doctor_trangcanhan">• Trang cá nhân</a>
+                    <a href="doctor_caidat">• Cài đặt</a>
 
                 </div>
             </div>

@@ -81,6 +81,7 @@ public class LoginServlet extends HttpServlet {
         User user = DoctorDB.getUserByEmailAndPassword(email, passwordHash);
 
         if (user != null) {
+            System.out.println("Logged in userId: " + user.getUserId());
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 

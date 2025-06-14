@@ -1,14 +1,20 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package Model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
-
+/**
+ *
+ * @author ASUS
+ */
 public class Appointment {
     private int appointmentId;
     private int patientId;
-    private long doctorId;
-    private java.time.LocalDate workDate;
+    private int doctorId;
+    private Date workDate;
     private int slotId;
     private String status;
     private String reason;
@@ -16,7 +22,7 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(int appointmentId, int patientId, long doctorId, LocalDate workDate, int slotId, String status, String reason) {
+    public Appointment(int appointmentId, int patientId, int doctorId, Date workDate, int slotId, String status, String reason) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -42,19 +48,19 @@ public class Appointment {
         this.patientId = patientId;
     }
 
-    public long getDoctorId() {
+    public int getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(long doctorId) {
+    public void setDoctorId(int doctorId) {
         this.doctorId = doctorId;
     }
 
-    public LocalDate getWorkDate() {
+    public Date getWorkDate() {
         return workDate;
     }
 
-    public void setWorkDate(LocalDate workDate) {
+    public void setWorkDate(Date workDate) {
         this.workDate = workDate;
     }
 

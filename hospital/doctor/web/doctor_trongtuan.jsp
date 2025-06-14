@@ -93,9 +93,9 @@
                         <!-- Debug Information -->
                         <div class="debug-info">
                             <strong>Số lượng lịch:</strong> ${schedules != null ? schedules.size() : 0}<br>
-                            <strong>Số lượng bác sĩ:</strong> ${doctors != null ? doctors.size() : 0}<br>
-                            <strong>Bác sĩ đã chọn (ID):</strong> ${selectedDoctorId}<br>
-                            <strong>Ngày đã chọn:</strong> ${selectedDate}<br>
+                            
+                            
+                            
 
                             <c:if test="${schedules != null and not empty schedules}">
                                 <strong>Chi tiết lịch đầu tiên:</strong><br>

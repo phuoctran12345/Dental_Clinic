@@ -20,7 +20,30 @@
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>Controller.LoginServlet</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>DoctorProfileServlet</servlet-name>
+        <servlet-class>Controller.DoctorProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditDoctorServlet</servlet-name>
+        <servlet-class>Controller.EditDoctorServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UploadAvatarServlet</servlet-name>
+        <servlet-class>Controller.UploadAvatarServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DoctorChangePasswordServlet</servlet-name>
+        <servlet-class>Controller.DoctorChangePasswordServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DoctorAppointmentsServlet</servlet-name>
+        <servlet-class>Controller.DoctorAppointmentsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DoctorReportMedicineServlet</servlet-name>
+        <servlet-class>Controller.DoctorReportMedicineServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -36,5 +59,29 @@
     <servlet-mapping>
         <servlet-name>SignUpServlet</servlet-name>
         <url-pattern>/SignUpServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DoctorProfileServlet</servlet-name>
+        <url-pattern>/DoctorProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditDoctorServlet</servlet-name>
+        <url-pattern>/EditDoctorServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UploadAvatarServlet</servlet-name>
+        <url-pattern>/UploadAvatarServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DoctorChangePasswordServlet</servlet-name>
+        <url-pattern>/DoctorChangePasswordServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DoctorAppointmentsServlet</servlet-name>
+        <url-pattern>/DoctorAppointmentsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DoctorReportMedicineServlet</servlet-name>
+        <url-pattern>/DoctorReportMedicineServlet</url-pattern>
     </servlet-mapping>
 </web-app>
