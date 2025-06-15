@@ -78,7 +78,9 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
        String email = request.getParameter("email");
         String passwordHash = request.getParameter("password_hash");
-        User user = DoctorDB.getUserByEmailAndPassword(email, passwordHash);
+        
+        // ⚠️ CẢNH BÁO: Đăng nhập với mật khẩu KHÔNG mã hóa - CHỈ DÙNG ĐỂ TEST!
+        User user = DoctorDB.getUserByEmailAndPasswordPlainText(email, passwordHash);
 
         if (user != null) {
             System.out.println("Logged in userId: " + user.getUserId());

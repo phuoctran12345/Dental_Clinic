@@ -92,7 +92,7 @@
 
             <div class="extra">
                 <p>Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
-                <p><a href="#">Quên mật khẩu?</a></p>
+                <p><a href="ResetPasswordServlet?action=forgot-password">Quên mật khẩu?</a></p>
             </div>
 
         </form>

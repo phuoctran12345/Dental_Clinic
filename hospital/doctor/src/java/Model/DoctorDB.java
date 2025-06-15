@@ -68,6 +68,44 @@ public class DoctorDB implements DatabaseInfo {
         return user;
     }
 
+    /**
+     * ⚠️ NGUY HIỂM: Đăng nhập với mật khẩu KHÔNG mã hóa - CHỈ DÙNG ĐỂ TEST!
+     */
+    public static User getUserByEmailAndPasswordPlainText(String email, String password) {
+        System.out.println("⚠️ [CẢNH BÁO] Đang đăng nhập với plain text - NGUY HIỂM!");
+        System.out.println("📧 Email: " + email);
+        System.out.println("🔓 Plain password: " + password);
+        
+        User user = null;
+        try {
+            Connection conn = DBConnection.getConnection();
+            String sql = "SELECT * FROM Users WHERE email = ? AND password_hash = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setString(2, password); // So sánh trực tiếp với plain text
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user = new User(
+                        rs.getInt("user_id"),
+                        rs.getString("password_hash"),
+                        rs.getString("email"),
+                        rs.getString("role"),
+                        rs.getTimestamp("created_at")
+                );
+                System.out.println("✅ Đăng nhập plain text thành công!");
+            } else {
+                System.err.println("❌ Đăng nhập thất bại");
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     public static boolean isPatientExists(String email) {
         String sql = "SELECT * FROM Users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
