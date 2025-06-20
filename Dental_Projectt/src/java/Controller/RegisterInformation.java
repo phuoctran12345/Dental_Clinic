@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+package controller;
 
-import Model.HospitalDB;
+
+import dao.HospitalDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -87,7 +88,7 @@ public class RegisterInformation extends HttpServlet {
         String gender = request.getParameter("gender");
 
         // Gọi DAO để lưu thông tin bệnh nhân
-        boolean success = HospitalDB.savePatientInfo(id, fullName, phone, dateOfBirth, gender);
+        boolean success = HospitalDAO.savePatientInfo(id, fullName, phone, dateOfBirth, gender);
 
         if (success) {
             response.sendRedirect("login.jsp");

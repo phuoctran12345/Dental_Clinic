@@ -2,11 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+package controller;
 
-import Model.HospitalDB;
-import Model.Patients;
-import Model.User;
+
+import dao.HospitalDAO;
+import model.Patients;
+import model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -75,13 +76,13 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String email = request.getParameter("email");
         String passwordHash = request.getParameter("password_hash");
-        User user = HospitalDB.getUserByEmailAndPassword(email, passwordHash);
+        User user = HospitalDAO.getUserByEmailAndPassword(email, passwordHash);
 
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-            Patients patient = HospitalDB.getPatientByUserId(user.getId());
+            Patients patient = HospitalDAO.getPatientByUserId(user.getId());
             session.setAttribute("patient", patient);
 
             String role = user.getRole();  // Lấy role từ user

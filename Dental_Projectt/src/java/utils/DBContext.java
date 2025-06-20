@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class DBContext {
     public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=ClothesShop;";
+    public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=BenhVien;";
 //    public static String dbURL = "jdbc:sqlserver://myserver.database.windows.net:1433;databaseName=lab4;encrypt=true;trustServerCertificate=false;";
 
     public static String userDB = "sa";

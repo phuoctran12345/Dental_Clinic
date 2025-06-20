@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+package controller;
 
-import Model.HospitalDB;
+
+import dao.HospitalDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -85,13 +86,13 @@ public class SignUpServlet extends HttpServlet {
         }
 
         // Kiểm tra khách hàng đã tồn tại chưa
-        if (HospitalDB.isPatientExists(email)) {
+        if (HospitalDAO.isPatientExists(email)) {
             response.sendRedirect("signup.jsp?error=exists");
             return;
         }
 
         // Gọi DAO để thêm khách hàng mới (có thể mã hóa mật khẩu ở đây nếu cần)
-        int id = HospitalDB.registerPatient(email, password);
+        int id = HospitalDAO.registerPatient(email, password);
         if (id > 0) {
             HttpSession session = request.getSession();
             session.setAttribute("id", id);

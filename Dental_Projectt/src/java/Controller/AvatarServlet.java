@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package Controller;
+package controller;
 
-import Model.DBConnection;
-import Model.User;
+
+import model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,6 +21,7 @@ import java.util.Base64;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import utils.DBContext;
 
 /**
  *
@@ -102,7 +103,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     String contentType = filePart.getContentType();
     String base64WithHeader = "data:" + contentType + ";base64," + base64;
 
-    try (Connection conn = DBConnection.getConnection()) {
+    try (Connection conn = DBContext.getConnection()) {
         String sql = "UPDATE users SET avatar = ? WHERE id = ?";
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, base64WithHeader);

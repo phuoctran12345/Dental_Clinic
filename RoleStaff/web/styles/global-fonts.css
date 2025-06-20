@@ -1,0 +1,92 @@
+/* Global Font Settings for Vietnamese Support */
+/* Font đã được import trong HTML, không cần import lại ở đây */
+
+/* Base font settings */
+* {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+}
+
+body, html {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+}
+
+/* Text elements */
+p, span, div, label, input, textarea, select, button {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+}
+
+/* Vietnamese specific characters */
+.vietnamese-text {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Font weights */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-bold { font-weight: 700; }
+
+/* Text sizes */
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+
+/* Menu specific styles */
+.menu-text {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* Button text */
+.btn-text {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+/* Input placeholder */
+::placeholder {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    color: #6b7280;
+    opacity: 1;
+}
+
+/* Card titles */
+.card-title {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Service titles */
+.service-title {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 600;
+    color: #1e40af;
+}
+
+/* Price text */
+.price-text {
+    font-family: 'Roboto', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+    font-weight: 700;
+    color: #059669;
+} 

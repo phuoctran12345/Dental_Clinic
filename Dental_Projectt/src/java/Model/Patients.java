@@ -1,8 +1,9 @@
+package model;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Model;
 
 import java.util.Date;
 
@@ -19,7 +20,8 @@ public class Patients {
     private Date dateOfBirth;  // date_of_birth (mã hóa AES-256)
     private String gender;     // gender ('male', 'female', 'other')
     private Date createdAt;    // created_at
-
+ 
+    
     public Patients() {
     }
     
@@ -96,7 +98,4 @@ public class Patients {
     public String toString() {
         return "Patients{" + "patientId=" + patientId + ", id=" + id + ", fullName=" + fullName + ", phone=" + phone + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", createdAt=" + createdAt + '}';
     }
-    
-    
-
 }

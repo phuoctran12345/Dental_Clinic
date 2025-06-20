@@ -2,9 +2,56 @@
 /Dental_Clinic/nbproject/private/
 /Dental_Clinic/build/
 /Dental_Clinic/dist/
-<<<<<<< HEAD
-=======
 /Dental_Project/nbproject/private/
 /Dental_Projectt/nbproject/private/
 /Dental_Projectt/build/
->>>>>>> main
+/Dental_Projectt/dist/
+/RoleStaff/nbproject/private/
+/RoleStaff/dist/
+/RoleStaff/build/
+/RoleStaffPhuoc/build/
+/RoleStaffPhuoc/dist/
+/RoleStaffPhuoc/nbproject/private/
+/RoleStaff 2/build/
+/RoleStaff 2/dist/
+/RoleStaff 2/nbproject/private/
+/RoleStaff 3/build/
+/RoleStaff 3/dist/
+/RoleStaff 3/nbproject/private/
+
+# === SECURITY & SECRETS ===
+# API Keys và Credentials  
+**/calandar_loginGG.json
+**/client_secret*.json
+**/google-credentials*.json
+**/credentials.json
+keyAPI.*
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+.docx
+
+# Target và build folders
+target/
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
