@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/Chat/ChatEndPoint.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/Chat/GetHttpSessionConfigurator.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/web/chat.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/controller/ListUsersServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/model/ChatMessage.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/controller/ChatHistoryServlet.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/web/doctor_chat.jsp</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/model/User.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/util/DBUtil.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/controller/LoginServlet3.java</file>
+            <file>file:/C:/Users/Home/Documents/NetBeansProjects/RealTimeChat/src/java/model/Patients.java</file>
+        </group>
+    </open-files>
+</project-private>

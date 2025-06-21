@@ -1,0 +1,143 @@
+/* Reset CSS */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== Thanh điều hướng ===== */
+.navbar {
+    background-color: #D2B48C;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    /* Cố định thanh navbar khi cuộn */
+    position: fixed;  
+    top: 0;  /* Giữ ở đầu trang */
+    width: 100%;  /* Độ rộng full */
+    z-index: 1000;  /* Đảm bảo navbar luôn trên cùng */
+}
+
+/* Để tránh nội dung bị che bởi navbar, thêm padding-top cho body */
+body {
+    padding-top: 120px;  /* Tăng khoảng cách bằng chiều cao của navbar */
+}
+
+
+/* Logo + chữ "76 BILLIARDS" */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-brand img {
+    height: 100px;
+    margin-right: 20px;
+}
+
+#blink-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 40px;
+    font-weight: bold;
+    animation: blink-color 1s infinite alternate;
+}
+
+
+
+/* ===== Chỉnh menu ngang cách đều ===== */
+.navbar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    width: 60%;  /* Căn chỉnh độ rộng menu */
+    justify-content: space-evenly;  /* CÁCH ĐỀU CÁC MỤC */
+    align-items: center;
+}
+
+.navbar-menu a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Hiệu ứng hover */
+.navbar-menu li a {
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== Chỉnh Login + Giỏ hàng trên 1 hàng ===== */
+.navbar-menu li:last-child {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa chữ "Login" và icon giỏ hàng */
+}
+
+.cart-icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* ===== Giao diện danh sách bàn ===== */
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.card {
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+
+.table-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+.table-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.nav-tabs .nav-link {
+    cursor: pointer;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}

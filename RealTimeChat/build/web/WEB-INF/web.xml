@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginServlet2</servlet-name>
+        <servlet-class>controller.LoginServlet2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ListUsersServlet</servlet-name>
+        <servlet-class>controller.ListUsersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChatHistoryServlet</servlet-name>
+        <servlet-class>controller.ChatHistoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginServlet3</servlet-name>
+        <servlet-class>controller.LoginServlet3</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet2</servlet-name>
+        <url-pattern>/LoginServlet2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ListUsersServlet</servlet-name>
+        <url-pattern>/ListUsersServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChatHistoryServlet</servlet-name>
+        <url-pattern>/ChatHistoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet3</servlet-name>
+        <url-pattern>/LoginServlet3</url-pattern>
+    </servlet-mapping>
+</web-app>

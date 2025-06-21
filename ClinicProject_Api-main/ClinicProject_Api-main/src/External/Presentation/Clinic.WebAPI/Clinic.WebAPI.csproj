@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="EndPoints\Appointment\**" />
+    <Compile Remove="EndPoints\Doctors\UserDetailAndRecentMedicalReport\**" />
+    <Content Remove="EndPoints\Appointment\**" />
+    <Content Remove="EndPoints\Doctors\UserDetailAndRecentMedicalReport\**" />
+    <EmbeddedResource Remove="EndPoints\Appointment\**" />
+    <EmbeddedResource Remove="EndPoints\Doctors\UserDetailAndRecentMedicalReport\**" />
+    <None Remove="EndPoints\Appointment\**" />
+    <None Remove="EndPoints\Doctors\UserDetailAndRecentMedicalReport\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints.Swagger" Version="5.29.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\BackgroundJob\Clinic.AppBackgroundJob\Clinic.AppBackgroundJob.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ChatMessage\Clinic.SignalR\Clinic.SignalR.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Communication\Clinic.Stringee\Clinic.Stringee.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\FileObjectStorage\Image\Clinic.Firebase\Clinic.Firebase.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\IdentityService\Clinic.JsonWebToken\Clinic.JsonWebToken.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\IdentityService\Clinic.OTP\Clinic.OTP.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Notification\Mail\Clinic.MailKit\Clinic.MailKit.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Notification\SMS\Clinic.TwilioSMS\Clinic.TwilioSMS.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\PaymentService\Clinic.VNPAY\Clinic.VNPAY.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Cache\Clinic.Redis\Clinic.Redis.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Relational\Clinic.MySQL\Clinic.MySQL.csproj" />
+  </ItemGroup>
+
+</Project>
