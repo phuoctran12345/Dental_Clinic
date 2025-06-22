@@ -97,10 +97,18 @@ public class LoginServlet extends HttpServlet {
 
             if ("doctor".equalsIgnoreCase(role)) {
                 // Lấy thông tin bác sĩ từ userId và lưu vào session
+                System.out.println("DEBUG: Getting doctor info for userId: " + user.getUserId());
                 Doctors doctor = DoctorDB.getDoctorByUserId(user.getUserId());
+                System.out.println("DEBUG: Doctor object returned: " + doctor);
+                
                 if (doctor != null) {
+                    System.out.println("DEBUG: Doctor details - Name: " + doctor.getFullName() + 
+                                     ", Specialty: " + doctor.getSpecialty() + 
+                                     ", Phone: " + doctor.getPhone());
                     session.setAttribute("doctor", doctor); // Lưu đối tượng bác sĩ vào session
+                    System.out.println("DEBUG: Doctor saved to session successfully");
                 } else {
+                    System.err.println("DEBUG: No doctor found for userId: " + user.getUserId());
                     // Nếu không tìm thấy bác sĩ, chuyển hướng về trang lỗi
                     response.sendRedirect("login.jsp?error=doctor_not_found");
                     return;

@@ -10,96 +10,77 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Servlet xử lý yêu cầu lấy danh sách cuộc hẹn của bác sĩ dựa trên userId từ
- * session. Yêu cầu người dùng phải đăng nhập với vai trò DOCTOR để truy cập.
- * Chuyển tiếp danh sách cuộc hẹn đến lichkham.jsp để hiển thị.
- */
+@WebServlet(name = "DoctorAppointmentsServlet")
 public class DoctorAppointmentsServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Xử lý yêu cầu GET để lấy danh sách cuộc hẹn của bác sĩ.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException nếu có lỗi liên quan đến servlet
-     * @throws IOException nếu có lỗi I/O
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy session
+        
+        System.out.println("=== DoctorAppointmentsServlet - doGet ===");
+        
+        // Lấy session và User object (giống như check_session.jsp)
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            System.out.println("Debug: Session null hoặc user không tồn tại");
-            response.sendRedirect("login.jsp?error=unauthorized");
-            return;
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = null;
+        
+        if (user != null) {
+            userId = user.getUserId();
+            System.out.println("Session exists, User object found, userId: " + userId);
+            System.out.println("User details: " + user.getEmail() + ", Role: " + user.getRole());
+        } else {
+            System.out.println("No user object found in session");
+            
+            // Thử cách cũ làm fallback
+            if (session != null) {
+                Object userIdObj = session.getAttribute("userId");
+                if (userIdObj != null) {
+                    userId = (Integer) userIdObj;
+                    System.out.println("Found userId directly in session: " + userId);
+                }
+            }
         }
+        
+        
+        
 
-        // Kiểm tra vai trò người dùng
-        User user = (User) session.getAttribute("user");
-        if (!"DOCTOR".equalsIgnoreCase(user.getRole())) {
-            System.out.println("Debug: User không phải DOCTOR, role=" + user.getRole());
-            response.sendRedirect("login.jsp?error=unauthorized");
-            return;
-        }
+        DoctorDB doctorDB = new DoctorDB();
 
         try {
-            // Lấy doctorId và lấy danh sách cuộc hẹn
-            int doctorId = user.getUserId();
-            System.out.println("Debug: Doctor ID = " + doctorId);
-            List<Appointment> appointments = DoctorDB.getAppointmentsByDoctorId(doctorId);
+            System.out.println("Fetching appointments for userId: " + userId);
+            // Lấy danh sách cuộc hẹn
+            List<Appointment> appointments = doctorDB.getAppointmentsByUserId(userId);
+            System.out.println("Found " + (appointments != null ? appointments.size() : 0) + " appointments");
+            
+            // Đặt danh sách cuộc hẹn vào request attribute để JSP sử dụng
+            request.setAttribute("appointments", appointments);
+            
+            // Chuyển tiếp đến JSP để hiển thị (cập nhật đường dẫn)
+            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
 
-            // Kiểm tra dữ liệu
-            if (appointments == null) {
-                System.out.println("Debug: appointments là null");
-                request.setAttribute("message", "Lỗi: Không lấy được danh sách cuộc hẹn.");
-            } else if (appointments.isEmpty()) {
-                System.out.println("Debug: appointments rỗng");
-                request.setAttribute("message", "Không có cuộc hẹn nào cho bác sĩ này.");
-            } else {
-                System.out.println("Debug: Số cuộc hẹn = " + appointments.size());
-                request.setAttribute("appointments", appointments);
-            }
-
-            // Chuyển tiếp đến lichkham.jsp
-            System.out.println("Debug: Chuyển tiếp đến lichkham.jsp");
-            request.getRequestDispatcher("lichkham.jsp").forward(request, response);
-
-        } catch (Exception e) {
-            // Xử lý lỗi
-            System.err.println("Lỗi trong DoctorAppointmentsServlet: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
+            
+            // Đặt thông báo lỗi vào request attribute
             request.setAttribute("error", "Lỗi khi lấy danh sách cuộc hẹn: " + e.getMessage());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            request.setAttribute("userId", userId);
+            request.setAttribute("appointments", null);
+            
+            // Vẫn forward tới JSP để hiển thị lỗi
+            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
+        } catch (Exception e) {
+            System.err.println("General Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            request.setAttribute("userId", userId);
+            request.setAttribute("appointments", null);
+            
+            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
         }
-    }
-
-    /**
-     * Xử lý yêu cầu POST bằng cách chuyển hướng đến doGet.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException nếu có lỗi liên quan đến servlet
-     * @throws IOException nếu có lỗi I/O
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
-    }
-
-    /**
-     * Mô tả ngắn về servlet.
-     *
-     * @return mô tả của servlet
-     */
-    @Override
-    public String getServletInfo() {
-        return "Servlet hiển thị danh sách cuộc hẹn của bác sĩ";
     }
 }

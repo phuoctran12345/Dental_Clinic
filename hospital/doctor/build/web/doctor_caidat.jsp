@@ -176,11 +176,11 @@
                                                 <option value="Không hoạt động" <c:if test="${doctor.status == 'Inactive'}">selected</c:if>>Không hoạt động</option>
                                                 </select>
 
-                                                <form action="uploadAvatar" method="post" enctype="multipart/form-data">
+<!--                                                <form action="uploadAvatar" method="post" enctype="multipart/form-data">
                                                     <label for="avatar">Ảnh Đại Diện</label>
                                                     <input type="file" id="avatar" name="avatar" accept="image/*" value="<c:out value='${doctor.avatar}'/>">
                                                 <input type="submit" value="Upload">
-                                            </form>
+                                            </form>-->
                                             <div class="form-group text-center mt-3">
                                                 <a href="doctor_changepassword.jsp" class="btn btn-warning">
                                                     <i class="fas fa-key me-1"></i> Đổi mật khẩu

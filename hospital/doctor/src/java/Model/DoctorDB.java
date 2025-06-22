@@ -194,6 +194,35 @@ public class DoctorDB implements DatabaseInfo {
         return patients;  // sửa tên biến trả về
     }
 
+    /**
+     * Lấy thông tin bệnh nhân từ patient_id
+     */
+    public static Patients getPatientByPatientId(int patientId) {
+        Patients patient = null;
+        String sql = "SELECT * FROM Patients WHERE patient_id = ?";
+        
+        try (Connection conn = DBConnection.getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, patientId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                patient = new Patients();
+                patient.setPatientId(rs.getInt("patient_id"));
+                patient.setUserId(rs.getInt("user_id"));
+                patient.setFullName(rs.getString("full_name"));
+                patient.setPhone(rs.getString("phone"));
+                patient.setDateOfBirth(rs.getDate("date_of_birth"));
+                patient.setGender(rs.getString("gender"));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patient;
+    }
+
     //--------------------------------------------------------------------------------------------
     public static List<Doctors> getAllDoctorsOnline() {
         List<Doctors> list = new ArrayList<>();
@@ -252,11 +281,10 @@ public class DoctorDB implements DatabaseInfo {
 
     public static Doctors getDoctorByUserId(int userId) {
         // Logic để lấy thông tin bác sĩ từ cơ sở dữ liệu dựa trên userId
-        // Ví dụ: Truy vấn SQL để lấy bác sĩ từ bảng Doctors
         Doctors doctor = null;
         try {
-            // Kết nối đến cơ sở dữ liệu (giả sử bạn đã có kết nối sẵn)
-            Connection conn = getConnection(); // Hàm lấy kết nối, bạn cần định nghĩa
+            // Kết nối đến cơ sở dữ liệu
+            Connection conn = DBConnection.getConnection();
             String sql = "SELECT * FROM Doctors WHERE user_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
@@ -266,12 +294,26 @@ public class DoctorDB implements DatabaseInfo {
                 doctor = new Doctors();
                 doctor.setDoctorId(rs.getInt("doctor_id"));
                 doctor.setUserId(rs.getInt("user_id"));
-                // Đặt các thuộc tính khác của đối tượng Doctors nếu cần
+                doctor.setFullName(rs.getString("full_name"));
+                doctor.setPhone(rs.getString("phone"));
+                doctor.setAddress(rs.getString("address"));
+                doctor.setDateOfBirth(rs.getDate("date_of_birth"));
+                doctor.setGender(rs.getString("gender"));
+                doctor.setSpecialty(rs.getString("specialty"));
+                doctor.setLicenseNumber(rs.getString("license_number"));
+                doctor.setStatus(rs.getString("status"));
+                doctor.setCreatedAt(rs.getTimestamp("created_at"));
+                doctor.setAvatar(rs.getString("avatar"));
+                
+                System.out.println("Found doctor: " + doctor.getFullName() + " - " + doctor.getSpecialty());
+            } else {
+                System.out.println("No doctor found with user_id: " + userId);
             }
             rs.close();
             stmt.close();
             conn.close();
         } catch (SQLException e) {
+            System.err.println("Error in getDoctorByUserId: " + e.getMessage());
             e.printStackTrace();
         }
         return doctor;
@@ -546,49 +588,72 @@ public class DoctorDB implements DatabaseInfo {
     }
 
     /*-------------------------------------------------------------*/
-    public static List<Appointment> getAppointmentsByDoctorId(int doctorId) {
-//    if (doctorId <= 0) {
-//        throw new IllegalArgumentException("ID bác sĩ không hợp lệ: " + doctorId);
-//    }
+    public List<Appointment> getAppointmentsByUserId(int userId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        
+        // Sửa lại query để phù hợp với database schema
+        // Lấy appointments cho doctor dựa trên userId -> doctorId
+        String query = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason
+            FROM Appointment a
+            INNER JOIN Doctors d ON a.doctor_id = d.doctor_id
+            WHERE d.user_id = ?
+            ORDER BY a.work_date DESC, a.slot_id ASC
+        """;
 
-        List<Appointment> list = new ArrayList<>();
-        String sql = "SELECT appointment_id, patient_id, doctor_id, work_date, slot_id, status, reason "
-                + "FROM Appointment WHERE doctor_id = ?";
+        System.out.println("Executing query for userId: " + userId);
+        System.out.println("Query: " + query);
 
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, doctorId);
-            ResultSet rs = ps.executeQuery();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            // Thiết lập tham số userId trong câu truy vấn
+            stmt.setInt(1, userId);
 
-            if (rs != null) {
+            // Thực thi câu truy vấn
+            try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Appointment a = new Appointment();
-                    a.setAppointmentId(rs.getInt("appointment_id"));
-                    a.setPatientId(rs.getInt("patient_id"));
-                    a.setDoctorId(doctorId);
-                    a.setWorkDate(rs.getDate("work_date"));
-                    a.setSlotId(rs.getInt("slot_id"));
-                    a.setStatus(rs.getString("status"));
-                    a.setReason(rs.getString("reason"));
-                    list.add(a);
+                    // Tạo một đối tượng Appointment mới cho mỗi bản ghi
+                    Appointment appointment = new Appointment();
+                    appointment.setAppointmentId(rs.getInt("appointment_id"));
+                    appointment.setPatientId(rs.getInt("patient_id"));
+                    appointment.setDoctorId(rs.getInt("doctor_id"));
+                    appointment.setWorkDate(rs.getDate("work_date"));
+                    appointment.setSlotId(rs.getInt("slot_id"));
+                    appointment.setStatus(rs.getString("status"));
+                    appointment.setReason(rs.getString("reason"));
+//                     appointment.setPreviousAppointmentId(rs.getInt("previousAppointmentId")); 
+
+                    // Thêm cuộc hẹn vào danh sách
+                    appointments.add(appointment);
+                    
+                    System.out.println("Added appointment: ID=" + appointment.getAppointmentId() + 
+                                     ", Patient=" + appointment.getPatientId() + 
+                                     ", Date=" + appointment.getWorkDate());
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi SQL khi lấy danh sách cuộc hẹn: " + e.getMessage());
-            throw new RuntimeException("Không thể lấy danh sách cuộc hẹn cho doctorId: " + doctorId, e);
+            System.err.println("SQL Error in getAppointmentsByUserId: " + e.getMessage());
+            e.printStackTrace();
+            // Xử lý hoặc ghi log lỗi nếu cần
+            throw new SQLException("Lỗi khi lấy danh sách cuộc hẹn cho userId: " + userId, e);
         }
 
-        return list;
+        System.out.println("Returning " + appointments.size() + " appointments");
+        return appointments;
     }
+
     
 
-    public int insertMedicalReport(int appointmentId, long doctorId, int patientId,
+    public int insertMedicalReport(int appointmentId, int doctorId, int patientId,
             String diagnosis, String treatmentPlan, String note, String sign) throws SQLException {
         String sql = "INSERT INTO MedicalReport (appointment_id, doctor_id, patient_id, diagnosis, treatment_plan, note, sign) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, appointmentId);
-            ps.setLong(2, doctorId);
+            ps.setInt(2, doctorId);
             ps.setInt(3, patientId);
             ps.setString(4, diagnosis);
             ps.setString(5, treatmentPlan);
@@ -673,4 +738,596 @@ public class DoctorDB implements DatabaseInfo {
         }
     }
 
+    /*-------------------------------------------------------------*/
+    /* CÁC HÀM XEM BÁO CÁO Y TẾ */
+    /*-------------------------------------------------------------*/
+    
+    /**
+     * Lấy Medical Report theo ID
+     */
+    public static MedicalReport getMedicalReportById(int reportId) throws SQLException {
+        String sql = "SELECT * FROM MedicalReport WHERE report_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, reportId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                return report;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Lấy Medical Report theo Appointment ID
+     */
+    public static MedicalReport getMedicalReportByAppointmentId(int appointmentId) throws SQLException {
+        String sql = "SELECT * FROM MedicalReport WHERE appointment_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                return report;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Lấy danh sách PrescriptionDetail theo Report ID
+     */
+    public static List<PrescriptionDetail> getPrescriptionsByReportId(int reportId) throws SQLException {
+        List<PrescriptionDetail> prescriptions = new ArrayList<>();
+        String sql = """
+            SELECT p.prescription_id, p.quantity, p.usage,
+                   m.medicine_id, m.name as medicine_name, m.unit
+            FROM Prescription p
+            JOIN Medicine m ON p.medicine_id = m.medicine_id
+            WHERE p.report_id = ?
+            ORDER BY p.prescription_id
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, reportId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                PrescriptionDetail detail = new PrescriptionDetail();
+                detail.setPrescriptionId(rs.getInt("prescription_id"));
+                detail.setMedicineId(rs.getInt("medicine_id"));
+                detail.setMedicineName(rs.getString("medicine_name"));
+                detail.setQuantity(rs.getInt("quantity"));
+                detail.setUnit(rs.getString("unit"));
+                detail.setUsage(rs.getString("usage"));
+                prescriptions.add(detail);
+            }
+        }
+        return prescriptions;
+    }
+    
+    /**
+     * Lấy thông tin TimeSlot từ Appointment ID
+     */
+    public static String getTimeSlotByAppointmentId(int appointmentId) throws SQLException {
+        String sql = """
+            SELECT ts.start_time, ts.end_time
+            FROM Appointment a
+            JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+            WHERE a.appointment_id = ?
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getTime("start_time") + " - " + rs.getTime("end_time");
+            }
+        }
+        return "N/A";
+    }
+    
+    /**
+     * Lấy tất cả Medical Reports của một bác sĩ
+     */
+    public static List<MedicalReport> getMedicalReportsByDoctorId(int doctorId) throws SQLException {
+        List<MedicalReport> reports = new ArrayList<>();
+        String sql = """
+            SELECT mr.*, a.work_date
+            FROM MedicalReport mr
+            JOIN Appointment a ON mr.appointment_id = a.appointment_id
+            WHERE mr.doctor_id = ?
+            ORDER BY mr.created_at DESC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                reports.add(report);
+            }
+        }
+        return reports;
+    }
+    
+    /**
+     * Kiểm tra xem một appointment đã có medical report chưa
+     */
+    public static boolean hasMedialReport(int appointmentId) throws SQLException {
+        String sql = "SELECT COUNT(*) as count FROM MedicalReport WHERE appointment_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Cập nhật Medical Report
+     */
+    public static boolean updateMedicalReport(MedicalReport report) throws SQLException {
+        String sql = """
+            UPDATE MedicalReport 
+            SET diagnosis = ?, treatment_plan = ?, note = ?, sign = ?
+            WHERE report_id = ?
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, report.getDiagnosis());
+            ps.setString(2, report.getTreatmentPlan());
+            ps.setString(3, report.getNote());
+            ps.setString(4, report.getSign());
+            ps.setInt(5, report.getReportId());
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+    
+    /**
+     * Xóa Medical Report và các prescription liên quan
+     */
+    public static boolean deleteMedicalReport(int reportId) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false); // Bắt đầu transaction
+            
+            // Xóa prescriptions trước
+            String deletePrescriptionsSql = "DELETE FROM Prescription WHERE report_id = ?";
+            try (PreparedStatement ps1 = conn.prepareStatement(deletePrescriptionsSql)) {
+                ps1.setInt(1, reportId);
+                ps1.executeUpdate();
+            }
+            
+            // Xóa medical report
+            String deleteReportSql = "DELETE FROM MedicalReport WHERE report_id = ?";
+            try (PreparedStatement ps2 = conn.prepareStatement(deleteReportSql)) {
+                ps2.setInt(1, reportId);
+                int rowsAffected = ps2.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    conn.commit(); // Commit transaction
+                    return true;
+                } else {
+                    conn.rollback(); // Rollback nếu không xóa được
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback(); // Rollback trong trường hợp lỗi
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true); // Reset auto commit
+                conn.close();
+            }
+        }
+    }
+
+    /*-------------------------------------------------------------*/
+    /* CÁC HÀM HỖ TRỢ CHỨC NĂNG TÁI KHÁM */
+    /*-------------------------------------------------------------*/
+    
+    /**
+     * Lấy danh sách cuộc hẹn đã hoàn tất của bác sĩ (để tái khám)
+     */
+    public static List<Appointment> getCompletedAppointmentsByDoctorId(int doctorId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.doctor_id = ? AND a.status = N'Hoàn tất'
+            AND NOT EXISTS (
+                SELECT 1 FROM Appointment a2 
+                WHERE a2.previous_appointment_id = a.appointment_id
+            )
+            ORDER BY a.work_date DESC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                appointment.setPreviousAppointmentId(rs.getInt("previous_appointment_id"));
+                
+                // Thêm thông tin bệnh nhân và slot time
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time"));
+                appointment.setEndTime(rs.getTime("end_time"));
+                
+                appointments.add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
+    
+    /**
+     * Kiểm tra xem khung giờ có còn trống không
+     */
+    public static boolean isSlotAvailable(int doctorId, String workDate, int slotId) throws SQLException {
+        String sql = """
+            SELECT COUNT(*) as count 
+            FROM Appointment 
+            WHERE doctor_id = ? AND work_date = ? AND slot_id = ? 
+            AND status IN (N'Đã đặt', N'Hoàn tất')
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ps.setString(2, workDate);
+            ps.setInt(3, slotId);
+            
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count") == 0;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Tạo lịch hẹn tái khám mới
+     */
+    public static boolean createReexaminationAppointment(int patientId, int doctorId, 
+            String workDate, int slotId, String reason, int previousAppointmentId) throws SQLException {
+        
+        String sql = """
+            INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason, previous_appointment_id)
+            VALUES (?, ?, ?, ?, N'Đã đặt', ?, ?)
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            ps.setString(3, workDate);
+            ps.setInt(4, slotId);
+            ps.setString(5, reason);
+            ps.setInt(6, previousAppointmentId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+    
+    /**
+     * Lấy tất cả khung giờ
+     */
+    public static List<TimeSlot> getAllTimeSlots() throws SQLException {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        String sql = "SELECT * FROM TimeSlot ORDER BY start_time";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TimeSlot timeSlot = new TimeSlot();
+                timeSlot.setSlotId(rs.getInt("slot_id"));
+                
+                // Convert java.sql.Time to LocalTime
+                Time startTimeSql = rs.getTime("start_time");
+                Time endTimeSql = rs.getTime("end_time");
+                
+                if (startTimeSql != null) {
+                    timeSlot.setStartTime(startTimeSql.toLocalTime());
+                }
+                if (endTimeSql != null) {
+                    timeSlot.setEndTime(endTimeSql.toLocalTime());
+                }
+                
+                timeSlots.add(timeSlot);
+            }
+        }
+        
+        return timeSlots;
+    }
+    
+    /**
+     * Lấy thông tin chi tiết của một cuộc hẹn (bao gồm thông tin bệnh nhân)
+     */
+    public static Appointment getAppointmentWithPatientInfo(int appointmentId) throws SQLException {
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.appointment_id = ?
+        """;
+        
+        System.out.println("DEBUG - getAppointmentWithPatientInfo for appointmentId: " + appointmentId);
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+                
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time"));
+                appointment.setEndTime(rs.getTime("end_time"));
+                
+                System.out.println("DEBUG - Found appointment: patient_id=" + appointment.getPatientId() + 
+                                 ", patient_name=" + appointment.getPatientName());
+                
+                return appointment;
+            } else {
+                System.out.println("DEBUG - No appointment found with ID: " + appointmentId);
+            }
+        }
+        
+        return null;
+    }
+
+    /*-------------------------------------------------------------*/
+    /* HÀM LẤY APPOINTMENT CHO DASHBOARD */
+    /*-------------------------------------------------------------*/
+    
+    /**
+     * Lấy danh sách cuộc hẹn hôm nay của bác sĩ kèm thông tin bệnh nhân
+     */
+    public static List<Appointment> getTodayAppointmentsByDoctorId(int doctorId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.doctor_id = ? AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
+            ORDER BY t.start_time ASC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+                
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time"));
+                appointment.setEndTime(rs.getTime("end_time"));
+                
+                appointments.add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
+
+    /**
+     * Lấy danh sách cuộc hẹn đang chờ khám hôm nay của bác sĩ
+     */
+    public static List<Appointment> getTodayWaitingAppointmentsByDoctorId(int doctorId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.doctor_id = ? 
+            AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
+            AND a.status = N'Đã đặt'
+            ORDER BY t.start_time ASC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+                
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time"));
+                appointment.setEndTime(rs.getTime("end_time"));
+                
+                appointments.add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
+
+    /*-------------------------------------------------------------*/
+    /* CHỨC NĂNG CẬP NHẬT TRẠNG THÁI BÁC SĨ */
+    /*-------------------------------------------------------------*/
+    
+    /**
+     * Cập nhật trạng thái làm việc của bác sĩ
+     * @param doctorId ID của bác sĩ
+     * @param status Trạng thái mới (Active/Inactive)
+     * @return true nếu cập nhật thành công, false nếu thất bại
+     */
+    public static boolean updateDoctorStatus(int doctorId, String status) throws SQLException {
+        String sql = "UPDATE Doctors SET status = ? WHERE doctor_id = ?";
+        
+        try (Connection conn = DBConnection.getConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, status);
+            ps.setInt(2, doctorId);
+            
+            int rowsAffected = ps.executeUpdate();
+            
+            System.out.println("DEBUG: updateDoctorStatus - Rows affected: " + rowsAffected);
+            System.out.println("DEBUG: updateDoctorStatus - Doctor ID: " + doctorId + ", Status: " + status);
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Database error in updateDoctorStatus: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /*-------------------------------------------------------------*/
 }

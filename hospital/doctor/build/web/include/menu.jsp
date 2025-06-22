@@ -265,9 +265,9 @@
 
                 </div>
                 <div class="dropdown_list">
-                    <a href="doctor_trongngay.jsp">• Trong ngày</a>
-                    <a href="doctor_bihuy.jsp">• Bị huỷ bỏ</a>
-                    <a href="doctor_ketqua.jsp">• Kết quả khám</a>
+                    <a href="DoctorAppointmentsServlet">• Trong ngày</a>
+                    <a href="cancelledAppointments">• Bị huỷ bỏ</a>
+                    <a href="completedAppointments">• Kết quả khám</a>
                 </div>
             </div>
 
@@ -282,7 +282,7 @@
                 <div class="dropdown_list">
                     <a href="doctor-schedule?action=list">• Lịch làm</a>
                     <a href="doctor_dangkilich.jsp">• Đăng kí lịch</a>
-                    <a href="doctor_taikham.jsp">• Tái khám</a>
+                    <a href="ReexaminationServlet">• Tái khám</a>
                 </div>
             </div>
 

@@ -44,6 +44,34 @@
         <servlet-name>DoctorReportMedicineServlet</servlet-name>
         <servlet-class>Controller.DoctorReportMedicineServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MedicalReportServlet</servlet-name>
+        <servlet-class>Controller.MedicalReportServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewReportServlet</servlet-name>
+        <servlet-class>Controller.ViewReportServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateMedicalReportServlet</servlet-name>
+        <servlet-class>Controller.UpdateMedicalReportServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteMedicalReportServlet</servlet-name>
+        <servlet-class>Controller.DeleteMedicalReportServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReexaminationServlet</servlet-name>
+        <servlet-class>Controller.ReexaminationServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateMedicalReportServlet</servlet-name>
+        <servlet-class>Controller.CreateMedicalReportServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateMedicalFormServlet</servlet-name>
+        <servlet-class>Controller.CreateMedicalFormServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -83,5 +111,33 @@
     <servlet-mapping>
         <servlet-name>DoctorReportMedicineServlet</servlet-name>
         <url-pattern>/DoctorReportMedicineServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MedicalReportServlet</servlet-name>
+        <url-pattern>/MedicalReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewReportServlet</servlet-name>
+        <url-pattern>/ViewReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateMedicalReportServlet</servlet-name>
+        <url-pattern>/UpdateMedicalReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteMedicalReportServlet</servlet-name>
+        <url-pattern>/DeleteMedicalReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReexaminationServlet</servlet-name>
+        <url-pattern>/ReexaminationServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateMedicalReportServlet</servlet-name>
+        <url-pattern>/CreateMedicalReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateMedicalFormServlet</servlet-name>
+        <url-pattern>/CreateMedicalFormServlet</url-pattern>
     </servlet-mapping>
 </web-app>

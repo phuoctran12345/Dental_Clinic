@@ -7,8 +7,209 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ include file="/include/header.jsp" %>
 <%@ include file="/include/menu.jsp" %>
+<%@ page import="Model.Doctors" %>
+<%@ page import="Model.User" %>
+<%@ page import="Model.Appointment" %>
+<%@ page import="Model.DoctorDB" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Calendar" %>
 
+<%!
+    // Helper function để lấy time slot
+    public String getTimeSlot(int slotId) {
+        switch (slotId) {
+            case 1: return "08:00 - 08:30";
+            case 2: return "08:30 - 09:00";
+            case 3: return "09:00 - 09:30";
+            case 4: return "09:30 - 10:00";
+            case 5: return "10:00 - 10:30";
+            default: return "N/A";
+        }
+    }
+%>
 
+<%
+    // Lấy thông tin bác sĩ từ session
+    Doctors loggedInDoctor = (Doctors) session.getAttribute("doctor");
+    User loggedInUser = (User) session.getAttribute("user");
+    
+    // Debug: In thông tin ra console
+    System.out.println("=== DEBUG: Doctor Info ===");
+    System.out.println("Session doctor object: " + loggedInDoctor);
+    
+    String doctorName = "Chưa cập nhật";
+    String doctorGender = "";
+    String doctorSpecialty = "";
+    String doctorPhone = "";
+    String avatarPath = "images/logo.png";
+    boolean isActive = false; // Trạng thái làm việc của bác sĩ
+    
+    // Lấy danh sách bệnh nhân đang chờ khám
+    List<Appointment> waitingAppointments = new ArrayList<>();
+    int waitingCount = 0;
+    
+    // Lấy danh sách lịch đã hủy
+    List<Appointment> cancelledAppointments = new ArrayList<>();
+    int cancelledCount = 0;
+    
+    if (loggedInDoctor != null) {
+        System.out.println("Doctor found in session!");
+        System.out.println("Full name: " + loggedInDoctor.getFullName());
+        System.out.println("Gender: " + loggedInDoctor.getGender());
+        System.out.println("Specialty: " + loggedInDoctor.getSpecialty());
+        System.out.println("Phone: " + loggedInDoctor.getPhone());
+        System.out.println("Avatar: " + loggedInDoctor.getAvatar());
+        System.out.println("DEBUG: Doctor status from DB: '" + loggedInDoctor.getStatus() + "'");
+        
+        // Hỗ trợ cả hai định dạng trạng thái
+        String currentStatus = loggedInDoctor.getStatus();
+        isActive = "Active".equals(currentStatus) || "Đang hoạt động".equals(currentStatus);
+        
+        System.out.println("DEBUG: isActive = " + isActive + " (based on status: '" + currentStatus + "')");
+        
+        doctorName = loggedInDoctor.getFullName() != null ? loggedInDoctor.getFullName() : "Chưa cập nhật";
+        
+        if ("male".equals(loggedInDoctor.getGender())) {
+            doctorGender = "Nam";
+        } else if ("female".equals(loggedInDoctor.getGender())) {
+            doctorGender = "Nữ";
+        } else {
+            doctorGender = "Chưa cập nhật";
+        }
+        
+        doctorSpecialty = loggedInDoctor.getSpecialty() != null ? loggedInDoctor.getSpecialty() : "Chưa cập nhật";
+        doctorPhone = loggedInDoctor.getPhone() != null ? loggedInDoctor.getPhone() : "Chưa cập nhật";
+        
+        if (loggedInDoctor.getAvatar() != null && !loggedInDoctor.getAvatar().trim().isEmpty()) {
+            avatarPath = loggedInDoctor.getAvatar();
+        }
+        
+        // Lấy danh sách appointment của bác sĩ
+        try {
+            System.out.println("DEBUG: Trying to get appointments for doctor_id: " + loggedInDoctor.getDoctorId());
+            
+            // Debug: In ra ngày hiện tại
+            java.util.Date currentDate = new java.util.Date();
+            SimpleDateFormat debugDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            System.out.println("DEBUG: Current date is: " + debugDateFormat.format(currentDate));
+            
+            // Sử dụng phương thức mới để lấy appointment hôm nay đang chờ khám
+            waitingAppointments = DoctorDB.getTodayWaitingAppointmentsByDoctorId(loggedInDoctor.getDoctorId());
+            waitingCount = waitingAppointments.size();
+            
+            System.out.println("DEBUG: Found " + waitingCount + " waiting appointments for today");
+            
+            // Lấy danh sách tất cả appointment để lọc lịch đã hủy
+            DoctorDB doctorDB = new DoctorDB();
+            List<Appointment> allAppointments = doctorDB.getAppointmentsByUserId(loggedInUser.getUserId());
+            
+            if (allAppointments != null && !allAppointments.isEmpty()) {
+                // Lọc ra những appointment đã hủy
+                for (Appointment app : allAppointments) {
+                    if ("Đã hủy".equalsIgnoreCase(app.getStatus())) {
+                        // Tạo appointment object với thông tin đầy đủ
+                        Appointment cancelledApp = new Appointment();
+                        cancelledApp.setAppointmentId(app.getAppointmentId());
+                        cancelledApp.setPatientId(app.getPatientId());
+                        cancelledApp.setDoctorId(app.getDoctorId());
+                        cancelledApp.setWorkDate(app.getWorkDate());
+                        cancelledApp.setSlotId(app.getSlotId());
+                        cancelledApp.setStatus(app.getStatus());
+                        cancelledApp.setReason(app.getReason());
+                        
+                        // Lấy thông tin bệnh nhân từ database
+                        Model.Patients patient = DoctorDB.getPatientByPatientId(app.getPatientId());
+                        if (patient != null) {
+                            cancelledApp.setPatientName(patient.getFullName());
+                            cancelledApp.setPatientGender(patient.getGender());
+                            cancelledApp.setPatientDateOfBirth(patient.getDateOfBirth());
+                            cancelledApp.setPatientPhone(patient.getPhone());
+                        }
+                        
+                        cancelledAppointments.add(cancelledApp);
+                        cancelledCount++;
+                    }
+                }
+            }
+            
+            System.out.println("DEBUG: Found " + cancelledCount + " cancelled appointments");
+            
+            // Debug: In ra tất cả appointments nếu có
+            if (waitingAppointments != null && waitingAppointments.size() > 0) {
+                for (Appointment app : waitingAppointments) {
+                    System.out.println("DEBUG: Waiting Appointment ID: " + app.getAppointmentId() + 
+                                     ", Patient: " + app.getPatientName() + 
+                                     ", Status: " + app.getStatus() + 
+                                     ", Date: " + app.getWorkDate());
+                }
+            } else {
+                System.out.println("DEBUG: No waiting appointments found or list is empty");
+                
+                // FALLBACK logic cho waiting appointments (giữ nguyên code cũ)
+                System.out.println("DEBUG: Trying to get all appointments for debug...");
+                System.out.println("DEBUG: Total appointments found: " + (allAppointments != null ? allAppointments.size() : 0));
+                
+                if (allAppointments != null && allAppointments.size() > 0) {
+                    for (Appointment app : allAppointments) {
+                        System.out.println("DEBUG: All Appointment - ID: " + app.getAppointmentId() + 
+                                         ", Patient ID: " + app.getPatientId() + 
+                                         ", Status: " + app.getStatus() + 
+                                         ", Date: " + app.getWorkDate());
+                    }
+                    
+                    // FALLBACK: Nếu không có appointment hôm nay, hiển thị những appointment đang chờ khám
+                    System.out.println("DEBUG: No today appointments, trying to show waiting appointments from any date...");
+                    for (Appointment app : allAppointments) {
+                        if ("Đã đặt".equalsIgnoreCase(app.getStatus())) {
+                            // Tạo appointment object với thông tin cơ bản để hiển thị
+                            Appointment waitingApp = new Appointment();
+                            waitingApp.setAppointmentId(app.getAppointmentId());
+                            waitingApp.setPatientId(app.getPatientId());
+                            waitingApp.setDoctorId(app.getDoctorId());
+                            waitingApp.setWorkDate(app.getWorkDate());
+                            waitingApp.setSlotId(app.getSlotId());
+                            waitingApp.setStatus(app.getStatus());
+                            waitingApp.setReason(app.getReason());
+                            
+                            // Lấy thông tin bệnh nhân từ database
+                            Model.Patients patient = DoctorDB.getPatientByPatientId(app.getPatientId());
+                            if (patient != null) {
+                                waitingApp.setPatientName(patient.getFullName());
+                                waitingApp.setPatientGender(patient.getGender());
+                                waitingApp.setPatientDateOfBirth(patient.getDateOfBirth());
+                                waitingApp.setPatientPhone(patient.getPhone());
+                            }
+                            
+                            waitingAppointments.add(waitingApp);
+                            waitingCount++;
+                            
+                            System.out.println("DEBUG: Added fallback appointment: " + waitingApp.getAppointmentId());
+                        }
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error getting appointments: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+    } else {
+        System.out.println("No doctor found in session!");
+        
+        // Thử lấy từ user thay thế
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            System.out.println("User found in session: " + user.getEmail() + " - Role: " + user.getRole());
+        } else {
+            System.out.println("No user found in session!");
+        }
+    }
+    System.out.println("=========================");
+%>
 
 <!DOCTYPE html>
 <html>
@@ -337,6 +538,17 @@
                 font-weight: 600;
                 color: #0f172a;
                 font-size: 14px;
+                transition: color 0.3s ease;
+            }
+
+            .status-label.updating {
+                color: #6b7280;
+                font-style: italic;
+            }
+
+            .toggle-switch input:disabled + .slider {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
 
             .note {
@@ -464,44 +676,66 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding-top: 25px;
+                padding-top: 15px;
                 margin-bottom: 12px;
                 border-bottom: 1px solid #f1f5f9;
+                gap: 8px;
             }
 
             .booking-avatar {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
                 object-fit: cover;
-                margin-right: 12px;
+                margin-right: 8px;
+                flex-shrink: 0; /* Ngăn avatar bị co nhỏ */
             }
 
             .booking-info {
                 flex-grow: 1;
                 margin-left: 12px;
+                min-width: 0; /* Cho phép shrink */
+                overflow: hidden;
             }
 
             .booking-name {
                 font-weight: 600;
                 color: #1e293b;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
 
             .booking-time {
-                font-size: 14px;
+                font-size: 12px;
                 color: #64748b;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                margin-top: 2px;
             }
 
             .booking-slot {
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 6px;
                 background-color: #2563eb;
-                padding: 6px 12px;
-                border-radius: 20px;
+                padding: 4px 8px;
+                border-radius: 16px;
                 color: white;
-                font-size: 13px;
+                font-size: 11px;
                 white-space: nowrap;
+                min-width: 0;
+                max-width: 140px;
+            }
+
+            .booking-time-slot {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
 
             .booking-status-icon {
@@ -509,7 +743,27 @@
                 height: 20px;
             }
 
+            /* CSS cho status badge */
+            .status-badge {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .status-active {
+                background-color: #dcfce7;
+                color: #166534;
+            }
+
+            .status-inactive {
+                background-color: #fee2e2;
+                color: #991b1b;
+            }
+
         </style>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     </head>
     <body>
@@ -536,36 +790,63 @@
 
 
             <div class="waiting-card">
-                <div class="visit-count">Đang chờ khám</div>
+                <div class="visit-count">Đang chờ khám (<%= waitingCount %>)</div>
+
+                <% if (waitingAppointments.size() > 0) { 
+                    int displayCount = Math.min(3, waitingAppointments.size()); // Hiển thị tối đa 3 bệnh nhân
+                    for (int i = 0; i < displayCount; i++) {
+                        Appointment appointment = waitingAppointments.get(i);
+                        String timeSlot = getTimeSlot(appointment.getSlotId());
+                        String patientName = appointment.getPatientName() != null ? appointment.getPatientName() : "Bệnh nhân #" + appointment.getPatientId();
+                        String patientGender = "";
+                        if ("male".equals(appointment.getPatientGender())) {
+                            patientGender = "Nam";
+                        } else if ("female".equals(appointment.getPatientGender())) {
+                            patientGender = "Nữ";
+                        }
+                        
+                        // Tính tuổi
+                        String ageInfo = "";
+                        if (appointment.getPatientDateOfBirth() != null) {
+                            Calendar now = Calendar.getInstance();
+                            Calendar birth = Calendar.getInstance();
+                            birth.setTime(appointment.getPatientDateOfBirth());
+                            int age = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR);
+                            if (now.get(Calendar.DAY_OF_YEAR) < birth.get(Calendar.DAY_OF_YEAR)) {
+                                age--;
+                            }
+                            ageInfo = patientGender + " • " + age + " Tuổi";
+                        } else {
+                            ageInfo = patientGender.isEmpty() ? "Thông tin chưa cập nhật" : patientGender;
+                        }
+                %>
 
                 <div class="patient">
-                    <img src="" alt="Nguyễn Hòa An" class="avatar">
+                    <img src="images/default-avatar.png" alt="<%= patientName %>" class="avatar" 
+                         onerror="this.src='images/logo.png'">
                     <div class="info">
-                        <div class="name">Nguyễn Hòa An</div>
-                        <div class="details">Nữ • 32 Tuổi</div>
+                        <div class="name"><%= patientName %></div>
+                        <div class="details"><%= ageInfo %></div>
                     </div>
-                    <button class="status-btn">Đang chờ</button>
+                    <button class="status-btn" onclick="window.location.href='phieukham.jsp?appointmentId=<%= appointment.getAppointmentId() %>'">
+                        <%= timeSlot %>
+                    </button>
                 </div>
 
-                <div class="patient">
-                    <img src="" alt="Nguyễn Hoàng Anh" class="avatar">
+                <% } 
+                } else { %>
+                
+                <div class="patient" style="text-align: center; padding: 20px; color: #64748b;">
+                    <i class="fas fa-clock" style="font-size: 24px; margin-bottom: 10px;"></i>
                     <div class="info">
-                        <div class="name">Nguyễn Hoàng Anh</div>
-                        <div class="details">Nữ • 32 Tuổi</div>
+                        <div class="name">Không có bệnh nhân đang chờ</div>
+                        <div class="details">Hôm nay chưa có lịch hẹn nào</div>
                     </div>
-                    <button class="status-btn">Đang chờ</button>
                 </div>
 
-                <div class="patient">
-                    <img src="" alt="Nguyễn Hoàng Anh" class="avatar">
-                    <div class="info">
-                        <div class="name">Nguyễn Hoàng Anh</div>
-                        <div class="details">Nữ • 32 Tuổi</div>
-                    </div>
-                    <button class="status-btn">Đang chờ</button>
-                </div>
+                <% } %>
 
-                <a href="#" class="view-all">Xem tất cả</a>
+                <a href="DoctorAppointmentsServlet" class="view-all">Xem tất cả</a>
             </div>
 
 
@@ -578,10 +859,10 @@
 
                 <div class="toggle-container">
                     <label class="toggle-switch">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" id="statusToggle" <%= isActive ? "checked" : "" %>>
                         <span class="slider"></span>
                     </label>
-                    <span class="status-label">Hiện đang trực</span>
+                    <span class="status-label" id="statusLabel"><%= isActive ? "Hiện đang trực" : "Hiện không trực" %></span>
                 </div>
 
                 <div class="note">
@@ -598,18 +879,15 @@
             <!-- Doctor Info Card -->
             <div class="doctor-card">
                 <div class="card-header">
-                    <img src="doctor.jpg" alt="Doctor Avatar" class="doctor-avatar">
-                    <button class="settings-btn">Cài đặt ⚙️</button>
+                    <img src="<%= avatarPath %>" alt="Doctor Avatar" class="doctor-avatar" onerror="this.src='images/logo.png'">
+                    <button class="settings-btn" onclick="window.location.href='doctor_caidat.jsp'">Cài đặt ⚙️</button>
                 </div>
                 <div class="card-body">
-                    
-                        <h2 class="doctor-name">toan</h2>
-                        <p><i class="fa-solid fa-venus-mars"></i> Giới tính: </p>
-                        <p><i class="fa-solid fa-user-doctor"></i> Chức vụ: Thạc Sĩ - Bác sĩ</p>
-                        <p><i class="fa-solid fa-stethoscope"></i> Chuyên khoa: </p>
-                        <p><i class="fa-solid fa-phone"></i> Số điện thoại: </p>
-                   
-                        
+                    <h2 class="doctor-name"><%= doctorName %></h2>
+                    <p><i class="fa-solid fa-venus-mars"></i> Giới tính: <%= doctorGender %></p>
+                    <p><i class="fa-solid fa-user-doctor"></i> Chức vụ: Bác sĩ</p>
+                    <p><i class="fa-solid fa-stethoscope"></i> Chuyên khoa: <%= doctorSpecialty %></p>
+                    <p><i class="fa-solid fa-phone"></i> Số điện thoại: <%= doctorPhone %></p>
                 </div>
             </div>
 
@@ -657,31 +935,54 @@
 
 
             <div class="recent-bookings">
-                <h4 class="booking-title">Lịch đã được đặt gần đây</h4>
+                <h4 class="booking-title">Lịch đã được hủy</h4>
+
+                <% if (cancelledAppointments.size() > 0) { 
+                    int displayCancelledCount = Math.min(2, cancelledAppointments.size()); // Hiển thị tối đa 2 lịch đã hủy
+                    for (int i = 0; i < displayCancelledCount; i++) {
+                        Appointment cancelledApp = cancelledAppointments.get(i);
+                        String timeSlot = getTimeSlot(cancelledApp.getSlotId());
+                        String patientName = cancelledApp.getPatientName() != null ? cancelledApp.getPatientName() : "Bệnh nhân #" + cancelledApp.getPatientId();
+                        
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        String workDateString = (cancelledApp.getWorkDate() != null) ? 
+                            dateFormat.format(cancelledApp.getWorkDate()) : "N/A";
+                %>
 
                 <div class="booking-item">
-                    <img src="images/avatar3.jpg" alt="Nguyễn Quang Quý" class="booking-avatar">
+                    <img src="images/default-avatar.png" alt="<%= patientName %>" class="booking-avatar" 
+                         onerror="this.src='images/logo.png'">
                     <div class="booking-info">
-                        <div class="booking-name">Nguyễn Quang Quý</div>
-                        <div class="booking-time"></div>
+                        <div class="booking-name"><%= patientName %></div>
+                        <div class="booking-time">Lý do: <%= cancelledApp.getReason() != null ? cancelledApp.getReason() : "Không rõ" %></div>
                     </div>
-                    <div class="booking-slot">
-                        <span class="booking-time-slot">08:30 - 9:30 | T4 • 02/11/2024</span>
-                        <img src="images/icon-check.png" alt="icon" class="booking-status-icon">
+                    <div class="booking-slot" style="background-color: #ef4444;">
+                        <span class="booking-time-slot"><%= timeSlot %> | <%= workDateString %></span>
+                        <i class="fas fa-times-circle" style="color: white;"></i>
                     </div>
                 </div>
 
-                <div class="booking-item">
-                    <img src="images/avatar3.jpg" alt="Nguyễn Quang Quý" class="booking-avatar">
+                <% } 
+                } else { %>
+
+                <div class="booking-item" style="text-align: center; padding: 20px; color: #64748b;">
+                    <i class="fas fa-calendar-times" style="font-size: 24px; margin-bottom: 10px;"></i>
                     <div class="booking-info">
-                        <div class="booking-name">Nguyễn Quang Quý</div>
-                        <div class="booking-time"></div>
-                    </div>
-                    <div class="booking-slot">
-                        <span class="booking-time-slot">08:30 - 9:30 | T4 • 02/11/2024</span>
-                        <img src="images/icon-check.png" alt="icon" class="booking-status-icon">
+                        <div class="booking-name">Không có lịch hẹn bị hủy</div>
+                        <div class="booking-time">Tất cả lịch hẹn đều diễn ra bình thường</div>
                     </div>
                 </div>
+                
+                <% } %>
+
+                <!-- Link xem tất cả lịch đã hủy -->
+                <% if (cancelledAppointments.size() > 2) { %>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <a href="cancelledAppointments" style="color: #ef4444; text-decoration: none; font-size: 14px;">
+                            Xem tất cả (<%= cancelledCount %> lịch đã hủy) →
+                        </a>
+                    </div>
+                <% } %>
             </div>
         </div>
 
@@ -690,3 +991,116 @@
     </body>
 </html>
 <script src="js/calendar.js"></script>
+<script>
+// JavaScript để xử lý toggle switch
+document.addEventListener('DOMContentLoaded', function() {
+    const statusToggle = document.getElementById('statusToggle');
+    const statusLabel = document.getElementById('statusLabel');
+    
+    if (statusToggle && statusLabel) {
+        statusToggle.addEventListener('change', function() {
+            const isChecked = this.checked;
+            const newStatus = isChecked ? 'Active' : 'Inactive';
+            const newLabel = isChecked ? 'Hiện đang trực' : 'Hiện không trực';
+            
+            // Hiển thị loading
+            statusLabel.textContent = 'Đang cập nhật...';
+            statusLabel.classList.add('updating');
+            statusToggle.disabled = true;
+            
+            // Gửi AJAX request
+            fetch('updateDoctorStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'status=' + encodeURIComponent(newStatus)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data);
+                
+                if (data.success) {
+                    // Cập nhật thành công
+                    statusLabel.textContent = newLabel;
+                    statusLabel.classList.remove('updating');
+                    
+                    // Hiển thị thông báo thành công
+                    showNotification('Cập nhật trạng thái thành công!', 'success');
+                    
+                } else {
+                    // Cập nhật thất bại, revert toggle
+                    statusToggle.checked = !isChecked;
+                    statusLabel.textContent = !isChecked ? 'Hiện đang trực' : 'Hiện không trực';
+                    statusLabel.classList.remove('updating');
+                    
+                    // Hiển thị thông báo lỗi
+                    showNotification(data.message || 'Cập nhật trạng thái thất bại!', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Cập nhật thất bại, revert toggle
+                statusToggle.checked = !isChecked;
+                statusLabel.textContent = !isChecked ? 'Hiện đang trực' : 'Hiện không trực';
+                statusLabel.classList.remove('updating');
+                
+                // Hiển thị thông báo lỗi
+                showNotification('Lỗi kết nối. Vui lòng thử lại!', 'error');
+            })
+            .finally(() => {
+                // Re-enable toggle
+                statusToggle.disabled = false;
+            });
+        });
+    }
+});
+
+// Function để hiển thị notification
+function showNotification(message, type) {
+    // Tạo element notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        max-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+    
+    // Set màu theo loại
+    if (type === 'success') {
+        notification.style.backgroundColor = '#10b981';
+    } else {
+        notification.style.backgroundColor = '#ef4444';
+    }
+    
+    notification.textContent = message;
+    
+    // Thêm vào body
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+</script>
