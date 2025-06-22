@@ -1,0 +1,179 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+UC 01: Chỉnh sửa hồ sơ cá nhân (Tất cả: Bác sĩ, Bệnh nhân, Nhân viên)
+Mô tả: Cho phép người dùng chỉnh sửa thông tin cá nhân (tên, email, số điện thoại, v.v.).
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng cơ sở dữ liệu cho hồ sơ người dùng (Phước). Thiết kế giao diện chỉnh sửa hồ sơ (Toàn). (Done)
+Tuần 2-5: Phát triển API cập nhật hồ sơ (Phước). Xây dựng giao diện frontend (Toàn). Tích hợp xác thực (Ngân).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 02: Đặt lịch hẹn (Bệnh nhân)
+Mô tả: Bệnh nhân đặt lịch hẹn với bác sĩ dựa trên lịch trống.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng lịch hẹn và API (Chung). Thiết kế giao diện chọn bác sĩ/giờ (Toàn).
+Tuần 2-5: Phát triển API đặt lịch (Chung). Xây dựng giao diện frontend (Toàn). Tích hợp kiểm tra lịch trống (Phước).
+Tuần 6: Kiểm thử xung đột lịch hẹn (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 03: Xem lịch sử điều trị (Bệnh nhân)
+Mô tả: Bệnh nhân xem danh sách các lần điều trị trước đây.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng lịch sử điều trị (Phước). Thiết kế giao diện danh sách điều trị (Toàn).
+Tuần 2-5: Phát triển API lấy lịch sử (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 04: Xem lịch hẹn đã đặt (Bệnh nhân)
+Mô tả: Bệnh nhân xem danh sách các lịch hẹn đã đặt.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng lịch hẹn (Phước). Thiết kế giao diện danh sách lịch hẹn (Toàn).
+Tuần 2-5: Phát triển API lấy lịch hẹn (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 05: Thanh toán trực tuyến cho lịch hẹn (Bệnh nhân)
+Mô tả: Bệnh nhân thanh toán phí lịch hẹn qua cổng thanh toán.
+Nhiệm vụ:
+Tuần 1: Thiết kế API tích hợp cổng thanh toán (Chung). Thiết kế giao diện thanh toán (Toàn).
+Tuần 2-5: Tích hợp Stripe (Chung). Xây dựng giao diện frontend (Toàn). Đảm bảo bảo mật giao dịch (Ngân).
+Tuần 6: Kiểm thử thanh toán và bảo mật (Chung, Ngân).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 07: Xem báo cáo y tế (Bệnh nhân)
+Mô tả: Bệnh nhân xem báo cáo y tế từ các lần khám.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng báo cáo y tế (Phước). Thiết kế giao diện xem báo cáo (Toàn).
+Tuần 2-5: Phát triển API lấy báo cáo (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 08: Gửi phản hồi cho bác sĩ (Bệnh nhân)
+Mô tả: Bệnh nhân gửi phản hồi về bác sĩ sau khi khám.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng phản hồi (Phước). Thiết kế giao diện gửi phản hồi (Toàn).
+Tuần 2-5: Phát triển API gửi phản hồi (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 09: Xem lịch hẹn (Bác sĩ)
+Mô tả: Bác sĩ xem danh sách lịch hẹn của mình.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng lịch hẹn (Phước). Thiết kế giao diện lịch hẹn bác sĩ (Toàn).
+Tuần 2-5: Phát triển API lấy lịch hẹn bác sĩ (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 10: Lập đơn thuốc (Bác sĩ)
+Mô tả: Bác sĩ tạo đơn thuốc cho bệnh nhân.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng đơn thuốc (Phước). Thiết kế giao diện lập đơn thuốc (Toàn).
+Tuần 2-5: Phát triển API tạo đơn thuốc (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 11: Tạo, Cập nhật báo cáo y tế (Bác sĩ)
+Mô tả: Bác sĩ tạo hoặc cập nhật báo cáo y tế cho bệnh nhân.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng báo cáo y tế (Phước). Thiết kế giao diện tạo/cập nhật báo cáo (Toàn).
+Tuần 2-5: Phát triển API tạo/cập nhật báo cáo (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 13: Quản lý lịch điều trị cá nhân (CRUD) (Bác sĩ)
+Mô tả: Bác sĩ tạo, đọc, cập nhật, xóa lịch điều trị cá nhân.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng lịch điều trị (Phước). Thiết kế giao diện quản lý lịch (Toàn).
+Tuần 2-5: Phát triển API CRUD lịch điều trị (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 16: Xem danh sách bệnh nhân (Nhân viên)
+Mô tả: Nhân viên xem danh sách tất cả bệnh nhân.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng bệnh nhân (Phước). Thiết kế giao diện danh sách bệnh nhân (Toàn).
+Tuần 2-5: Phát triển API lấy danh sách bệnh nhân (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 17: Đặt lịch điều trị cho tất cả bác sĩ (Nhân viên)
+Mô tả: Nhân viên sắp xếp lịch điều trị cho bác sĩ.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng lịch hẹn (Phước). Thiết kế giao diện đặt lịch (Toàn).
+Tuần 2-5: Phát triển API đặt lịch cho bác sĩ (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 18: Thông báo ngày tái khám (Bác sĩ, Nhân viên)
+Mô tả: Gửi thông báo nhắc nhở ngày tái khám cho bệnh nhân.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng thông báo tái khám (Phước). Thiết kế giao diện thông báo (Toàn).
+Tuần 2-5: Phát triển API gửi thông báo (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 19: Xem và đặt lại tài khoản người dùng (Quản trị viên)
+Mô tả: Quản trị viên xem và đặt lại mật khẩu tài khoản người dùng.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng người dùng (Phước). Thiết kế giao diện quản lý tài khoản (Toàn).
+Tuần 2-5: Phát triển API quản lý tài khoản (Phước). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Phước, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 20: Quản lý bác sĩ (CRUD) (Quản trị viên)
+Mô tả: Quản trị viên tạo, đọc, cập nhật, xóa thông tin bác sĩ.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng bác sĩ (Phước). Thiết kế giao diện quản lý bác sĩ (Toàn).
+Tuần 2-5: Phát triển API CRUD bác sĩ (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 21: Quản lý nhân viên (CRUD) (Quản trị viên)
+Mô tả: Quản trị viên tạo, đọc, cập nhật, xóa thông tin nhân viên.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng nhân viên (Phước). Thiết kế giao diện quản lý nhân viên (Toàn).
+Tuần 2-5: Phát triển API CRUD nhân viên (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử API và giao diện (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 25: Xem trang chủ (landing page) (Khách)
+Mô tả: Khách truy cập trang chủ để xem thông tin phòng khám và gửi liên hệ.
+Nhiệm vụ:
+Tuần 1: Thiết kế giao diện trang chủ (Toàn).
+Tuần 2-5: Phát triển giao diện frontend (Toàn). Phát triển API xử lý form liên hệ (Chung).
+Tuần 6: Kiểm thử giao diện và API (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 26: Gửi thông báo email (Hệ thống)
+Mô tả: Hệ thống gửi email thông báo (xác nhận lịch hẹn, tái khám, v.v.).
+Nhiệm vụ:
+Tuần 1: Thiết kế API gửi email (Chung).
+Tuần 2-5: Tích hợp SendGrid (Chung). Tích hợp vào các use case liên quan (Chung, Phước).
+Tuần 6: Kiểm thử gửi email (Chung).
+Tuần 7: Triển khai, viết tài liệu (Chung).
+UC 27: Gửi thông báo thời gian thực (Hệ thống)
+Mô tả: Hệ thống gửi thông báo thời gian thực (WebSocket) cho người dùng.
+Nhiệm vụ:
+Tuần 1: Thiết kế API WebSocket (Chung). Thiết kế giao diện hiển thị thông báo (Toàn).
+Tuần 2-5: Phát triển WebSocket (Chung). Xây dựng giao diện frontend (Toàn).
+Tuần 6: Kiểm thử thông báo thời gian thực (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+UC 30: Tư vấn trực tuyến cho bệnh nhân (Bệnh nhân) [Mới]
+Mô tả: Bệnh nhân bắt đầu hoặc tham gia phiên chat với bác sĩ/nhân viên để tư vấn nha khoa.
+Nhiệm vụ:
+Tuần 1: Thiết kế bảng lịch sử chat (Phước). Thiết kế giao diện chat cho bệnh nhân (Toàn).
+Tuần 2-5: Phát triển API khởi tạo phiên chat (Chung). Xây dựng giao diện frontend với WebSocket (Toàn). Tích hợp mã hóa tin nhắn (Ngân).
+Tuần 6: Kiểm thử API, giao diện, và độ trễ tin nhắn (Chung, Toàn, Châu).
+Tuần 7: Triển khai, viết hướng dẫn sử dụng (Chung, Toàn).
+UC 31: Trả lời tư vấn trực tuyến (Bác sĩ) [Mới]
+Mô tả: Bác sĩ nhận và trả lời các yêu cầu tư vấn từ bệnh nhân qua chat.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng lịch sử chat (Phước). Thiết kế giao diện chat cho bác sĩ (Toàn).
+Tuần 2-5: Phát triển API quản lý phiên chat bác sĩ (Phước). Xây dựng giao diện frontend (Toàn). Tích hợp thông báo tin nhắn mới (Chung).
+Tuần 6: Kiểm thử API, giao diện, và tích hợp thông báo (Phước, Toàn, Chung).
+Tuần 7: Triển khai, viết tài liệu (Phước, Toàn).
+UC 32: Hỗ trợ tư vấn trực tuyến (Nhân viên) [Mới]
+Mô tả: Nhân viên nhận và trả lời các thắc mắc cơ bản từ bệnh nhân qua chat.
+Nhiệm vụ:
+Tuần 1: Tái sử dụng bảng lịch sử chat (Phước). Thiết kế giao diện chat cho nhân viên (Toàn).
+Tuần 2-5: Phát triển API quản lý phiên chat nhân viên (Chung). Xây dựng giao diện frontend (Toàn). Tích hợp thông báo tin nhắn mới (Chung).
+Tuần 6: Kiểm thử API, giao diện, và tích hợp thông báo (Chung, Toàn).
+Tuần 7: Triển khai, viết tài liệu (Chung, Toàn).
+
+
+Tư vấn trực tiếp chat 
+Tự động trả lời 
+	-> giá cả 
+	-> dịch vụ chi 
+	-> mấy giờ làm việc  ; nghỉ làm 
+	-> chất lượng đội ngũ 
+	-> 
+// Trợ lý ảo ai -> gọi gemini tự động trả lời 
+
+
+
