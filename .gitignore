@@ -32,6 +32,7 @@ keyAPI.*
 .env.local
 .env.production
 .env.development
+.env.*
 
 # Temporary files
 *.tmp
