@@ -1,0 +1,43 @@
+# File archives
+*.zip
+*.tar.gz
+*.rar
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables (IMPORTANT: Never commit secrets!)
+.env
+*.env
+!.env.example
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+build/
+dist/
+target/
+*.class
+
+# Logs
+*.log
+logs/
+
+# API Keys và Secrets (backup protection)
+**/secrets/
+**/keys/
+**/credentials/
+
+# Các file chứa API key cần bảo mật
+src/java/controller/TwilioCallServlet.java
+src/java/utils/GoogleOAuth2Config.java
