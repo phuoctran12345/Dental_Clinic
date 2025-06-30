@@ -1,0 +1,15 @@
+/Dental_clinic/build/
+/Dental_Clinic/nbproject/private/
+/Dental_Clinic/build/
+/Dental_Clinic/dist/
+<<<<<<< HEAD
+=======
+/Dental_Project/nbproject/private/
+/Dental_Projectt/nbproject/private/
+/Dental_Projectt/build/
+>>>>>>> main
+/Dental_Projectt/dist/
+
+# Google OAuth secrets
+.env
+RoleStaff/src/java/calandar_loginGG.json

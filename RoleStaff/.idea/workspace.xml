@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e8d79d10-b839-4b45-a66f-0d82b5f0bd43" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/Dental_Clinic/RoleStaff/build/web/WEB-INF/classes/utils/DBContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/Dental_Clinic/RoleStaff/build/web/WEB-INF/classes/utils/DBContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/Dental_Clinic/RoleStaff/build/web/jsp/patient/user_services.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/Dental_Clinic/RoleStaff/build/web/jsp/patient/user_services.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/AvatarServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/AvatarServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/LoginServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/LoginServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/PatientAppointmentsServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/controller/PatientAppointmentsServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/dao/DoctorDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/dao/DoctorDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/model/DoctorSchedule.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/model/DoctorSchedule.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/model/Doctors.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/model/Doctors.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/WEB-INF/classes/utils/DBContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/WEB-INF/classes/utils/DBContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/home.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/home.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/datlich-thanhcong.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/datlich-thanhcong.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_bihuy.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_bihuy.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_caidat.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_caidat.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_dangkilich.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_dangkilich.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_header.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_header.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_lichtrongthang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_lichtrongthang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_menu.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_menu.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_tongquan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_tongquan.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_trangcanhan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_trangcanhan.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_trongngay.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/doctor_trongngay.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/doctor/phieukham.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/doctor/phieukham.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/patient/user_chatAI.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/patient/user_chatAI.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/patient/user_datlich_bacsi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/patient/user_datlich_bacsi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/patient/user_homepage.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/patient/user_homepage.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/patient/user_menu.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/patient/user_menu.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/jsp/patient/user_services.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/jsp/patient/user_services.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/private/private.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/private/private.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/controller/AvatarServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/controller/AvatarServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/controller/LoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/controller/LoginServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/controller/PatientAppointmentsServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/controller/PatientAppointmentsServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/dao/DoctorDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/dao/DoctorDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/model/DoctorSchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/model/DoctorSchedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/model/Doctors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/model/Doctors.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/utils/DBContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/utils/DBContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/home.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/home.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/datlich-thanhcong.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/datlich-thanhcong.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_bihuy.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_bihuy.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_caidat.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_caidat.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_dangkilich.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_dangkilich.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_header.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_header.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_lichtrongthang.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_lichtrongthang.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_menu.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_menu.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_tongquan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_tongquan.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_trangcanhan.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_trangcanhan.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/doctor_trongngay.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/doctor_trongngay.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/doctor/phieukham.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/doctor/phieukham.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/patient/user_chatAI.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/patient/user_chatAI.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/patient/user_datlich_bacsi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/patient/user_datlich_bacsi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/patient/user_homepage.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/patient/user_homepage.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/patient/user_menu.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/patient/user_menu.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/patient/user_services.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/patient/user_services.jsp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2z7zpWXeXXRrCB87r1DIEXseUVA" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;NGAN&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/1.FPT/SU25/Dental_Clinic/RoleStaff&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-WS-251.26927.40" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e8d79d10-b839-4b45-a66f-0d82b5f0bd43" name="Changes" comment="" />
+      <created>1751097082322</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751097082322</updated>
+      <workItem from="1751097083429" duration="2061000" />
+      <workItem from="1751124926335" duration="982000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
