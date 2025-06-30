@@ -64,13 +64,6 @@ public class UpdateDoctorStatusServlet extends HttpServlet {
             System.out.println("DEBUG: Current DB status: '" + currentDbStatus + "'");
             System.out.println("DEBUG: Requested new status: '" + newStatus + "'");
             
-            // Nếu database đang dùng tiếng Việt, chuyển đổi
-            if ("Đang hoạt động".equals(currentDbStatus) || "Không hoạt động".equals(currentDbStatus)) {
-                dbStatus = "Active".equals(newStatus) ? "Đang hoạt động" : "Không hoạt động";
-            }
-            
-            System.out.println("DEBUG: Final DB status to update: '" + dbStatus + "'");
-            System.out.println("DEBUG: Updating doctor status from '" + doctor.getStatus() + "' to '" + dbStatus + "'");
             
             // Cập nhật trạng thái trong database
             boolean updateResult = DoctorDB.updateDoctorStatus(doctor.getDoctorId(), dbStatus);
@@ -80,7 +73,7 @@ public class UpdateDoctorStatusServlet extends HttpServlet {
                 doctor.setStatus(dbStatus);
                 session.setAttribute("doctor", doctor);
                 
-                String statusText = "Active".equals(newStatus) ? "Đang hoạt động" : "Không hoạt động";
+                String statusText = "Active".equals(newStatus) ? "active" : "inactive";
                 
                 out.print("{\"success\": true, \"message\": \"Cập nhật trạng thái thành công\", \"newStatus\": \"" + newStatus + "\", \"statusText\": \"" + statusText + "\"}");
                 

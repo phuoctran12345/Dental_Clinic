@@ -24,14 +24,14 @@ public class DoctorChangePasswordServlet extends HttpServlet {
         // Lấy session
         HttpSession session = request.getSession(false); // Không tạo session mới nếu chưa tồn tại
         if (session == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp");
             return;
         }
 
         // Lấy thông tin user từ session
         User user = (User) session.getAttribute("user");
         if (user == null || !user.getRole().equals("doctor")) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp");
             return;
         }
 
@@ -43,13 +43,13 @@ public class DoctorChangePasswordServlet extends HttpServlet {
         // Kiểm tra dữ liệu đầu vào
         if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
-            request.getRequestDispatcher("doctor_changepassword.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_changepassword.jsp").forward(request, response);
             return;
         }
 
         if (currentPassword == null || !currentPassword.equals(user.getPasswordHash())) {
             request.setAttribute("errorMessage", "Mật khẩu hiện tại không đúng!");
-            request.getRequestDispatcher("doctor_changepassword.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_changepassword.jsp").forward(request, response);
             return;
         }
 
@@ -63,6 +63,6 @@ public class DoctorChangePasswordServlet extends HttpServlet {
         }
 
         // Chuyển hướng về trang JSP
-        request.getRequestDispatcher("doctor_changepassword.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/doctor/doctor_changepassword.jsp").forward(request, response);
     }
 }

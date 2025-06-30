@@ -139,7 +139,7 @@ public class MedicalReportServlet extends HttpServlet {
             // Tạo báo cáo y tế
             int reportId = dao.insertMedicalReport(appointmentId, doctorId, patientId, diagnosis, treatmentPlan, note, sign);
             if (reportId != -1) {
-                dao.updateAppointmentStatus(appointmentId, "Hoàn tất");
+                dao.updateAppointmentStatus(appointmentId, "completed");
             } else {
                 response.getWriter().println("Không thể tạo báo cáo y tế.");
                 return;
@@ -174,7 +174,7 @@ public class MedicalReportServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect("success.jsp");
+            response.sendRedirect("/doctor/jsp/doctor/success.jsp");
 
         } catch (NumberFormatException e) {
             e.printStackTrace();

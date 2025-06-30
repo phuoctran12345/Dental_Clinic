@@ -21,6 +21,10 @@
         <servlet-class>Controller.LoginServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DoctorTongQuanServlet</servlet-name>
+        <servlet-class>Controller.DoctorTongQuanServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DoctorProfileServlet</servlet-name>
         <servlet-class>Controller.DoctorProfileServlet</servlet-class>
     </servlet>
@@ -72,9 +76,21 @@
         <servlet-name>CreateMedicalFormServlet</servlet-name>
         <servlet-class>Controller.CreateMedicalFormServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>TestDataServlet</servlet-name>
+        <servlet-class>Controller.TestDataServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TestReexaminationServlet</servlet-name>
+        <servlet-class>Controller.TestReexaminationServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DoctorTongQuanServlet</servlet-name>
+        <url-pattern>/DoctorTongQuanServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -139,5 +155,13 @@
     <servlet-mapping>
         <servlet-name>CreateMedicalFormServlet</servlet-name>
         <url-pattern>/CreateMedicalFormServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestDataServlet</servlet-name>
+        <url-pattern>/TestDataServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestReexaminationServlet</servlet-name>
+        <url-pattern>/TestReexaminationServlet</url-pattern>
     </servlet-mapping>
 </web-app>

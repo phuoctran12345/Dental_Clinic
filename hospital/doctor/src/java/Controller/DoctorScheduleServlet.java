@@ -67,7 +67,7 @@ public class DoctorScheduleServlet extends HttpServlet {
         } catch (SQLException e) {
             // Handle database errors
             request.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         }
     }
 
@@ -86,7 +86,7 @@ public class DoctorScheduleServlet extends HttpServlet {
         Doctors doctor = (Doctors) request.getSession().getAttribute("doctor");
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/login.jsp").forward(request, response);
             return;
         }
 
@@ -103,7 +103,7 @@ public class DoctorScheduleServlet extends HttpServlet {
         request.setAttribute("pageTitle", "Lịch Làm Việc Của Bạn");
 
         // Forward to the JSP
-        request.getRequestDispatcher("/doctor_trongtuan.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/doctor/doctor_trongtuan.jsp").forward(request, response);
     }
 
     /**
@@ -122,14 +122,13 @@ public class DoctorScheduleServlet extends HttpServlet {
         Doctors doctor = (Doctors) request.getSession().getAttribute("doctor");
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/login.jsp").forward(request, response);
             return;
         }
 
         int doctorId = doctor.getDoctorId();
         String dateParam = request.getParameter("date");
 
-        // Validate the date parameter
         // Validate the date parameter
         if (dateParam == null || dateParam.trim().isEmpty()) {
             request.setAttribute("errorMessage", "Vui lòng chọn ngày");
@@ -160,7 +159,7 @@ public class DoctorScheduleServlet extends HttpServlet {
             request.setAttribute("pageTitle", "Lịch Làm Việc Ngày " + localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
             // Forward to the JSP
-            request.getRequestDispatcher("/doctor_trongtuan.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongtuan.jsp").forward(request, response);
         } catch (DateTimeParseException e) {
             // Handle invalid date format
             request.setAttribute("errorMessage", "Ngày không hợp lệ. Vui lòng sử dụng định dạng yyyy-MM-dd");

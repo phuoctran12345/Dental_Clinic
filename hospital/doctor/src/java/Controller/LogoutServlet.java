@@ -62,7 +62,7 @@ public class LogoutServlet extends HttpServlet {
         }
         
         
-        request.getRequestDispatcher("user_homepage.jsp").forward(request, response); 
+        request.getRequestDispatcher("/jsp/doctor/user_homepage.jsp").forward(request, response); 
     }
 
     /**

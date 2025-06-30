@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
 import static Model.DBConnection.getConnection;
@@ -25,48 +21,48 @@ import java.util.List;
 
 public class DoctorDB implements DatabaseInfo {
 
-    public static Connection getConnect() {
-        try {
-            Class.forName(DRIVERNAME);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error loading driver" + e);
-        }
-        try {
-            Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
-            return con;
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-        return null;
-    }
+//    public static Connection getConnect() {
+//        try {
+//            Class.forName(DRIVERNAME);
+//        } catch (ClassNotFoundException e) {
+//            System.out.println("Error loading driver" + e);
+//        }
+//        try {
+//            Connection con = DriverManager.getConnection(DBURL, USERDB, PASSDB);
+//            return con;
+//        } catch (SQLException e) {
+//            System.out.println("Error: " + e);
+//        }
+//        return null;
+//    }
     //-----------------------------------------------------------------------------------------
 
-    public static User getUserByEmailAndPassword(String email, String passwordHash) {
-        User user = null;
-        try {
-            Connection conn = DBConnection.getConnection();
-            String sql = "SELECT * FROM Users WHERE email = ? AND password_hash = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
-            ps.setString(2, passwordHash);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                user = new User(
-                        rs.getInt("user_id"),
-                        rs.getString("password_hash"),
-                        rs.getString("email"),
-                        rs.getString("role"),
-                        rs.getTimestamp("created_at")
-                );
-            }
-
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
+//    public static User getUserByEmailAndPassword(String email, String passwordHash) {
+//        User user = null;
+//        try {
+//            Connection conn = DBConnection.getConnection();
+//            String sql = "SELECT * FROM Users WHERE email = ? AND password_hash = ?";
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            ps.setString(1, email);
+//            ps.setString(2, passwordHash);
+//            ResultSet rs = ps.executeQuery();
+//
+//            if (rs.next()) {
+//                user = new User(
+//                        rs.getInt("user_id"),
+//                        rs.getString("password_hash"),
+//                        rs.getString("email"),
+//                        rs.getString("role"),
+//                        rs.getTimestamp("created_at")
+//                );
+//            }
+//
+//            conn.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return user;
+//    }
 
     /**
      * ⚠️ NGUY HIỂM: Đăng nhập với mật khẩu KHÔNG mã hóa - CHỈ DÙNG ĐỂ TEST!
@@ -106,65 +102,22 @@ public class DoctorDB implements DatabaseInfo {
         return user;
     }
 
-    public static boolean isPatientExists(String email) {
-        String sql = "SELECT * FROM Users WHERE email = ?";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            System.out.println("Checking existence for email: " + email);
-            ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                boolean exists = rs.next();
-                System.out.println("Exists? " + exists);
-                return exists;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Thêm khách hàng mới vào database
-    public static int registerPatient(String email, String passwordHash) {
-        String sql = "INSERT INTO Users (email, password_hash, role) VALUES (?, ?, 'PATIENT')";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, email);
-            ps.setString(2, passwordHash);
-
-            int rowsInserted = ps.executeUpdate();
-            if (rowsInserted > 0) {
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getInt(1); // Trả về int user_id
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    public static boolean savePatientInfo(int userId, String fullName, String phone, String dateOfBirth, String gender) {
-        String sql = "INSERT INTO Patients (user_id, full_name, phone, date_of_birth, gender) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, userId);
-            ps.setString(2, fullName);
-            ps.setString(3, phone);
-            ps.setString(4, dateOfBirth); // yyyy-MM-dd
-            ps.setString(5, gender);
-
-            int rowsInserted = ps.executeUpdate();
-            return rowsInserted > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
+//    public static boolean isPatientExists(String email) {
+//        String sql = "SELECT * FROM Users WHERE email = ?";
+//        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+//
+//            System.out.println("Checking existence for email: " + email);
+//            ps.setString(1, email);
+//            try (ResultSet rs = ps.executeQuery()) {
+//                boolean exists = rs.next();
+//                System.out.println("Exists? " + exists);
+//                return exists;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
     //--------------------------------------------------------------------------------------------//
     public static Patients getPatientByUserId(int userId) {
         Patients patients = null;
@@ -320,80 +273,80 @@ public class DoctorDB implements DatabaseInfo {
     }
 
     //--------------------------------------------------------------------------------------------
-    public List<DoctorSchedule> getAllDoctorSchedules() throws SQLException {
-        List<DoctorSchedule> schedules = new ArrayList<>();
-        String sql = """
-            SELECT ds.schedule_id, ds.doctor_id, ds.work_date, ds.slot_id,
-                   d.full_name, d.specialty, d.phone, d.status,
-                   ts.start_time, ts.end_time
-            FROM DoctorSchedule ds
-            JOIN Doctors d ON ds.doctor_id = d.doctor_id
-            JOIN TimeSlot ts ON ds.slot_id = ts.slot_id
-            ORDER BY ds.work_date, ts.start_time
-            """;
-
-        try (Connection connection = DBConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            System.out.println("Executing query: " + sql);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    try {
-                        DoctorSchedule schedule = new DoctorSchedule();
-                        schedule.setScheduleId(resultSet.getInt("schedule_id"));
-                        schedule.setDoctorId(resultSet.getInt("doctor_id"));
-
-                        // Xử lý work_date an toàn
-                        Date workDateSql = resultSet.getDate("work_date");
-                        if (workDateSql != null) {
-                            schedule.setWorkDate(new java.sql.Date(workDateSql.getTime()));
-                        }
-
-                        schedule.setSlotId(resultSet.getInt("slot_id"));
-
-                        // Tạo Doctor object
-                        Doctors doctor = new Doctors();
-                        doctor.setDoctorId(resultSet.getInt("doctor_id"));
-                        doctor.setFullName(resultSet.getString("full_name"));
-                        doctor.setSpecialty(resultSet.getString("specialty"));
-                        doctor.setPhone(resultSet.getString("phone"));
-                        doctor.setStatus(resultSet.getString("status"));
-                        schedule.setDoctor(doctor);
-
-                        // Tạo TimeSlot object
-                        TimeSlot timeSlot = new TimeSlot();
-                        timeSlot.setSlotId(resultSet.getInt("slot_id"));
-
-                        // Xử lý time an toàn
-                        Time startTimeSql = resultSet.getTime("start_time");
-                        Time endTimeSql = resultSet.getTime("end_time");
-
-                        if (startTimeSql != null) {
-                            timeSlot.setStartTime(startTimeSql.toLocalTime());
-                        }
-                        if (endTimeSql != null) {
-                            timeSlot.setEndTime(endTimeSql.toLocalTime());
-                        }
-
-                        schedule.setTimeSlot(timeSlot);
-
-                        schedules.add(schedule);
-                        System.out.println("Added schedule: " + schedule.toString());
-                    } catch (Exception e) {
-                        System.err.println("Error processing row: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Database error in getAllDoctorSchedules: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        System.out.println("Total schedules found: " + schedules.size());
-        return schedules;
-    }
+//    public List<DoctorSchedule> getAllDoctorSchedules() throws SQLException {
+//        List<DoctorSchedule> schedules = new ArrayList<>();
+//        String sql = """
+//            SELECT ds.schedule_id, ds.doctor_id, ds.work_date, ds.slot_id,
+//                   d.full_name, d.specialty, d.phone, d.status,
+//                   ts.start_time, ts.end_time
+//            FROM DoctorSchedule ds
+//            JOIN Doctors d ON ds.doctor_id = d.doctor_id
+//            JOIN TimeSlot ts ON ds.slot_id = ts.slot_id
+//            ORDER BY ds.work_date, ts.start_time
+//            """;
+//
+//        try (Connection connection = DBConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+//
+//            System.out.println("Executing query: " + sql);
+//
+//            try (ResultSet resultSet = statement.executeQuery()) {
+//                while (resultSet.next()) {
+//                    try {
+//                        DoctorSchedule schedule = new DoctorSchedule();
+//                        schedule.setScheduleId(resultSet.getInt("schedule_id"));
+//                        schedule.setDoctorId(resultSet.getInt("doctor_id"));
+//
+//                        // Xử lý work_date an toàn
+//                        Date workDateSql = resultSet.getDate("work_date");
+//                        if (workDateSql != null) {
+//                            schedule.setWorkDate(new java.sql.Date(workDateSql.getTime()));
+//                        }
+//
+//                        schedule.setSlotId(resultSet.getInt("slot_id"));
+//
+//                        // Tạo Doctor object
+//                        Doctors doctor = new Doctors();
+//                        doctor.setDoctorId(resultSet.getInt("doctor_id"));
+//                        doctor.setFullName(resultSet.getString("full_name"));
+//                        doctor.setSpecialty(resultSet.getString("specialty"));
+//                        doctor.setPhone(resultSet.getString("phone"));
+//                        doctor.setStatus(resultSet.getString("status"));
+//                        schedule.setDoctor(doctor);
+//
+//                        // Tạo TimeSlot object
+//                        TimeSlot timeSlot = new TimeSlot();
+//                        timeSlot.setSlotId(resultSet.getInt("slot_id"));
+//
+//                        // Xử lý time an toàn
+//                        Time startTimeSql = resultSet.getTime("start_time");
+//                        Time endTimeSql = resultSet.getTime("end_time");
+//
+//                        if (startTimeSql != null) {
+//                            timeSlot.setStartTime(startTimeSql.toLocalTime());
+//                        }
+//                        if (endTimeSql != null) {
+//                            timeSlot.setEndTime(endTimeSql.toLocalTime());
+//                        }
+//
+//                        schedule.setTimeSlot(timeSlot);
+//
+//                        schedules.add(schedule);
+//                        System.out.println("Added schedule: " + schedule.toString());
+//                    } catch (Exception e) {
+//                        System.err.println("Error processing row: " + e.getMessage());
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        } catch (SQLException e) {
+//            System.err.println("Database error in getAllDoctorSchedules: " + e.getMessage());
+//            e.printStackTrace();
+//            throw e;
+//        }
+//
+//        System.out.println("Total schedules found: " + schedules.size());
+//        return schedules;
+//    }
 
     // Lấy lịch làm việc của một bác sĩ cụ thể
     public List<DoctorSchedule> getSchedulesByDoctorId(int doctorId) throws SQLException {
@@ -591,13 +544,16 @@ public class DoctorDB implements DatabaseInfo {
     public List<Appointment> getAppointmentsByUserId(int userId) throws SQLException {
         List<Appointment> appointments = new ArrayList<>();
         
-        // Sửa lại query để phù hợp với database schema
-        // Lấy appointments cho doctor dựa trên userId -> doctorId
+        // Cập nhật query để join với bảng Patients lấy thông tin tên bệnh nhân
         String query = """
             SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
-                   a.slot_id, a.status, a.reason
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
             FROM Appointment a
             INNER JOIN Doctors d ON a.doctor_id = d.doctor_id
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
             WHERE d.user_id = ?
             ORDER BY a.work_date DESC, a.slot_id ASC
         """;
@@ -623,13 +579,26 @@ public class DoctorDB implements DatabaseInfo {
                     appointment.setSlotId(rs.getInt("slot_id"));
                     appointment.setStatus(rs.getString("status"));
                     appointment.setReason(rs.getString("reason"));
-//                     appointment.setPreviousAppointmentId(rs.getInt("previousAppointmentId")); 
+                    
+                    // Handle null previous_appointment_id
+                    int prevAppId = rs.getInt("previous_appointment_id");
+                    if (!rs.wasNull()) {
+                        appointment.setPreviousAppointmentId(prevAppId);
+                    }
+                    
+                    // Thêm thông tin bệnh nhân và thời gian
+                    appointment.setPatientName(rs.getString("patient_name"));
+                    appointment.setPatientPhone(rs.getString("phone"));
+                    appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                    appointment.setPatientGender(rs.getString("gender"));
+                    appointment.setStartTime(rs.getTime("start_time"));
+                    appointment.setEndTime(rs.getTime("end_time"));
 
                     // Thêm cuộc hẹn vào danh sách
                     appointments.add(appointment);
                     
                     System.out.println("Added appointment: ID=" + appointment.getAppointmentId() + 
-                                     ", Patient=" + appointment.getPatientId() + 
+                                     ", Patient=" + appointment.getPatientName() + 
                                      ", Date=" + appointment.getWorkDate());
                 }
             }
@@ -685,27 +654,27 @@ public class DoctorDB implements DatabaseInfo {
         }
     }
 
-    public static List<Medicine> getAllMedicine() {
-        List<Medicine> list = new ArrayList<>();
-        String sql = "SELECT * FROM Medicine";
-
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Medicine m = new Medicine();
-                m.setMedicineId(rs.getInt("medicine_id"));
-                m.setName(rs.getString("name"));
-                m.setUnit(rs.getString("unit"));
-                m.setQuantityInStock(rs.getInt("quantity_in_stock"));
-                m.setDescription(rs.getString("description"));
-                list.add(m);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
+//    public static List<Medicine> getAllMedicine() {
+//        List<Medicine> list = new ArrayList<>();
+//        String sql = "SELECT * FROM Medicine";
+//
+//        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+//
+//            while (rs.next()) {
+//                Medicine m = new Medicine();
+//                m.setMedicineId(rs.getInt("medicine_id"));
+//                m.setName(rs.getString("name"));
+//                m.setUnit(rs.getString("unit"));
+//                m.setQuantityInStock(rs.getInt("quantity_in_stock"));
+//                m.setDescription(rs.getString("description"));
+//                list.add(m);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
 
     public boolean hasEnoughStock(int medicineId, int requiredQty) throws SQLException {
         String sql = "SELECT quantity_in_stock FROM Medicine WHERE medicine_id = ?";
@@ -894,25 +863,7 @@ public class DoctorDB implements DatabaseInfo {
         return reports;
     }
     
-    /**
-     * Kiểm tra xem một appointment đã có medical report chưa
-     */
-    public static boolean hasMedialReport(int appointmentId) throws SQLException {
-        String sql = "SELECT COUNT(*) as count FROM MedicalReport WHERE appointment_id = ?";
-        
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setInt(1, appointmentId);
-            ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt("count") > 0;
-            }
-        }
-        return false;
-    }
-    
+   
     /**
      * Cập nhật Medical Report
      */
@@ -997,7 +948,7 @@ public class DoctorDB implements DatabaseInfo {
             FROM Appointment a
             INNER JOIN Patients p ON a.patient_id = p.patient_id
             INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
-            WHERE a.doctor_id = ? AND a.status = N'Hoàn tất'
+            WHERE a.doctor_id = ? AND a.status = N'completed'
             AND NOT EXISTS (
                 SELECT 1 FROM Appointment a2 
                 WHERE a2.previous_appointment_id = a.appointment_id
@@ -1045,7 +996,7 @@ public class DoctorDB implements DatabaseInfo {
             SELECT COUNT(*) as count 
             FROM Appointment 
             WHERE doctor_id = ? AND work_date = ? AND slot_id = ? 
-            AND status IN (N'Đã đặt', N'Hoàn tất')
+            AND status IN (N'booked', N'completed')
         """;
         
         try (Connection conn = getConnection();
@@ -1072,7 +1023,7 @@ public class DoctorDB implements DatabaseInfo {
         
         String sql = """
             INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason, previous_appointment_id)
-            VALUES (?, ?, ?, ?, N'Đã đặt', ?, ?)
+            VALUES (?, ?, ?, ?, N'booked', ?, ?)
         """;
         
         try (Connection conn = getConnection();
@@ -1189,56 +1140,56 @@ public class DoctorDB implements DatabaseInfo {
     /**
      * Lấy danh sách cuộc hẹn hôm nay của bác sĩ kèm thông tin bệnh nhân
      */
-    public static List<Appointment> getTodayAppointmentsByDoctorId(int doctorId) throws SQLException {
-        List<Appointment> appointments = new ArrayList<>();
-        String sql = """
-            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
-                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
-                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
-                   t.start_time, t.end_time
-            FROM Appointment a
-            INNER JOIN Patients p ON a.patient_id = p.patient_id
-            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
-            WHERE a.doctor_id = ? AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
-            ORDER BY t.start_time ASC
-        """;
-        
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setInt(1, doctorId);
-            ResultSet rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setAppointmentId(rs.getInt("appointment_id"));
-                appointment.setPatientId(rs.getInt("patient_id"));
-                appointment.setDoctorId(rs.getInt("doctor_id"));
-                appointment.setWorkDate(rs.getDate("work_date"));
-                appointment.setSlotId(rs.getInt("slot_id"));
-                appointment.setStatus(rs.getString("status"));
-                appointment.setReason(rs.getString("reason"));
-                
-                // Handle null previous_appointment_id
-                int prevAppId = rs.getInt("previous_appointment_id");
-                if (!rs.wasNull()) {
-                    appointment.setPreviousAppointmentId(prevAppId);
-                }
-                
-                // Thông tin bệnh nhân
-                appointment.setPatientName(rs.getString("patient_name"));
-                appointment.setPatientPhone(rs.getString("phone"));
-                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
-                appointment.setPatientGender(rs.getString("gender"));
-                appointment.setStartTime(rs.getTime("start_time"));
-                appointment.setEndTime(rs.getTime("end_time"));
-                
-                appointments.add(appointment);
-            }
-        }
-        
-        return appointments;
-    }
+//    public static List<Appointment> getTodayAppointmentsByDoctorId(int doctorId) throws SQLException {
+//        List<Appointment> appointments = new ArrayList<>();
+//        String sql = """
+//            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+//                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+//                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+//                   t.start_time, t.end_time
+//            FROM Appointment a
+//            INNER JOIN Patients p ON a.patient_id = p.patient_id
+//            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+//            WHERE a.doctor_id = ? AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
+//            ORDER BY t.start_time ASC
+//        """;
+//        
+//        try (Connection conn = getConnection();
+//             PreparedStatement ps = conn.prepareStatement(sql)) {
+//            
+//            ps.setInt(1, doctorId);
+//            ResultSet rs = ps.executeQuery();
+//            
+//            while (rs.next()) {
+//                Appointment appointment = new Appointment();
+//                appointment.setAppointmentId(rs.getInt("appointment_id"));
+//                appointment.setPatientId(rs.getInt("patient_id"));
+//                appointment.setDoctorId(rs.getInt("doctor_id"));
+//                appointment.setWorkDate(rs.getDate("work_date"));
+//                appointment.setSlotId(rs.getInt("slot_id"));
+//                appointment.setStatus(rs.getString("status"));
+//                appointment.setReason(rs.getString("reason"));
+//                
+//                // Handle null previous_appointment_id
+//                int prevAppId = rs.getInt("previous_appointment_id");
+//                if (!rs.wasNull()) {
+//                    appointment.setPreviousAppointmentId(prevAppId);
+//                }
+//                
+//                // Thông tin bệnh nhân
+//                appointment.setPatientName(rs.getString("patient_name"));
+//                appointment.setPatientPhone(rs.getString("phone"));
+//                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+//                appointment.setPatientGender(rs.getString("gender"));
+//                appointment.setStartTime(rs.getTime("start_time"));
+//                appointment.setEndTime(rs.getTime("end_time"));
+//                
+//                appointments.add(appointment);
+//            }
+//        }
+//        
+//        return appointments;
+//    }
 
     /**
      * Lấy danh sách cuộc hẹn đang chờ khám hôm nay của bác sĩ
@@ -1255,7 +1206,7 @@ public class DoctorDB implements DatabaseInfo {
             INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
             WHERE a.doctor_id = ? 
             AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
-            AND a.status = N'Đã đặt'
+            AND a.status = N'booked'
             ORDER BY t.start_time ASC
         """;
         

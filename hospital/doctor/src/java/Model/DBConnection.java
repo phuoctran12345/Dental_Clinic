@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String DB_URL = "jdbc:sqlserver://TOAN;databaseName=Doctor;encrypt=false;trustServerCertificate=false;loginTimeout=30";
+    private static final String DB_URL = "jdbc:sqlserver://TOAN;databaseName=BenhVien;encrypt=false;trustServerCertificate=false;loginTimeout=30";
     private static final String USER = "sa";
     private static final String PASSWORD = "123";
 
@@ -29,20 +29,7 @@ public class DBConnection {
         return conn;
     }
 
-    // ✅ Hàm main để test kết nối
-//    public static void main(String[] args) {
-//    Connection conn = getConnection();
-//    if (conn != null) {
-//        System.out.println("✅ Kết nối database thành công!");
-//        try {
-//            conn.close(); // Đóng kết nối sau khi kiểm tra
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    } else {
-//        System.out.println("❌ Kết nối database thất bại!");
-//    }
-//}
+   
 
 
 }

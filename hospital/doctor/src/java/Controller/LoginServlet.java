@@ -110,18 +110,19 @@ public class LoginServlet extends HttpServlet {
                 } else {
                     System.err.println("DEBUG: No doctor found for userId: " + user.getUserId());
                     // Nếu không tìm thấy bác sĩ, chuyển hướng về trang lỗi
-                    response.sendRedirect("login.jsp?error=doctor_not_found");
+                    response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=doctor_not_found");
                     return;
                 }
-                request.getRequestDispatcher("doctor_tongquan.jsp").forward(request, response);
+                // Chuyển hướng đến DoctorTongQuanServlet thay vì JSP trực tiếp
+                response.sendRedirect("/doctor/DoctorTongQuanServlet");
             } else if ("patient".equalsIgnoreCase(role)) {
-                request.getRequestDispatcher("user_homepage.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/user_homepage.jsp").forward(request, response);
             } else {
                 // Role không xác định, chuyển hướng về trang lỗi hoặc đăng nhập
-                response.sendRedirect("login.jsp?error=invalid_role");
+                response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=invalid_role");
             }
         } else {
-            response.sendRedirect("login.jsp?error=1");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=1");
         }
     }
 

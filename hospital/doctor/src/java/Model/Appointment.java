@@ -20,7 +20,7 @@ public class Appointment {
     private String status;
     private String reason;
     private int previousAppointmentId;
-    
+    private int bookedByUserId;
     // Thêm các thuộc tính để hiển thị thông tin bệnh nhân và thời gian
     private String patientName;
     private String patientPhone;
@@ -41,6 +41,7 @@ public class Appointment {
         this.status = status;
         this.reason = reason;
         this.previousAppointmentId = previousAppointmentId;
+        this.bookedByUserId=bookedByUserId;
     }
 
     public int getAppointmentId() {
@@ -107,7 +108,14 @@ public class Appointment {
         this.previousAppointmentId = previousAppointmentId;
     }
 
-    // Getter và Setter cho các thuộc tính mới
+    public int getBookedByUserId() {
+        return bookedByUserId;
+    }
+
+    public void setBookedByUserId(int bookedByUserId) {
+        this.bookedByUserId = bookedByUserId;
+    }
+
     public String getPatientName() {
         return patientName;
     }
@@ -158,7 +166,9 @@ public class Appointment {
 
     @Override
     public String toString() {
-        return "Appointment{" + "appointmentId=" + appointmentId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", workDate=" + workDate + ", slotId=" + slotId + ", status=" + status + ", reason=" + reason + ", previousAppointmentId=" + previousAppointmentId + ", patientName=" + patientName + '}';
+        return "Appointment{" + "appointmentId=" + appointmentId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", workDate=" + workDate + ", slotId=" + slotId + ", status=" + status + ", reason=" + reason + ", previousAppointmentId=" + previousAppointmentId + ", bookedByUserId=" + bookedByUserId + ", patientName=" + patientName + ", patientPhone=" + patientPhone + ", patientDateOfBirth=" + patientDateOfBirth + ", patientGender=" + patientGender + ", startTime=" + startTime + ", endTime=" + endTime + '}';
     }
+
+    
     
 }

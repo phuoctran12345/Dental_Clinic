@@ -11,6 +11,7 @@ import java.util.Date;
  * @author ASUS
  */
 public class Patients {
+
     private int patientId;    // patient_id (auto-increment)
     private int userId;       // id liên kết User (không null)
     private String fullName;   // full_name (mã hóa AES-256 ở tầng service)
@@ -21,6 +22,17 @@ public class Patients {
     private String avatar;
 
     public Patients() {
+    }
+
+    public Patients(int patientId, int userId, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt, String avatar) {
+        this.patientId = patientId;
+        this.userId = userId;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.createdAt = createdAt;
+        this.avatar = avatar;
     }
 
     public int getPatientId() {
@@ -84,17 +96,6 @@ public class Patients {
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Patients(int patientId, int userId, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt, String avatar) {
-        this.patientId = patientId;
-        this.userId = userId;
-        this.fullName = fullName;
-        this.phone = phone;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.createdAt = createdAt;
         this.avatar = avatar;
     }
 

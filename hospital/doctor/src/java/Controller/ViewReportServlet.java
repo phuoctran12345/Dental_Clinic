@@ -24,7 +24,7 @@ public class ViewReportServlet extends HttpServlet {
             String appointmentIdParam = request.getParameter("appointmentId");
             
             if (reportIdParam == null && appointmentIdParam == null) {
-                response.sendRedirect("doctor_trongngay.jsp?error=missing_params");
+                response.sendRedirect("/doctor/jsp/doctor/doctor_trongngay.jsp?error=missing_params");
                 return;
             }
             
@@ -46,7 +46,7 @@ public class ViewReportServlet extends HttpServlet {
             // Kiểm tra báo cáo có tồn tại không
             if (report == null) {
                 // Redirect đến trang "không có báo cáo" với appointmentId
-                String redirectUrl = "no_report_found.jsp";
+                String redirectUrl = "/doctor/jsp/doctor/no_report_found.jsp";
                 if (appointmentId != null) {
                     redirectUrl += "?appointmentId=" + appointmentId;
                 } else if (appointmentIdParam != null) {
@@ -77,15 +77,15 @@ public class ViewReportServlet extends HttpServlet {
             request.setAttribute("timeSlot", timeSlot);
             
             // Forward đến JSP
-            request.getRequestDispatcher("viewMedicalReport.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/viewMedicalReport.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
             // Lỗi parse số - redirect đến trang lỗi
-            response.sendRedirect("error_page.jsp?error=invalid_id");
+            response.sendRedirect("/doctor/jsp/doctor/error_page.jsp?error=invalid_id");
         } catch (Exception e) {
             e.printStackTrace();
             // Lỗi hệ thống - redirect đến trang lỗi với thông tin chi tiết
-            response.sendRedirect("error_page.jsp?error=system_error");
+            response.sendRedirect("/doctor/jsp/doctor/error_page.jsp?error=system_error");
         }
     }
 

@@ -7,17 +7,17 @@ public class TimeSlot {
     private LocalTime startTime;
     private LocalTime endTime;
 
-    // Constructor mặc định
+   
     public TimeSlot() {}
 
-    // Constructor đầy đủ
+
     public TimeSlot(int slotId, LocalTime startTime, LocalTime endTime) {
         this.slotId = slotId;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    // Getters và Setters
+    
     public int getSlotId() {
         return slotId;
     }
@@ -42,7 +42,7 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
-    // Phương thức tiện ích để hiển thị khung giờ
+    
     public String getTimeRange() {
         return startTime + " - " + endTime;
     }

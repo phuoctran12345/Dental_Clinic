@@ -1,9 +1,9 @@
 package Model;
 
-
 import java.util.Date;
 
 public class Doctors {
+
     private int doctorId;
     private int userId;
     private String fullName;
@@ -17,14 +17,13 @@ public class Doctors {
     private Date createdAt;
     private String avatar;
 
-    // Constructor mặc định
-    public Doctors() {}
+    public Doctors() {
+    }
 
-    // Constructor đầy đủ
-    public Doctors(int doctorId, int userId, String fullName, String phone, 
-                  String address, Date dateOfBirth, String gender, 
-                  String specialty, String licenseNumber, String status, 
-                  Date createdAt, String avatar) {
+    public Doctors(int doctorId, int userId, String fullName, String phone,
+            String address, Date dateOfBirth, String gender,
+            String specialty, String licenseNumber, String status,
+            Date createdAt, String avatar) {
         this.doctorId = doctorId;
         this.userId = userId;
         this.fullName = fullName;
@@ -39,7 +38,6 @@ public class Doctors {
         this.avatar = avatar;
     }
 
-    // Getters và Setters
     public int getDoctorId() {
         return doctorId;
     }
@@ -138,11 +136,11 @@ public class Doctors {
 
     @Override
     public String toString() {
-        return "Doctor{" +
-                "doctorId=" + doctorId +
-                ", fullName='" + fullName + '\'' +
-                ", specialty='" + specialty + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return "Doctor{"
+                + "doctorId=" + doctorId
+                + ", fullName='" + fullName + '\''
+                + ", specialty='" + specialty + '\''
+                + ", status='" + status + '\''
+                + '}';
     }
-} 
+}

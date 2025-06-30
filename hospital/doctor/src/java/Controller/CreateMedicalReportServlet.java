@@ -26,7 +26,7 @@ public class CreateMedicalReportServlet extends HttpServlet {
         Doctors doctor = (Doctors) session.getAttribute("doctor");
         
         if (doctor == null) {
-            response.sendRedirect("login.jsp?error=session_expired");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=session_expired");
             return;
         }
 
@@ -35,7 +35,7 @@ public class CreateMedicalReportServlet extends HttpServlet {
             String appointmentIdStr = request.getParameter("appointmentId");
             if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
                 request.setAttribute("error", "Thiếu ID cuộc hẹn");
-                request.getRequestDispatcher("error_page.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
 
@@ -46,7 +46,7 @@ public class CreateMedicalReportServlet extends HttpServlet {
             if (appointment == null) {
                 System.err.println("ERROR - No appointment found with ID: " + appointmentId);
                 request.setAttribute("error", "Không tìm thấy cuộc hẹn với ID: " + appointmentId);
-                request.getRequestDispatcher("error_page.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
             
@@ -61,7 +61,7 @@ public class CreateMedicalReportServlet extends HttpServlet {
             if (appointment.getPatientId() <= 0) {
                 System.err.println("ERROR - Invalid patient_id in appointment: " + appointment.getPatientId());
                 request.setAttribute("error", "Appointment không có patient_id hợp lệ");
-                request.getRequestDispatcher("error_page.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
             
@@ -90,7 +90,7 @@ public class CreateMedicalReportServlet extends HttpServlet {
                 
                 request.setAttribute("error", "Không tìm thấy bệnh nhân với patient_id: " + appointment.getPatientId() + 
                                            ". Có thể dữ liệu bị không nhất quán trong database.");
-                request.getRequestDispatcher("error_page.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
             
@@ -105,15 +105,15 @@ public class CreateMedicalReportServlet extends HttpServlet {
             request.setAttribute("patient", patient);
             
             // Forward đến trang phiếu khám
-            request.getRequestDispatcher("phieukham.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/phieukham.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID cuộc hẹn không hợp lệ");
-            request.getRequestDispatcher("error_page.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi cơ sở dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("error_page.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         }
     }
 

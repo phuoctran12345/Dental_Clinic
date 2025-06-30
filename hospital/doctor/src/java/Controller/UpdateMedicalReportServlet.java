@@ -15,7 +15,7 @@ public class UpdateMedicalReportServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Redirect to ViewReportServlet for viewing
-        response.sendRedirect("ViewReportServlet");
+        response.sendRedirect("/doctor/ViewReportServlet");
     }
 
     @Override
@@ -49,21 +49,24 @@ public class UpdateMedicalReportServlet extends HttpServlet {
             }
             
             // Redirect về trang xem báo cáo với thông báo
-            response.sendRedirect("ViewReportServlet?reportId=" + reportId + "&message=" + 
+            response.sendRedirect("/doctor/ViewReportServlet?reportId=" + reportId + "&message=" + 
                                 (success ? "success" : "error"));
             
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             request.setAttribute("message", "Lỗi: ID báo cáo không hợp lệ!");
             request.setAttribute("messageType", "error");
-            response.sendRedirect("ViewReportServlet?message=error");
+            response.sendRedirect("/doctor/ViewReportServlet?message=error");
         } catch (SQLException e) {
+            e.printStackTrace();
             request.setAttribute("message", "Lỗi cơ sở dữ liệu: " + e.getMessage());
             request.setAttribute("messageType", "error");
-            response.sendRedirect("ViewReportServlet?message=error");
+            response.sendRedirect("/doctor/ViewReportServlet?message=error");
         } catch (Exception e) {
+            e.printStackTrace();
             request.setAttribute("message", "Lỗi không xác định: " + e.getMessage());
             request.setAttribute("messageType", "error");
-            response.sendRedirect("ViewReportServlet?message=error");
+            response.sendRedirect("/doctor/ViewReportServlet?message=error");
         }
     }
 

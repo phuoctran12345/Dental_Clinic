@@ -59,7 +59,7 @@ public class DoctorAppointmentsServlet extends HttpServlet {
             request.setAttribute("appointments", appointments);
             
             // Chuyển tiếp đến JSP để hiển thị (cập nhật đường dẫn)
-            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongngay.jsp").forward(request, response);
 
         } catch (SQLException e) {
             System.err.println("SQL Error: " + e.getMessage());
@@ -71,7 +71,7 @@ public class DoctorAppointmentsServlet extends HttpServlet {
             request.setAttribute("appointments", null);
             
             // Vẫn forward tới JSP để hiển thị lỗi
-            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongngay.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("General Error: " + e.getMessage());
             e.printStackTrace();
@@ -80,7 +80,7 @@ public class DoctorAppointmentsServlet extends HttpServlet {
             request.setAttribute("userId", userId);
             request.setAttribute("appointments", null);
             
-            request.getRequestDispatcher("doctor_trongngay.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongngay.jsp").forward(request, response);
         }
     }
 }

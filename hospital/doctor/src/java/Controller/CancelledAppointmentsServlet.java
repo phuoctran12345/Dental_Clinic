@@ -48,7 +48,7 @@ public class CancelledAppointmentsServlet extends HttpServlet {
         // Kiểm tra nếu không có session hoặc userId
         if (userId == null) {
             System.out.println("No valid session/userId found, redirecting to login");
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp");
             return;
         }
 
@@ -66,7 +66,7 @@ public class CancelledAppointmentsServlet extends HttpServlet {
             List<Appointment> cancelledAppointments = null;
             if (allAppointments != null) {
                 cancelledAppointments = allAppointments.stream()
-                    .filter(appointment -> "Đã hủy".equalsIgnoreCase(appointment.getStatus()))
+                    .filter(appointment -> "cancelled".equalsIgnoreCase(appointment.getStatus()))
                     .collect(Collectors.toList());
             }
             
@@ -76,7 +76,7 @@ public class CancelledAppointmentsServlet extends HttpServlet {
             request.setAttribute("cancelledAppointments", cancelledAppointments);
             
             // Chuyển tiếp đến JSP để hiển thị
-            request.getRequestDispatcher("doctor_bihuy.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_bihuy.jsp").forward(request, response);
 
         } catch (SQLException e) {
             System.err.println("SQL Error: " + e.getMessage());
@@ -87,7 +87,7 @@ public class CancelledAppointmentsServlet extends HttpServlet {
             request.setAttribute("cancelledAppointments", null);
             
             // Vẫn forward tới JSP để hiển thị lỗi
-            request.getRequestDispatcher("doctor_bihuy.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_bihuy.jsp").forward(request, response);
         } catch (Exception e) {
             System.err.println("General Error: " + e.getMessage());
             e.printStackTrace();
@@ -95,7 +95,7 @@ public class CancelledAppointmentsServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
             request.setAttribute("cancelledAppointments", null);
             
-            request.getRequestDispatcher("doctor_bihuy.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_bihuy.jsp").forward(request, response);
         }
     }
     

@@ -29,27 +29,34 @@ public class EditDoctorServlet extends HttpServlet {
         Doctors doctor = (Doctors) request.getSession().getAttribute("doctor");
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/login.jsp").forward(request, response);
             return;
         }
 
         try {
-            // Lấy thông tin chi tiết bác sĩ dựa trên userId
+            // Luôn lấy thông tin chi tiết bác sĩ mới nhất từ database
             int userId = doctor.getUserId();
             Doctors doctorInfo = doctorDB.getInforDoctor(userId);
             if (doctorInfo == null) {
                 request.setAttribute("errorMessage", "Không tìm thấy thông tin bác sĩ");
-                request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
 
+            // Debug logging
+            System.out.println("DEBUG doGet - Gender from DB: '" + doctorInfo.getGender() + "'");
+            System.out.println("DEBUG doGet - Status from DB: '" + doctorInfo.getStatus() + "'");
+
+            // Cập nhật lại session với thông tin mới nhất từ database
+            request.getSession().setAttribute("doctor", doctorInfo);
+            
             // Đặt thông tin bác sĩ vào request để hiển thị trên form
             request.setAttribute("doctor", doctorInfo);
             request.setAttribute("pageTitle", "Chỉnh sửa thông tin bác sĩ");
-            request.getRequestDispatcher("/doctor_caidat.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_caidat.jsp").forward(request, response);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         }
     }
 
@@ -59,7 +66,7 @@ public class EditDoctorServlet extends HttpServlet {
         Doctors sessionDoctor = (Doctors) request.getSession().getAttribute("doctor");
         if (sessionDoctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/login.jsp").forward(request, response);
             return;
         }
 
@@ -73,8 +80,13 @@ public class EditDoctorServlet extends HttpServlet {
             String gender = request.getParameter("gender");
             String specialty = request.getParameter("specialty");
             String licenseNumber = request.getParameter("license_number");
-            String status = request.getParameter("status");
+            // Không cho phép bác sĩ tự thay đổi status - giữ nguyên status hiện tại
+            String status = sessionDoctor.getStatus(); // Lấy từ session thay vì form
             String avatar = request.getParameter("avatar");
+
+            // Debug logging
+            System.out.println("DEBUG doPost - Gender from form: '" + gender + "'");
+            System.out.println("DEBUG doPost - Status kept from session: '" + status + "'");
 
             // Chuyển đổi date_of_birth từ String sang java.sql.Date
             Date dateOfBirth = null;
@@ -86,7 +98,7 @@ public class EditDoctorServlet extends HttpServlet {
                 } catch (ParseException e) {
                     request.setAttribute("errorMessage", "Định dạng ngày sinh không hợp lệ");
                     request.setAttribute("doctor", doctorDB.getInforDoctor(userId));
-                    request.getRequestDispatcher("/doctor_caidat.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/doctor/doctor_caidat.jsp").forward(request, response);
                     return;
                 }
             }
@@ -110,15 +122,18 @@ public class EditDoctorServlet extends HttpServlet {
                 // Cập nhật lại session với thông tin mới
                 Doctors updatedDoctor = doctorDB.getInforDoctor(userId);
                 request.getSession().setAttribute("doctor", updatedDoctor);
-                response.sendRedirect("doctor_trangcanhan"); // Chuyển hướng về trang hồ sơ
+                
+                // Đặt thông báo thành công và chuyển hướng về lại trang cài đặt
+                request.getSession().setAttribute("successMessage", "Cập nhật thông tin thành công!");
+                response.sendRedirect("/doctor/doctor_caidat"); // Chuyển về lại trang cài đặt
             } else {
                 request.setAttribute("errorMessage", "Không thể cập nhật thông tin bác sĩ");
                 request.setAttribute("doctor", doctor);
-                request.getRequestDispatcher("/doctor_caidat.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/doctor_caidat.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("/doctor_caidat.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_caidat.jsp").forward(request, response);
         }
     }
 

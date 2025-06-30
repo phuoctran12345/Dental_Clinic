@@ -30,7 +30,7 @@ public class DoctorProfileServlet extends HttpServlet {
         Doctors doctor = (Doctors) request.getSession().getAttribute("doctor");
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/login.jsp").forward(request, response);
             return;
         }
 
@@ -41,7 +41,7 @@ public class DoctorProfileServlet extends HttpServlet {
             Doctors doctor_trangcanhan = doctorDB.getInforDoctor(userId);
             if (doctor_trangcanhan == null) {
                 request.setAttribute("errorMessage", "Không tìm thấy thông tin bác sĩ");
-                request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
                 return;
             }
 
@@ -50,13 +50,13 @@ public class DoctorProfileServlet extends HttpServlet {
             request.setAttribute("pageTitle", "Hồ Sơ Cá Nhân Bác Sĩ");
 
             // Chuyển hướng đến JSP
-            request.getRequestDispatcher("/doctor_trangcanhan.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_trangcanhan.jsp").forward(request, response);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Lỗi: " + e.getMessage());
-            request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/error_page.jsp").forward(request, response);
         }
     }
 

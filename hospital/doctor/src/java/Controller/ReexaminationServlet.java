@@ -31,7 +31,7 @@ public class ReexaminationServlet extends HttpServlet {
         Doctors doctor = (Doctors) session.getAttribute("doctor");
         
         if (doctor == null) {
-            response.sendRedirect("login.jsp?error=session_expired");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=session_expired");
             return;
         }
 
@@ -46,12 +46,12 @@ public class ReexaminationServlet extends HttpServlet {
             request.setAttribute("timeSlots", timeSlots);
             request.setAttribute("doctor", doctor);
             
-            request.getRequestDispatcher("doctor_taikham.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_taikham.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi tải dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("doctor_taikham.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/doctor/doctor_taikham.jsp").forward(request, response);
         }
     }
 
@@ -63,7 +63,7 @@ public class ReexaminationServlet extends HttpServlet {
         Doctors doctor = (Doctors) session.getAttribute("doctor");
         
         if (doctor == null) {
-            response.sendRedirect("login.jsp?error=session_expired");
+            response.sendRedirect("/doctor/jsp/doctor/login.jsp?error=session_expired");
             return;
         }
 

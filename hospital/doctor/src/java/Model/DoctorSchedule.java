@@ -8,21 +8,24 @@ public class DoctorSchedule {
     private int doctorId;
     private Date workDate;
     private int slotId;
-    
+    private String status;
     // Thuộc tính để join với các bảng khác
     private Doctors doctor;
     private TimeSlot timeSlot;
 
-    // Constructor mặc định
+   
     public DoctorSchedule() {}
 
-    // Constructor cơ bản
-    public DoctorSchedule(int scheduleId, int doctorId, Date workDate, int slotId) {
+    public DoctorSchedule(int scheduleId, int doctorId, Date workDate, int slotId, String status, Doctors doctor, TimeSlot timeSlot) {
         this.scheduleId = scheduleId;
         this.doctorId = doctorId;
         this.workDate = workDate;
         this.slotId = slotId;
+        this.status = status;
     }
+
+    
+    
 
     // Constructor với join data
     public DoctorSchedule(int scheduleId, int doctorId, Date workDate, 
@@ -31,11 +34,11 @@ public class DoctorSchedule {
         this.doctorId = doctorId;
         this.workDate = workDate;
         this.slotId = slotId;
+        this.status = status;
         this.doctor = doctor;
         this.timeSlot = timeSlot;
     }
 
-    // Getters và Setters
     public int getScheduleId() {
         return scheduleId;
     }
@@ -68,6 +71,14 @@ public class DoctorSchedule {
         this.slotId = slotId;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Doctors getDoctor() {
         return doctor;
     }
@@ -86,11 +97,10 @@ public class DoctorSchedule {
 
     @Override
     public String toString() {
-        return "DoctorSchedule{" +
-                "scheduleId=" + scheduleId +
-                ", doctorId=" + doctorId +
-                ", workDate=" + workDate +
-                ", slotId=" + slotId +
-                '}';
+        return "DoctorSchedule{" + "scheduleId=" + scheduleId + ", doctorId=" + doctorId + ", workDate=" + workDate + ", slotId=" + slotId + ", status=" + status + ", doctor=" + doctor + ", timeSlot=" + timeSlot + '}';
     }
+
+   
+   
+    
 } 
