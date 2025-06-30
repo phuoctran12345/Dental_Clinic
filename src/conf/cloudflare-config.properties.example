@@ -1,0 +1,52 @@
+# Cloudflare Configuration for Dental Clinic System
+# Rename this file to cloudflare-config.properties and update with your values
+
+# Cloudflare API Configuration
+cloudflare.enabled=true
+cloudflare.api_token=YOUR_CLOUDFLARE_API_TOKEN_HERE
+cloudflare.zone_id=YOUR_ZONE_ID_HERE
+cloudflare.domain=phongkhamnhakhoa.com
+cloudflare.server_ip=YOUR_SERVER_IP_HERE
+
+# SSL/TLS Settings
+ssl.enabled=true
+ssl.redirect_http=true
+ssl.mode=full_strict
+
+# Security Settings
+security.level=medium
+security.bot_fight_mode=true
+security.rate_limiting=true
+
+# Cache Settings
+cache.static_assets=true
+cache.ttl.browser=14400
+cache.ttl.edge=2592000
+cache.auto_purge=true
+
+# Analytics Settings
+analytics.enabled=true
+analytics.retention_days=30
+
+# Performance Settings
+performance.minify_js=true
+performance.minify_css=true
+performance.minify_html=true
+performance.brotli=true
+performance.http2=true
+
+# Monitoring Settings
+monitoring.health_checks=true
+monitoring.alerts=true
+monitoring.email=admin@phongkhamnhakhoa.com
+
+# Development Settings
+development.mode=false
+development.bypass_cache=false
+
+# Logging
+logging.level=INFO
+logging.cloudflare_events=true
+
+# Created: 2024-12-26
+# Version: 1.0 

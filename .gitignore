@@ -1,0 +1,15 @@
+# Thông tin bảo mật và key API
+.env
+*.env
+src/conf/cloudflare-config.properties
+src/java/utils/PayOSConfig.java
+src/java/utils/GoogleOAuth2Config.java
+src/java/utils/EmailService.java
+cloudflare-setup.sh
+cloudflare-tomcat-config.xml
+src/java/utils/CloudflareService.java
+src/conf/*.properties
+src/conf/*.env
+
+src/java/controller/TwilioCallServlet.java
+src/java/utils/
