@@ -1,5 +1,1 @@
-test lan dau tien.  
-Test lan 2
-test lan 3
-Test lần 4
-	
+Hello, this is a test file for the Dental_Clinic project.
