@@ -1,6 +1,6 @@
 <%-- Document : staff_homepage Created on : 26 thg 5, 2025, 14:40:44 Author : tranhongphuoc --%>
 
-    <%@page  pageEncoding="UTF-8" %>
+    <%@page pageEncoding="UTF-8" %>
         <%@ include file="/jsp/staff/staff_header.jsp" %>
             <%@ include file="/jsp/staff/staff_menu.jsp" %>
 
@@ -231,7 +231,7 @@
                                     <div class="appointment-name">Trần Thị B</div>
                                     <div class="appointment-time">09:00 - Khám tổng quát</div>
                                 </div>
-                                <span class="appointment-status status-confirmed">Đã xác nhận</span>
+                                <span class="appointment-status status-confirmed">Đã đặt lịch</span>
                             </div>
                             <div class="appointment-item">
                                 <img src="patient2.jpg" alt="Patient" class="appointment-avatar">
@@ -239,7 +239,7 @@
                                     <div class="appointment-name">Lê Văn C</div>
                                     <div class="appointment-time">10:30 - Tư vấn răng</div>
                                 </div>
-                                <span class="appointment-status status-pending">Chờ xác nhận</span>
+                                <span class="appointment-status status-pending">Chờ thanh toán</span>
                             </div>
                         </div>
 

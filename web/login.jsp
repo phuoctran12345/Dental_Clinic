@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html lang="vi">
+    <!DOCTYPE html>
+    <html lang="vi">
 
     <head>
         <meta charset="UTF-8">
@@ -12,7 +12,8 @@
             body {
                 /* Ghi chú: Đặt nền ảnh, căn giữa, cố định và phủ toàn màn hình trên màn hình lớn */
                 background: url('img/nen1.jpg') no-repeat center center fixed;
-                background-size: cover; /* Nền phủ toàn màn hình trên màn hình lớn */
+                background-size: cover;
+                /* Nền phủ toàn màn hình trên màn hình lớn */
                 margin: 0;
                 padding: 0;
                 min-height: 100vh;
@@ -25,12 +26,18 @@
 
             .login-container {
                 /* Ghi chú: Đặt chiều rộng tối đa và căn chỉnh lề trái trên màn hình lớn */
-                width: 500px; /* Thay max-width bằng width để cố định kích thước */
-                margin-left: 130px; /* Khoảng cách từ lề trái trên màn hình lớn */
-                padding: 30px; /* Tăng padding để form rộng hơn */
-                background-color: rgba(255, 255, 255, 0.9); /* Thêm nền trắng mờ để dễ đọc */
-                border-radius: 15px; /* Bo góc container */
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ */
+                width: 500px;
+                /* Thay max-width bằng width để cố định kích thước */
+                margin-left: 130px;
+                /* Khoảng cách từ lề trái trên màn hình lớn */
+                padding: 30px;
+                /* Tăng padding để form rộng hơn */
+                background-color: rgba(255, 255, 255, 0.9);
+                /* Thêm nền trắng mờ để dễ đọc */
+                border-radius: 15px;
+                /* Bo góc container */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                /* Thêm bóng đổ nhẹ */
             }
 
             .login-container h3 {
@@ -39,35 +46,45 @@
                 font-size: 31px;
                 font-weight: 600;
                 text-align: center;
-                margin-bottom: 30px; /* Tăng khoảng cách dưới tiêu đề */
+                margin-bottom: 30px;
+                /* Tăng khoảng cách dưới tiêu đề */
             }
 
             .form-control {
                 /* Ghi chú: Bo góc trường nhập liệu, thêm viền và hiệu ứng chuyển đổi */
                 border-radius: 15px;
                 border: 1px solid #ced4da;
-                padding: 15px; /* Tăng padding cho input */
-                height: 45px; /* Cố định chiều cao input */
-                font-size: 16px; /* Tăng kích thước chữ */
+                padding: 15px;
+                /* Tăng padding cho input */
+                height: 45px;
+                /* Cố định chiều cao input */
+                font-size: 16px;
+                /* Tăng kích thước chữ */
                 transition: border-color 0.3s ease, box-shadow 0.3s ease;
-                margin-bottom: 15px; /* Tăng khoảng cách giữa các input */
+                margin-bottom: 15px;
+                /* Tăng khoảng cách giữa các input */
             }
 
             .form-control:focus {
                 /* Ghi chú: Hiệu ứng khi focus vào trường nhập liệu */
-                border-color: #3b82f6; /* Màu viền xanh để rõ ràng */
+                border-color: #3b82f6;
+                /* Màu viền xanh để rõ ràng */
                 box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
             }
 
             .btn-primary {
                 /* Ghi chú: Định dạng nút đăng nhập với màu xanh đậm và bo góc */
-                border-radius: 15px; /* Bo góc nhiều hơn */
+                border-radius: 15px;
+                /* Bo góc nhiều hơn */
                 background-color: #0432b5;
                 border: none;
-                padding: 15px; /* Tăng padding cho nút */
+                padding: 15px;
+                /* Tăng padding cho nút */
                 font-weight: 500;
-                font-size: 16px; /* Tăng kích thước chữ */
-                height: 50px; /* Cố định chiều cao nút */
+                font-size: 16px;
+                /* Tăng kích thước chữ */
+                height: 50px;
+                /* Cố định chiều cao nút */
                 transition: background-color 0.3s ease, transform 0.2s ease;
             }
 
@@ -83,7 +100,8 @@
                 font-weight: 500;
                 text-decoration: none;
                 transition: color 0.2s ease;
-                font-size: 15px; /* Tăng kích thước chữ */
+                font-size: 15px;
+                /* Tăng kích thước chữ */
             }
 
             .text-center a:hover {
@@ -104,8 +122,10 @@
                 /* Ghi chú: Đảm bảo nhãn trường nhập liệu căn chỉnh đều */
                 font-weight: 700;
                 color: #1f2937;
-                font-size: 16px; /* Tăng kích thước chữ nhãn */
-                margin-bottom: 8px; /* Tăng khoảng cách dưới nhãn */
+                font-size: 16px;
+                /* Tăng kích thước chữ nhãn */
+                margin-bottom: 8px;
+                /* Tăng khoảng cách dưới nhãn */
             }
 
             /* Thêm style cho nút Google */
@@ -160,64 +180,53 @@
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <input type="password_hash" name="password_hash" class="form-control" placeholder="Your Password"
-                           required>
+                        required>
                 </div>
-                <% if (request.getParameter("error") != null) {
-                        String error = request.getParameter("error");
-                        String errorMessage = "";
-                        switch (error) {
-                            case "empty_fields":
-                                errorMessage = "Vui lòng điền đầy đủ thông tin!";
-                                break;
-                            case "invalid_credentials":
-                                errorMessage = "Email hoặc mật khẩu không đúng!";
-                                break;
-                            case "account_locked":
-                                errorMessage = "Tài khoản đã bị khóa!";
-                                break;
-                            case "system_error":
-                                errorMessage = "Có lỗi xảy ra, vui lòng thử lại!";
-                                break;
-                            default:
-                                errorMessage = "Đăng nhập thất bại!";
-                        }%>
-                <div class="alert alert-danger">
-                    <%= errorMessage%>
-                </div>
-                <% }%>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-                <div style="margin-top: 20px">
-                    <a class="google-btn w-100 text-decoration-none"
-                       href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/RoleStaff/login-google&response_type=code&client_id=20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com&approval_prompt=force">
-                        <img src="https://www.google.com/favicon.ico" alt="Google">
-                        Login With Google
-                    </a>
-                </div>
-                <p class="text-center mt-3">
-                    <a href="<%= request.getContextPath()%>/signup.jsp">Sign up</a> |  <a href="ResetPasswordServlet?action=forgot-password">Quên mật khẩu?</a>
-                </p>
+                <% if (request.getParameter("error") !=null) { String error=request.getParameter("error"); String
+                    errorMessage="" ; switch (error) { case "empty_fields" :
+                    errorMessage="Vui lòng điền đầy đủ thông tin!" ; break; case "invalid_credentials" :
+                    errorMessage="Email hoặc mật khẩu không đúng!" ; break; case "account_locked" :
+                    errorMessage="Tài khoản đã bị khóa!" ; break; case "system_error" :
+                    errorMessage="Có lỗi xảy ra, vui lòng thử lại!" ; break; default: errorMessage="Đăng nhập thất bại!"
+                    ; }%>
+                    <div class="alert alert-danger">
+                        <%= errorMessage%>
+                    </div>
+                    <% }%>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <div style="margin-top: 20px">
+                            <a class="google-btn w-100 text-decoration-none"
+                                href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/TestFull/login-google&response_type=code&client_id=20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com&approval_prompt=force">
+                                <img src="https://www.google.com/favicon.ico" alt="Google">
+                                Login With Google
+                            </a>
+                        </div>
+                        <p class="text-center mt-3">
+                            <a href="<%= request.getContextPath()%>/signup.jsp">Sign up</a> | <a
+                                href="ResetPasswordServlet?action=forgot-password">Quên mật khẩu?</a>
+                        </p>
 
-                <div class="text-center mt-3">
-                    <span>Hoặc</span>
-                </div>
+                        <div class="text-center mt-3">
+                            <span>Hoặc</span>
+                        </div>
 
 
-                <p class="text-center mt-4">
-                    <a href="<%= request.getContextPath()%>/" style="color: blue;">Trang Chủ</a>
-                </p>
+                        <p class="text-center mt-4">
+                            <a href="<%= request.getContextPath()%>/" style="color: blue;">Trang Chủ</a>
+                        </p>
             </form>
 
         </div>
-                
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <!-- Ghi chú: Script kiểm tra form trước khi gửi -->
+        <!-- Ghi chú: Script kiểm tra form trước khi gửi -->
         <script>
             document.querySelector("form").addEventListener("submit", function (e) {
                 const password = document.querySelector("input[name='password_hash']").value;
                 // Ghi chú: Có thể thêm logic kiểm tra mật khẩu nếu cần
             });
-        </script>  
-    
+        </script>
+
     </body>
 
-</html>
+    </html>

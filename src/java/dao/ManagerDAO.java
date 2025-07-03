@@ -10,21 +10,21 @@ public class ManagerDAO {
     }
 
     public static Manager getManagerInfo(int userId) {
-        String sql = "SELECT * FROM users WHERE id = ? AND role = 'MANAGER'";
+        String sql = "SELECT * FROM users WHERE user_id = ? AND role = 'MANAGER'";
         try (Connection conn = getConnect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Manager(
-                    rs.getInt("id"),
-                    rs.getInt("id"),
-                    rs.getString("username"),
+                    rs.getInt("user_id"),
+                    rs.getInt("user_id"),
+                    rs.getString("email"), // users table không có username
                     rs.getString("email"),
                     "", // address
                     null, // date_of_birth
                     "", // gender
-                    "", // position
+                    "MANAGER", // position
                     rs.getDate("created_at")
                 );
             }

@@ -8,7 +8,7 @@ public class DoctorSchedule {
     private int scheduleId;
     private long doctorId;
     private Date workDate;
-    private int slotId;
+    private Integer slotId; // Dùng object Integer thay vì int bởi vì int k thể nhận giá trị null còn Integer thì có thể thì có 
     private Time startTime;
     private Time endTime;
     private String status;
@@ -17,7 +17,7 @@ public class DoctorSchedule {
     public DoctorSchedule() {
     }
 
-    public DoctorSchedule(int scheduleId, long doctorId, Date workDate, int slotId, String status) {
+    public DoctorSchedule(int scheduleId, long doctorId, Date workDate, Integer slotId, String status) {
         this.scheduleId = scheduleId;
         this.doctorId = doctorId;
         this.workDate = workDate;
@@ -25,7 +25,7 @@ public class DoctorSchedule {
         this.status = status;
     }
 
-    public DoctorSchedule(int scheduleId, long doctorId, Date workDate, int slotId, Time startTime, Time endTime, String status) {
+    public DoctorSchedule(int scheduleId, long doctorId, Date workDate, Integer slotId, Time startTime, Time endTime, String status) {
         this.scheduleId = scheduleId;
         this.doctorId = doctorId;
         this.workDate = workDate;
@@ -65,11 +65,11 @@ public class DoctorSchedule {
         }
     }
 
-    public int getSlotId() {
+    public Integer getSlotId() {
         return slotId;
     }
 
-    public void setSlotId(int slotId) {
+    public void setSlotId(Integer slotId) {
         this.slotId = slotId;
     }
 

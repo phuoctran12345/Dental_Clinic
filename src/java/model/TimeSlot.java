@@ -15,6 +15,7 @@ public class TimeSlot {
     private int slotId;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String slotName; //  tên ca làm việc 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public TimeSlot() {
@@ -24,6 +25,7 @@ public class TimeSlot {
         this.slotId = slotId;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.slotName = String.format("Ca %d (%s)", slotId, getFormattedTime());
     }
 
     public int getSlotId() {
@@ -48,6 +50,17 @@ public class TimeSlot {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public String getSlotName() {
+        if (slotName == null) {
+            slotName = String.format("Ca %d (%s)", slotId, getFormattedTime());
+        }
+        return slotName;
+    }
+
+    public void setSlotName(String slotName) {
+        this.slotName = slotName;
     }
 
     /**

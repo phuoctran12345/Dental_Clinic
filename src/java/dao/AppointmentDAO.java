@@ -38,18 +38,11 @@ public class AppointmentDAO {
     private static final String UPDATE_STATUS = "UPDATE Appointment SET status = ? WHERE appointment_id = ?";
     private static final String DELETE = "DELETE FROM Appointment WHERE appointment_id = ?";
 
-    // Status constants cho reservation
-    public static final String STATUS_RESERVED = "ĐANG GIỮ CHỖ";
-    public static final String STATUS_WAITING_PAYMENT = "CHờ THANH TOÁN";
-    public static final String STATUS_CONFIRMED = "ĐÃ ĐẶT";
-    public static final String STATUS_EXPIRED = "HẾT HẠN";
-    public static final String STATUS_CANCELLED = "ĐÃ HỦY";
-
-    // Status constants cho quản lý hàng đợi bệnh nhân
-    public static final String STATUS_WAITING = "Đang chờ";          // Bệnh nhân đang chờ được gọi
-    public static final String STATUS_IN_TREATMENT = "Đang điều trị"; // Bệnh nhân đang được khám/điều trị
-    public static final String STATUS_COMPLETED = "Hoàn thành";       // Đã hoàn thành khám/điều trị
-    public static final String STATUS_CONFIRMED_ALT = "Đã xác nhận";  // Đã xác nhận lịch hẹn
+    // Status constants for Appointment (English - Chỉ 4 trạng thái chính)
+    public static final String STATUS_BOOKED = "BOOKED";               // Đã đặt lịch (thay thế CONFIRMED)
+    public static final String STATUS_COMPLETED = "COMPLETED";         // Hoàn thành
+    public static final String STATUS_CANCELLED = "CANCELLED";         // Đã hủy
+    public static final String STATUS_WAITING_PAYMENT = "WAITING_PAYMENT"; // Chờ thanh toán
 
     // Instance variables for connection management
     private Connection conn = null;
@@ -563,7 +556,7 @@ public class AppointmentDAO {
             ps.setInt(1, doctorId);
             ps.setDate(2, java.sql.Date.valueOf(workDate));
             ps.setInt(3, slotId);
-            ps.setString(4, STATUS_EXPIRED);
+            ps.setString(4, STATUS_WAITING_PAYMENT);
             ps.setString(5, STATUS_CANCELLED);
             ResultSet rs = ps.executeQuery();
             boolean available = false;
@@ -590,9 +583,9 @@ public class AppointmentDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, doctorId);
             ps.setDate(2, java.sql.Date.valueOf(workDate));
-            ps.setString(3, STATUS_CONFIRMED);
-            ps.setString(4, STATUS_WAITING_PAYMENT);
-            ps.setString(5, STATUS_RESERVED);
+            ps.setString(3, STATUS_WAITING_PAYMENT);
+            ps.setString(4, STATUS_BOOKED);
+            ps.setString(5, STATUS_COMPLETED);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 bookedSlots.add(rs.getInt("slot_id"));
@@ -627,7 +620,7 @@ public class AppointmentDAO {
             ps.setInt(2, doctorId);
             ps.setDate(3, java.sql.Date.valueOf(workDate));
             ps.setInt(4, slotId);
-            ps.setString(5, STATUS_RESERVED);
+            ps.setString(5, STATUS_WAITING_PAYMENT);
             ps.setString(6, reservationReason);
 
             int result = ps.executeUpdate();
@@ -675,7 +668,7 @@ public class AppointmentDAO {
             ps.setInt(3, slotId);
             ps.setDate(4, java.sql.Date.valueOf(workDate));
             ps.setString(5, reason);
-            ps.setString(6, "Đã xác nhận");
+            ps.setString(6, STATUS_BOOKED);
 
             int result = ps.executeUpdate();
             conn.close();
@@ -700,13 +693,13 @@ public class AppointmentDAO {
             String sql = "UPDATE Appointment SET status = ? WHERE appointment_id = ?";
 
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, STATUS_CONFIRMED); // "ĐÃ ĐẶT"
+            ps.setString(1, STATUS_COMPLETED); // "ĐÃ ĐẶT"
             ps.setInt(2, appointmentId);
 
             int result = ps.executeUpdate();
             conn.close();
 
-            System.out.println("✅ HOÀN THÀNH RESERVATION: Appointment " + appointmentId + " → " + STATUS_CONFIRMED);
+            System.out.println("✅ HOÀN THÀNH RESERVATION: Appointment " + appointmentId + " → " + STATUS_COMPLETED);
             return result > 0;
         } catch (Exception e) {
             System.err.println("❌ LỖI HOÀN THÀNH RESERVATION: " + e.getMessage());
@@ -910,7 +903,7 @@ public class AppointmentDAO {
     }
     
     /**
-     * Đếm số bệnh nhân đang chờ hôm nay
+     * Đếm số bệnh nhân đang chờ hôm nay (sử dụng 4 status mới)
      */
     public static int getWaitingPatientsCount(long doctorId, String dateStr) throws SQLException {
         String sql = """
@@ -918,7 +911,7 @@ public class AppointmentDAO {
             FROM Appointment 
             WHERE doctor_id = ? 
             AND work_date = ?
-            AND (status = 'CONFIRMED' OR status = 'PENDING' OR status = 'Đang chờ')
+            AND status = ?
         """;
         
         try (Connection conn = DBContext.getConnection();
@@ -926,6 +919,7 @@ public class AppointmentDAO {
             
             ps.setLong(1, doctorId);
             ps.setString(2, dateStr);
+            ps.setString(3, STATUS_BOOKED); // Đếm số appointment đã đặt
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -938,6 +932,85 @@ public class AppointmentDAO {
         }
         
         return 0;
+    }
+
+    /**
+     * Chuyển đổi status từ tiếng Anh sang tiếng Việt (dùng cho render giao diện)
+     * @param status Status tiếng Anh
+     * @return Status tiếng Việt để hiển thị
+     */
+    public static String getStatusDisplayText(String status) {
+        if (status == null) return "Không xác định";
+        
+        switch (status) {
+            case STATUS_BOOKED:
+                return "Đã đặt lịch";
+            case STATUS_COMPLETED:
+                return "Hoàn thành";
+            case STATUS_CANCELLED:
+                return "Đã hủy";
+            case STATUS_WAITING_PAYMENT:
+                return "Chờ thanh toán";
+            default:
+                return status; // Trả về status gốc nếu không map được
+        }
+    }
+
+    /**
+     * Lấy CSS class cho status (dùng cho styling giao diện)
+     * @param status Status tiếng Anh
+     * @return CSS class name
+     */
+    public static String getStatusCssClass(String status) {
+        if (status == null) return "badge-secondary";
+        
+        switch (status) {
+            case STATUS_BOOKED:
+                return "badge-success";
+            case STATUS_COMPLETED:
+                return "badge-primary";
+            case STATUS_CANCELLED:
+                return "badge-danger";
+            case STATUS_WAITING_PAYMENT:
+                return "badge-warning";
+            default:
+                return "badge-secondary";
+        }
+    }
+
+    /**
+     * Lấy danh sách các status hợp lệ (dùng cho dropdown)
+     */
+    public static String[] getAllValidStatuses() {
+        return new String[]{
+            STATUS_BOOKED,
+            STATUS_COMPLETED, 
+            STATUS_CANCELLED,
+            STATUS_WAITING_PAYMENT
+        };
+    }
+
+    /**
+     * Lấy danh sách status display text (dùng cho dropdown)
+     */
+    public static String[] getAllStatusDisplayTexts() {
+        return new String[]{
+            "Đã đặt lịch",
+            "Hoàn thành",
+            "Đã hủy", 
+            "Chờ thanh toán"
+        };
+    }
+
+    /**
+     * Kiểm tra status có hợp lệ không
+     */
+    public static boolean isValidStatus(String status) {
+        if (status == null) return false;
+        return STATUS_BOOKED.equals(status) || 
+               STATUS_COMPLETED.equals(status) || 
+               STATUS_CANCELLED.equals(status) || 
+               STATUS_WAITING_PAYMENT.equals(status);
     }
 
 }

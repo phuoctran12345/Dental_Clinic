@@ -1,76 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="5.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee           https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd">
-    <!-- 🏥 DENTAL CLINIC CONFIGURATION -->
-    <display-name>RoleStaff Dental Clinic</display-name>
-    <description>Dental Clinic Management System</description>
-    <!-- ========================================= -->
-    <!-- 🔒 SECURITY FILTERS - CURRENTLY DISABLED -->
-    <!-- ========================================= -->
-    <!-- 
-    ⚠️  TẤT CẢ SECURITY FILTERS ĐÃ BỊ TẮT ĐỂ DEVELOPMENT
-    📝 Để bật lại: Bỏ comment các filter bên dưới
-    -->
-    <!-- 1. ENCODING FILTER - Đảm bảo UTF-8 cho tiếng Việt -->
-    <!-- 
-    <filter>
-        <filter-name>EncodingFilter</filter-name>
-        <filter-class>Filter.EncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>EncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-    </filter-mapping> 
-    -->
-    <!-- 2. SECURITY FILTER - BẢO MẬT CHỐNG TẤN CÔNG -->
-    <!-- 🔴 DISABLED FOR DEVELOPMENT -->
-    <!--
-    <filter>
-        <filter-name>SecurityFilter</filter-name>
-        <filter-class>Filter.SecurityFilter</filter-class>
-        <init-param>
-            <param-name>debug</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>SecurityFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-    -->
-    <!-- 3. AUTHENTICATION FILTER - KIỂM TRA ĐĂNG NHẬP -->
-    <!-- 🔴 DISABLED FOR DEVELOPMENT -->
-    <!--
-    <filter>
-        <filter-name>AuthenticationFilter</filter-name>
-        <filter-class>Filter.AuthenticationFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>AuthenticationFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-    -->
-    <!-- 4. ROLE FILTER - KIỂM TRA QUYỀN TRUY CẬP -->
-    <!-- 🔴 DISABLED FOR DEVELOPMENT -->
-    <!-- RoleFilter sử dụng @WebFilter annotation - đã disable trong code -->
-    <!-- ========================================= -->
-    <!-- 📄 WELCOME FILES -->
-    <!-- ========================================= -->
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <!-- ========================================= -->
-    <!-- 🔧 SERVLET MAPPINGS -->
-    <!-- ========================================= -->
     <!-- Services Servlet -->
     <servlet>
         <servlet-name>ServiceServlet</servlet-name>
@@ -106,13 +39,10 @@
         <url-pattern>/UpdateUserServlet</url-pattern>
     </servlet-mapping>
     <!-- Doctor Schedule Servlets -->
-    <servlet>
-        <servlet-name>DoctorScheduleServlet</servlet-name>
-        <servlet-class>controller.DoctorScheduleServlet</servlet-class>
-    </servlet>
+
     <servlet-mapping>
-        <servlet-name>DoctorScheduleServlet</servlet-name>
-        <url-pattern>/DoctorScheduleServlet</url-pattern>
+        <servlet-name>DoctorRegisterScheduleServlet</servlet-name>
+        <url-pattern>/DoctorRegisterScheduleServlet</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>DoctorScheduleConfirmServlet</servlet-name>
@@ -315,7 +245,7 @@
     <!-- Schedule Approval Servlet -->
     <servlet>
         <servlet-name>ScheduleApprovalServlet</servlet-name>
-        <servlet-class>controller.ScheduleApprovalServlet</servlet-class>
+        <servlet-class>controller.ManagerApprovalDoctorSchedulerServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ScheduleApprovalServlet</servlet-name>
@@ -334,8 +264,6 @@
         <servlet-name>StaffPaymentServlet</servlet-name>
         <url-pattern>/StaffPaymentServlet</url-pattern>
     </servlet-mapping>
-
-   
     <!-- Staff Handle Queue Servlet -->
     <servlet>
         <servlet-name>StaffHandleQueueServlet</servlet-name>
@@ -344,6 +272,15 @@
     <servlet-mapping>
         <servlet-name>StaffHandleQueueServlet</servlet-name>
         <url-pattern>/StaffHandleQueueServlet</url-pattern>
+    </servlet-mapping>
+    <!-- Manager Approval Staff Schedule Servlet -->
+    <servlet>
+        <servlet-name>ManagerApprovalStaffScheduleServlet</servlet-name>
+        <servlet-class>controller.ManagerApprovalStaffScheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ManagerApprovalStaffScheduleServlet</servlet-name>
+        <url-pattern>/ManagerApprovalStaffScheduleServlet</url-pattern>
     </servlet-mapping>
     <!-- Doctor Have Appointment Servlet -->
     <servlet>
@@ -354,7 +291,24 @@
         <servlet-name>DoctorHaveAppointmentServlet</servlet-name>
         <url-pattern>/DoctorHaveAppointmentServlet</url-pattern>
     </servlet-mapping>
-
+    <!-- Staff Register Schedule Servlet -->
+    <servlet>
+        <servlet-name>StaffRegisterSecheduleServlet</servlet-name>
+        <servlet-class>controller.StaffRegisterSecheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StaffRegisterSecheduleServlet</servlet-name>
+        <url-pattern>/StaffRegisterSecheduleServlet</url-pattern>
+    </servlet-mapping>
+    <!-- Staff Schedule Servlet -->
+    <servlet>
+        <servlet-name>StaffScheduleServlet</servlet-name>
+        <servlet-class>controller.StaffScheduleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StaffScheduleServlet</servlet-name>
+        <url-pattern>/StaffScheduleServlet</url-pattern>
+    </servlet-mapping>
     <!-- ========================================= -->
     <!-- 🔧 SESSION CONFIGURATION -->
     <!-- ========================================= -->
@@ -385,15 +339,4 @@
         <extension>js</extension>
         <mime-type>application/javascript</mime-type>
     </mime-mapping>
-    <!-- ========================================= -->
-    <!-- 🚫 ERROR PAGES -->
-    <!-- ========================================= -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/jsp/error/404.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/jsp/error/500.jsp</location>
-    </error-page>
 </web-app>

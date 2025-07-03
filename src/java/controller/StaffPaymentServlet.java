@@ -273,7 +273,7 @@ public class StaffPaymentServlet extends HttpServlet {
                 String status = bill.getPaymentStatus();
                 if ("PAID".equals(status) || "success".equals(status) || "Đã thanh toán".equals(status)) {
                     paidAmount += billAmount;
-                } else if ("PENDING".equals(status) || "pending".equals(status) || "Chờ thanh toán".equals(status)) {
+                } else if ("PENDING".equals(status) || "pending".equals(status) || "WAITING_PAYMENT".equals(status)) {
                     pendingAmount += billAmount;
                 } else if ("PARTIAL".equals(status) || "partial".equals(status) || "Thanh toán một phần".equals(status)) {
                     paidAmount += billAmount * 0.5; // Giả sử trả 50%

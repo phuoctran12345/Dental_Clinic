@@ -158,17 +158,15 @@ public class ViewAllAppointmentsServlet extends HttpServlet {
         public String getStatusColor() {
             if (status == null) return "secondary";
             
-            switch (status.toLowerCase()) {
-                case "đã đặt":
+            switch (status.toUpperCase()) {
+                case "BOOKED":
                     return "success";
-                case "đã hủy":
+                case "CANCELLED":
                     return "danger";
-                case "hoàn thành":
+                case "COMPLETED":
                     return "primary";
-                case "đang giữ chỗ":
+                case "WAITING_PAYMENT":
                     return "warning";
-                case "chờ thanh toán":
-                    return "info";
                 default:
                     return "secondary";
             }

@@ -255,9 +255,9 @@ public class StaffBookingServlet extends HttpServlet {
             
             System.out.println("Getting timeslots for doctorId: " + doctorId + ", workDate: " + workDate);
             
-            // Lấy danh sách slot_id mà bác sĩ đã đăng ký và được xác nhận
-            List<Integer> approvedSlotIds = DoctorScheduleDAO.getApprovedSlotIdsByDoctorAndDate(doctorId, workDate);
-            System.out.println("Approved slot IDs: " + approvedSlotIds);
+            // Lấy danh sách slot có thể đặt lịch
+            List<Integer> approvedSlotIds = DoctorScheduleDAO.getAvailableSlotIdsByDoctorAndDate(doctorId, workDate);
+            System.out.println("✅ Available slot IDs (NEW LOGIC): " + approvedSlotIds);
             
             // Convert doctor schedule slot IDs to actual time slot IDs
             //slot ID: 1 thì hãy list ra từ slot ID: 3002 -> 3009 ,  slot ID: 2 thì hãy list ra từ slot ID: 3010 -> 3019  ,  slot ID: 3 thì hãy list ra từ slot ID: 3002 -> 3019 

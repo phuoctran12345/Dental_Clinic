@@ -120,7 +120,7 @@
             <div class="menu_group">
                 <div class="menu_item" onclick="toggleDropdown(this)">
                     <i class="fa-solid fa-users"></i>
-                    <span>Quản lý nhân viên</span>
+                    <span>Quản lý người dùng </span>
                     <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
                 </div>
                 <div class="dropdown_list">

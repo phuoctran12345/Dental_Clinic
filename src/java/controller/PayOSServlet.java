@@ -1006,8 +1006,8 @@ public class PayOSServlet extends HttpServlet {
             paymentData.put("buyerName", bill.getCustomerName());
             paymentData.put("buyerPhone", bill.getCustomerPhone());
             paymentData.put("buyerEmail", bill.getCustomerEmail() != null ? bill.getCustomerEmail() : "customer@example.com");
-            paymentData.put("cancelUrl", "http://localhost:8080/RoleStaff/payment?action=cancel");
-            paymentData.put("returnUrl", "http://localhost:8080/RoleStaff/payment?action=success");
+            paymentData.put("cancelUrl", "http://localhost:8080/TestFull/payment?action=cancel");
+            paymentData.put("returnUrl", "http://localhost:8080/TestFull/payment?action=success");
             
             // Thêm expiredAt (required)
             paymentData.put("expiredAt", System.currentTimeMillis() / 1000 + 900); // 15 phút

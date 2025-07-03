@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html lang="vi">
+    <!DOCTYPE html>
+    <html lang="vi">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,19 +18,27 @@
                 min-height: 100vh;
                 /* Ghi chú: Sử dụng flex để căn chỉnh container sang bên trái */
                 display: flex;
-                justify-content: flex-start; /* Đẩy form về phía bên trái */
-                align-items: center; /* Căn giữa theo chiều dọc */
+                justify-content: flex-start;
+                /* Đẩy form về phía bên trái */
+                align-items: center;
+                /* Căn giữa theo chiều dọc */
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             }
 
             .login-container {
                 /* Ghi chú: Đặt chiều rộng tối đa và căn chỉnh lề trái trên màn hình lớn */
-                width: 500px; /* Thay max-width bằng width để cố định kích thước */
-                margin-left: 130px; /* Khoảng cách từ lề trái trên màn hình lớn */
-                padding: 30px; /* Tăng padding để form rộng hơn */
-                background-color: rgba(255, 255, 255, 0.9); /* Thêm nền trắng mờ để dễ đọc */
-                border-radius: 10px; /* Bo góc container */
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ */
+                width: 500px;
+                /* Thay max-width bằng width để cố định kích thước */
+                margin-left: 130px;
+                /* Khoảng cách từ lề trái trên màn hình lớn */
+                padding: 30px;
+                /* Tăng padding để form rộng hơn */
+                background-color: rgba(255, 255, 255, 0.9);
+                /* Thêm nền trắng mờ để dễ đọc */
+                border-radius: 10px;
+                /* Bo góc container */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                /* Thêm bóng đổ nhẹ */
             }
 
             .login-container h3 {
@@ -43,7 +52,8 @@
 
             .form-control {
                 /* Ghi chú: Bo góc trường nhập liệu, thêm viền và hiệu ứng chuyển đổi */
-                border-radius: 10px; /* Đã thay đổi từ 15px xuống 10px */
+                border-radius: 10px;
+                /* Đã thay đổi từ 15px xuống 10px */
                 border: 1px solid #ced4da;
                 padding: 12px;
                 transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -58,7 +68,8 @@
 
             .btn-primary {
                 /* Ghi chú: Định dạng nút đăng nhập với màu xanh đậm và bo góc */
-                border-radius: 10px; /* Đã thay đổi từ 5px lên 10px */
+                border-radius: 10px;
+                /* Đã thay đổi từ 5px lên 10px */
                 background-color: #0432b5;
                 border: none;
                 padding: 13px;
@@ -107,7 +118,8 @@
                 background-color: #fff;
                 color: #1f2937;
                 border: 1px solid #ced4da;
-                border-radius: 10px; /* Đã thay đổi từ 15px xuống 10px */
+                border-radius: 10px;
+                /* Đã thay đổi từ 15px xuống 10px */
                 padding: 12px;
                 font-weight: 500;
                 transition: all 0.3s ease;
@@ -138,52 +150,53 @@
             }
         </style>
     </head>
+
     <body class="container-fluid">
         <div class="login-container">
             <h3 class="text-center">Vui lòng tạo tài khoản mới</h3>
 
-            <% if (request.getParameter("error") != null) { %>
-            <div class="alert alert-danger">Email đã tồn tại!</div>
-            <% } %>
-            <% if (request.getParameter("success") != null) { %>
-            <div class="alert alert-success">
-                Đăng ký thành công!
-                <form action="information.jsp" method="post" class="mt-2">
-                    <button type="submit" class="btn btn-success w-100">Tiếp tục hoàn tất thông tin</button>
-                </form>
-            </div>
-            <% }%>
+            <% if (request.getParameter("error") !=null) { %>
+                <div class="alert alert-danger">Email đã tồn tại!</div>
+                <% } %>
+                    <% if (request.getParameter("success") !=null) { %>
+                        <div class="alert alert-success">
+                            Đăng ký thành công!
+                            <form action="information.jsp" method="post" class="mt-2">
+                                <button type="submit" class="btn btn-success w-100">Tiếp tục hoàn tất thông tin</button>
+                            </form>
+                        </div>
+                        <% }%>
 
-            <form action="SignUpServlet" method="post">
-                <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control" required>
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" name="passwordHash" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Xác nhận mật khẩu</label>
-                    <input type="password" name="confirmPassword" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Đăng Ký</button>
-            </form>
+                            <form action="SignUpServlet" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên đăng nhập</label>
+                                    <input type="text" name="username" class="form-control" required>
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu</label>
+                                    <input type="password" name="passwordHash" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Xác nhận mật khẩu</label>
+                                    <input type="password" name="confirmPassword" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Đăng Ký</button>
+                            </form>
 
-            <div style="margin-top: 20px">
-                <a class="google-btn w-100 text-decoration-none"
-                   href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/RoleStaff/login-google&response_type=code&client_id=20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com&approval_prompt=force">
-                    <img src="https://www.google.com/favicon.ico" alt="Google">
-                    Login With Google
-                </a>
-            </div>
+                            <div style="margin-top: 20px">
+                                <a class="google-btn w-100 text-decoration-none"
+                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/TestFull/login-google&response_type=code&client_id=20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com&approval_prompt=force">
+                                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                                    Login With Google
+                                </a>
+                            </div>
 
-            <p class="text-center mt-3">Đã có tài khoản? <a href="login.jsp">Đăng nhập</a></p>
-            <p class="text-center mt-4">
-                <a href="<%= request.getContextPath()%>/home.jsp" style="color: blue;">Trang Chủ</a>
-            </p>
+                            <p class="text-center mt-3">Đã có tài khoản? <a href="login.jsp">Đăng nhập</a></p>
+                            <p class="text-center mt-4">
+                                <a href="<%= request.getContextPath()%>/home.jsp" style="color: blue;">Trang Chủ</a>
+                            </p>
         </div>
     </body>
 
@@ -198,4 +211,5 @@
             }
         });
     </script>
-</html>
+
+    </html>

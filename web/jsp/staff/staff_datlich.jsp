@@ -274,10 +274,11 @@
                                                             <div class="col-md-3">
                                                                 <select name="status" class="form-select">
                                                                     <option value="">Tất cả trạng thái</option>
-                                                                    <option value="Chờ xác nhận">Chờ xác nhận</option>
-                                                                    <option value="Đã xác nhận">Đã xác nhận</option>
-                                                                    <option value="Hoàn thành">Hoàn thành</option>
-                                                                    <option value="Đã hủy">Đã hủy</option>
+                                                                    <option value="BOOKED">Đã đặt lịch</option>
+                                                                    <option value="COMPLETED">Hoàn thành</option>
+                                                                    <option value="CANCELLED">Đã hủy</option>
+                                                                    <option value="WAITING_PAYMENT">Chờ thanh toán
+                                                                    </option>
                                                                 </select>
                                                             </div>
                                                             <div class="col-md-3">
@@ -354,17 +355,17 @@
                                                                                         <i class="fas fa-eye"></i>
                                                                                     </button>
                                                                                     <c:if
-                                                                                        test="${apt.status != 'Đã xác nhận' && apt.status != 'Hoàn thành'}">
+                                                                                        test="${apt.status != 'COMPLETED' && apt.status != 'CANCELLED'}">
                                                                                         <button
                                                                                             class="btn btn-sm btn-outline-success me-1"
-                                                                                            title="Xác nhận"
+                                                                                            title="Hoàn thành"
                                                                                             data-appointment-id="${apt.appointmentId}"
                                                                                             onclick="confirmAppointment(this)">
                                                                                             <i class="fas fa-check"></i>
                                                                                         </button>
                                                                                     </c:if>
                                                                                     <c:if
-                                                                                        test="${apt.status != 'Hoàn thành' && apt.status != 'Đã hủy'}">
+                                                                                        test="${apt.status != 'COMPLETED' && apt.status != 'CANCELLED'}">
                                                                                         <button
                                                                                             class="btn btn-sm btn-outline-danger"
                                                                                             title="Hủy"
@@ -1016,7 +1017,7 @@
                                                         cancelButtonText: '<i class="fas fa-arrow-left"></i> Quay lại'
                                                     }).then((result) => {
                                                         if (result.isConfirmed) {
-                                                            updateAppointmentStatus(appointmentId, 'Đã hủy', 'error');
+                                                            updateAppointmentStatus(appointmentId, 'CANCELLED', 'error');
                                                         }
                                                     });
                                                 }
@@ -1064,15 +1065,14 @@
                                                 }
 
                                                 /**
-                                                 * Get Bootstrap color class for status
+                                                 * Get Bootstrap color class for status (4 status mới)
                                                  */
                                                 function getStatusColor(status) {
                                                     switch (status) {
-                                                        case 'Đã xác nhận': return 'success';
-                                                        case 'Chờ xác nhận': return 'warning';
-                                                        case 'Hoàn thành': return 'primary';
-                                                        case 'Đã hủy': return 'danger';
-                                                        case 'ĐANG GIỮ CHỖ': return 'info';
+                                                        case 'BOOKED': return 'success';
+                                                        case 'COMPLETED': return 'primary';
+                                                        case 'CANCELLED': return 'danger';
+                                                        case 'WAITING_PAYMENT': return 'warning';
                                                         default: return 'secondary';
                                                     }
                                                 }

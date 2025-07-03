@@ -18,9 +18,9 @@ public class PayOSConfig {
     public static final String GET_PAYMENT_URL = PAYOS_BASE_URL + "/v2/payment-requests";
     
     // Return URLs
-    public static final String SUCCESS_URL = "http://localhost:8080/RoleStaff/PaymentSuccessServlet";
-    public static final String CANCEL_URL = "http://localhost:8080/RoleStaff/PaymentCancelServlet";
-    public static final String WEBHOOK_URL = "http://localhost:8080/RoleStaff/PayOSWebhookServlet";
+    public static final String SUCCESS_URL = "http://localhost:8080/TestFull/PaymentSuccessServlet";
+    public static final String CANCEL_URL = "http://localhost:8080/TestFull/PaymentCancelServlet";
+    public static final String WEBHOOK_URL = "http://localhost:8080/TestFull/PayOSWebhookServlet";
     
     // Payment configurations
     public static final String CURRENCY = "VND";

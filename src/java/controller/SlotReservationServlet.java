@@ -278,7 +278,7 @@ public class SlotReservationServlet extends HttpServlet {
         
         try {
             String status = request.getParameter("status");
-            if (status == null) status = AppointmentDAO.STATUS_RESERVED;
+            if (status == null) status = AppointmentDAO.STATUS_BOOKED;
             
             List<SlotReservation> reservations = AppointmentDAO.getReservationsByStatus(status);
             
@@ -414,7 +414,7 @@ public class SlotReservationServlet extends HttpServlet {
                 <script>
                     async function testCreateReservation() {
                         try {
-                            const response = await fetch('/RoleStaff/slot-reservation', {
+                            const response = await fetch('/TestFull/slot-reservation', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: 'action=create-reservation&doctorId=1&workDate=2024-12-25&slotId=1&reason=Test reservation'
@@ -431,7 +431,7 @@ public class SlotReservationServlet extends HttpServlet {
 
                     async function testGetActive() {
                         try {
-                            const response = await fetch('/RoleStaff/slot-reservation?action=get-active');
+                            const response = await fetch('/TestFull/slot-reservation?action=get-active');
                             const result = await response.json();
                             document.getElementById('active-result').innerHTML = 
                                 '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
@@ -443,7 +443,7 @@ public class SlotReservationServlet extends HttpServlet {
 
                     async function testGetBookedSlots() {
                         try {
-                            const response = await fetch('/RoleStaff/slot-reservation?action=get-booked-slots&doctorId=1&workDate=2024-12-25');
+                            const response = await fetch('/TestFull/slot-reservation?action=get-booked-slots&doctorId=1&workDate=2024-12-25');
                             const result = await response.json();
                             document.getElementById('booked-result').innerHTML = 
                                 '<pre class="success">' + JSON.stringify(result, null, 2) + '</pre>';
@@ -455,7 +455,7 @@ public class SlotReservationServlet extends HttpServlet {
 
                     async function testComplete() {
                         try {
-                            const response = await fetch('/RoleStaff/slot-reservation', {
+                            const response = await fetch('/TestFull/slot-reservation', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body: 'action=complete&appointmentId=1'
@@ -472,7 +472,7 @@ public class SlotReservationServlet extends HttpServlet {
 
                     async function testCleanup() {
                         try {
-                            const response = await fetch('/RoleStaff/slot-reservation?action=cleanup');
+                            const response = await fetch('/TestFull/slot-reservation?action=cleanup');
                             const result = await response.json();
                             document.getElementById('cleanup-result').innerHTML = 
                                 '<pre class="success">' + JSON.stringify(result, null, 2) + '</pre>';

@@ -94,7 +94,7 @@ public class WebhookTestServlet extends HttpServlet {
         out.println("<a href='?action=send&billId=BILL_8FF18D1F&amount=2000' class='btn'>Test BILL_8FF18D1F</a>");
         
         out.println("<hr>");
-        out.println("<p><a href='/RoleStaff/payment?serviceId=10'>🔙 Back to Payment</a></p>");
+        out.println("<p><a href='/TestFull/payment?serviceId=10'>🔙 Back to Payment</a></p>");
         out.println("</div>");
         
         out.println("</body></html>");
@@ -130,7 +130,7 @@ public class WebhookTestServlet extends HttpServlet {
             System.out.println("Webhook JSON: " + webhookJson);
             
             // Gửi POST request tới payment webhook endpoint
-            URL url = new URL("http://localhost:8080/RoleStaff/payment?action=webhook");
+            URL url = new URL("http://localhost:8080/TestFull/payment?action=webhook");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

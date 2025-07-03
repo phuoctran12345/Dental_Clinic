@@ -32,12 +32,11 @@ public class SlotReservation {
     private String payosOrderId; // Tương ứng với Bills.payos_order_id
     private String billId;       // Link với Bills.bill_id
     
-    // Constants cho status
-    public static final String STATUS_RESERVED = "ĐANG GIỮ CHỖ";
-    public static final String STATUS_WAITING_PAYMENT = "CHờ THANH TOÁN";
-    public static final String STATUS_CONFIRMED = "ĐÃ ĐẶT";
-    public static final String STATUS_EXPIRED = "HẾT HẠN";
-    public static final String STATUS_CANCELLED = "ĐÃ HỦY";
+    // Constants cho status (English - Chỉ 4 trạng thái chính)
+    public static final String STATUS_BOOKED = "BOOKED";               // ĐÃ ĐẶT LỊCH
+    public static final String STATUS_COMPLETED = "COMPLETED";         // HOÀN THÀNH
+    public static final String STATUS_CANCELLED = "CANCELLED";         // ĐÃ HỦY
+    public static final String STATUS_WAITING_PAYMENT = "WAITING_PAYMENT"; // CHỜ THANH TOÁN
     
     // Constructors
     public SlotReservation() {
@@ -51,7 +50,7 @@ public class SlotReservation {
         this.workDate = workDate;
         this.slotId = slotId;
         this.patientId = patientId;
-        this.status = STATUS_RESERVED;
+        this.status = STATUS_BOOKED;
         this.reservedAt = Timestamp.valueOf(LocalDateTime.now());
         this.expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)); // 5 phút
     }
@@ -176,14 +175,14 @@ public class SlotReservation {
      * Kiểm tra reservation có còn hiệu lực không
      */
     public boolean isActive() {
-        return STATUS_RESERVED.equals(status) && !isExpired();
+        return STATUS_BOOKED.equals(status) && !isExpired();
     }
     
     /**
      * Kiểm tra có đã confirmed chưa
      */
     public boolean isConfirmed() {
-        return STATUS_CONFIRMED.equals(status);
+        return STATUS_COMPLETED.equals(status);
     }
     
     /**
@@ -213,20 +212,18 @@ public class SlotReservation {
     }
     
     /**
-     * Chuyển đổi status từ reservation sang appointment
+     * Chuyển đổi status từ reservation sang appointment (render ra giao diện)
      */
     public String getAppointmentStatus() {
         switch (status) {
-            case STATUS_RESERVED:
-                return "ĐANG GIỮ CHỖ";
-            case STATUS_WAITING_PAYMENT:
-                return "CHờ THANH TOÁN";
-            case STATUS_CONFIRMED:
-                return "ĐÃ ĐẶT";
-            case STATUS_EXPIRED:
-                return "HẾT HẠN";
+            case STATUS_BOOKED:
+                return "Đã đặt lịch";
+            case STATUS_COMPLETED:
+                return "Hoàn thành";
             case STATUS_CANCELLED:
-                return "ĐÃ HỦY";
+                return "Đã hủy";
+            case STATUS_WAITING_PAYMENT:
+                return "Chờ thanh toán";
             default:
                 return status;
         }

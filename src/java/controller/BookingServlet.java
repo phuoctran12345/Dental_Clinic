@@ -153,7 +153,7 @@ public class BookingServlet extends HttpServlet {
             
             // CHUYỂN HƯỚNG ĐẾN PAYOSSERVLET ĐỂ THANH TOÁN
             String paymentUrl = String.format(
-                "/RoleStaff/payment?serviceId=%s&doctorId=%s&workDate=%s&slotId=%s&reason=%s",
+                "/TestFull/payment?serviceId=%s&doctorId=%s&workDate=%s&slotId=%s&reason=%s",
                 serviceId, doctorId, workDate, slotId, 
                 reason != null ? java.net.URLEncoder.encode(reason, "UTF-8") : ""
             );

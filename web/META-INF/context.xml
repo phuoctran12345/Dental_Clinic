@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/RoleStaff" reloadable="true">
+<Context path="/TestFull" reloadable="true">
     <!-- Database Connection Pool -->
     <Resource name="jdbc/BenhVien" 
               auth="Container"

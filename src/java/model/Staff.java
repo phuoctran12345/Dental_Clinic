@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  * Model Staff đại diện cho thông tin của nhân viên
- * @author TranHongPhuoc
+ * @author TranHongPhuoc && B.Chou
  */
 public class Staff {
     private long staffId;         // ID của nhân viên (IDENTITY)
@@ -19,6 +19,7 @@ public class Staff {
     private String gender;        // Giới tính (male/female/other)
     private String address;       // Địa chỉ
     private String position;      // Chức vụ (NOT NULL)
+    private String employmentType; // Loại nhân viên (fulltime/parttime)
     private Date createdAt;       // Ngày tạo
 
     // Constructor mặc định
@@ -27,7 +28,8 @@ public class Staff {
 
     // Constructor đầy đủ tham số
     public Staff(long staffId, long userId, String fullName, String phone, 
-                Date dateOfBirth, String gender, String address, String position, Date createdAt) {
+                Date dateOfBirth, String gender, String address, String position, 
+                String employmentType, Date createdAt) {
         this.staffId = staffId;
         this.userId = userId;
         this.fullName = fullName;
@@ -36,6 +38,7 @@ public class Staff {
         this.gender = gender;
         this.address = address;
         this.position = position;
+        this.employmentType = employmentType;
         this.createdAt = createdAt;
     }
     
@@ -112,6 +115,20 @@ public class Staff {
         this.position = position;
     }
 
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        if (employmentType != null) {
+            employmentType = employmentType.toLowerCase();
+            if (!employmentType.equals("fulltime") && !employmentType.equals("parttime")) {
+                throw new IllegalArgumentException("Employment type must be 'fulltime' or 'parttime'");
+            }
+        }
+        this.employmentType = employmentType;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -132,6 +149,7 @@ public class Staff {
                ", gender='" + gender + '\'' + 
                ", address='" + address + '\'' + 
                ", position='" + position + '\'' + 
+               ", employmentType='" + employmentType + '\'' + 
                ", createdAt=" + createdAt + 
                '}';
     }
@@ -157,6 +175,16 @@ public class Staff {
         if (gender != null) {
             String genderLower = gender.toLowerCase();
             if (!genderLower.equals("male") && !genderLower.equals("female") && !genderLower.equals("other")) {
+                return false;
+            }
+        }
+        
+
+        //
+        // Kiểm tra employmentType phải là "fulltime" hoặc "parttime"
+        if (employmentType != null) {
+            String empTypeLower = employmentType.toLowerCase();
+            if (!empTypeLower.equals("fulltime") && !empTypeLower.equals("parttime")) {
                 return false;
             }
         }

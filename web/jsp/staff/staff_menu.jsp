@@ -3,135 +3,136 @@
 
 <head>
     <%@ page pageEncoding="UTF-8" %>
-        <title>Menu Staff</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+            <title>Menu Staff</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .menu {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 250px;
-                height: 100vh;
-                background-color: #fff;
-                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-                z-index: 1000;
-                transition: 0.3s ease;
-            }
-
-            .menu_header {
-                padding: 20px;
-                text-align: center;
-                border-bottom: 1px solid #eee;
-            }
-
-            .menu_header h2 {
-                color: #00BFFF;
-                font-size: 24px;
-            }
-
-            .menu_item {
-                padding: 15px 20px;
-                display: flex;
-                align-items: center;
-                cursor: pointer;
-                transition: 0.3s;
-            }
-
-            .menu_item:hover {
-                background-color: #f8f9fb;
-            }
-
-            .menu_item i {
-                margin-right: 10px;
-                color: #666;
-                width: 20px;
-            }
-
-            .menu_item span {
-                color: #333;
-                font-size: 16px;
-            }
-
-            .menu_item a {
-                text-decoration: none;
-                color: inherit;
-            }
-
-            .menu_group {
-                position: relative;
-            }
-
-            .dropdown_list {
-                display: none;
-                padding-left: 20px;
-                background-color: #f8f9fb;
-            }
-
-            .dropdown_list a {
-                display: block;
-                padding: 10px 20px;
-                color: #666;
-                text-decoration: none;
-                font-size: 14px;
-            }
-
-            .dropdown_list a:hover {
-                background-color: #e9ecef;
-            }
-
-            .dropdown-arrow {
-                margin-left: auto;
-                transition: 0.3s;
-            }
-
-            .menu_item.active .dropdown-arrow {
-                transform: rotate(180deg);
-            }
-
-            .menu_item.active+.dropdown_list {
-                display: block;
-            }
-
-            .menu-toggle {
-                position: fixed;
-                left: 20px;
-                top: 20px;
-                z-index: 1001;
-                cursor: pointer;
-                display: none;
-            }
-
-            @media (max-width: 768px) {
-                .menu {
-                    transform: translateX(-100%);
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Segoe UI', sans-serif;
                 }
 
-                #menu-toggle:checked~.menu {
-                    transform: translateX(0);
+                .menu {
+                    position: fixed;
+                    left: 0;
+                    top: 0;
+                    width: 250px;
+                    height: 100vh;
+                    background-color: #fff;
+                    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    transition: 0.3s ease;
+                }
+
+                .menu_header {
+                    padding: 20px;
+                    text-align: center;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .menu_header h2 {
+                    color: #00BFFF;
+                    font-size: 24px;
+                }
+
+                .menu_item {
+                    padding: 15px 20px;
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+                    transition: 0.3s;
+                }
+
+                .menu_item:hover {
+                    background-color: #f8f9fb;
+                }
+
+                .menu_item i {
+                    margin-right: 10px;
+                    color: #666;
+                    width: 20px;
+                }
+
+                .menu_item span {
+                    color: #333;
+                    font-size: 16px;
+                }
+
+                .menu_item a {
+                    text-decoration: none;
+                    color: inherit;
+                }
+
+                .menu_group {
+                    position: relative;
+                }
+
+                .dropdown_list {
+                    display: none;
+                    padding-left: 20px;
+                    background-color: #f8f9fb;
+                }
+
+                .dropdown_list a {
+                    display: block;
+                    padding: 10px 20px;
+                    color: #666;
+                    text-decoration: none;
+                    font-size: 14px;
+                }
+
+                .dropdown_list a:hover {
+                    background-color: #e9ecef;
+                }
+
+                .dropdown-arrow {
+                    margin-left: auto;
+                    transition: 0.3s;
+                }
+
+                .menu_item.active .dropdown-arrow {
+                    transform: rotate(180deg);
+                }
+
+                .menu_item.active+.dropdown_list {
+                    display: block;
                 }
 
                 .menu-toggle {
-                    display: block;
+                    position: fixed;
+                    left: 20px;
+                    top: 20px;
+                    z-index: 1001;
+                    cursor: pointer;
+                    display: none;
                 }
-            }
 
-            .notification-badge {
-                background-color: #ff4444;
-                color: white;
-                border-radius: 50%;
-                padding: 2px 6px;
-                font-size: 12px;
-                margin-left: 5px;
-            }
-        </style>
+                @media (max-width: 768px) {
+                    .menu {
+                        transform: translateX(-100%);
+                    }
+
+                    #menu-toggle:checked~.menu {
+                        transform: translateX(0);
+                    }
+
+                    .menu-toggle {
+                        display: block;
+                    }
+                }
+
+                .notification-badge {
+                    background-color: #ff4444;
+                    color: white;
+                    border-radius: 50%;
+                    padding: 2px 6px;
+                    font-size: 12px;
+                    margin-left: 5px;
+                }
+            </style>
 </head>
 
 <body>
@@ -183,12 +184,12 @@
 
 
 
-      
-                       <!-- Bán thuốc  -->
+
+        <!-- Bán thuốc  -->
         <div class="menu_item">
             <i class="fa-solid fa-users-line"></i>
             <span>
-                <a href="${pageContext.request.contextPath}/jsp/staff/sell_medicine_direct.jsp" >Bán thuốc</a>
+                <a href="${pageContext.request.contextPath}/jsp/staff/sell_medicine_direct.jsp">Bán thuốc</a>
             </span>
         </div>
 
@@ -209,6 +210,16 @@
             <a href="StaffPaymentServlet?action=payments" class="sub_item">Thanh toán hóa đơn</a>
             <a href="StaffPaymentServlet?action=installments" class="sub_item">Quản lý trả góp</a>
         </div>
+
+
+        <!-- Đăng kí lịch làm việc  -->
+        <div class="menu_item">
+            <i class="fa-solid fa-users-line"></i>
+            <span>
+                <a href="${pageContext.request.contextPath}/StaffRegisterSecheduleServlet">Đăng Kí Lịch Làm Việc</a>
+            </span>
+        </div>
+
 
         <!-- Tin tức y tế -->
         <div class="menu_group">

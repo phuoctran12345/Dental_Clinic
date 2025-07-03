@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 
    private static final String CLIENT_ID = "20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI = "http://localhost:8080/RoleStaff/login-google";
+    private static final String REDIRECT_URI = "http://localhost:8080/TestFull/login-google";
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
@@ -142,6 +142,9 @@ public class LoginServlet extends HttpServlet {
                         
                         // Lưu user vào session (password_hash đã được hash trong UserDAO)
                         session.setAttribute("user", user);
+                        session.setAttribute("role", user.getRole());
+                        session.setAttribute("userId", user.getId());
+                        System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
 
                         Patients patient = UserDAO.getPatientByUserId(user.getId());
                         session.setAttribute("patient", patient);
@@ -190,6 +193,9 @@ public class LoginServlet extends HttpServlet {
                             
                             // Lưu user vào session (password_hash đã được hash trong UserDAO)
                             session.setAttribute("user", user);
+                            session.setAttribute("role", user.getRole());
+                            session.setAttribute("userId", user.getId());
+                            System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
                             
                             // Chuyển đến trang đăng ký thông tin bệnh nhân
                             request.setAttribute("googleEmail", email);
@@ -258,6 +264,9 @@ public class LoginServlet extends HttpServlet {
             System.out.println("User role: " + user.getRole());
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            session.setAttribute("role", user.getRole());
+            session.setAttribute("userId", user.getId());
+            System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
 
             Patients patient = UserDAO.getPatientByUserId(user.getId());
             session.setAttribute("patient", patient);

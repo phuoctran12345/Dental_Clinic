@@ -130,7 +130,7 @@ public class DoctorHomePageServlet extends HttpServlet {
         List<Appointment> appointments = AppointmentDAO.getAppointmentsByDoctorAndDate(doctorId, today);
         
         for (Appointment appointment : appointments) {
-            if ("CONFIRMED".equals(appointment.getStatus()) || "PENDING".equals(appointment.getStatus())) {
+            if ("BOOKED".equals(appointment.getStatus()) || "WAITING_PAYMENT".equals(appointment.getStatus())) {
                 Patients patient = PatientDAO.getPatientById(appointment.getPatientId());
                 
                 if (patient != null) {

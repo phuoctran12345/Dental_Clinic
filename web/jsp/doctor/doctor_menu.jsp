@@ -263,7 +263,7 @@
             </div>
             <div class="dropdown_list">
                 <a href="${pageContext.request.contextPath}/DoctorHaveAppointmentServlet">• Lịch làm</a>
-                <a href="${pageContext.request.contextPath}/DoctorScheduleServlet">• Đăng ký lịch</a>
+                <a href="${pageContext.request.contextPath}/DoctorRegisterScheduleServlet">• Đăng ký lịch</a>
                 <a href="${pageContext.request.contextPath}/jsp/doctor/doctor_taikham.jsp">• Tái khám</a>
             </div>
         </div>
@@ -292,10 +292,7 @@
             </div>
         </div>
 
-        <a href="${pageContext.request.contextPath}/DoctorScheduleServlet" class="menu_item menu_register_schedule">
-            <i class="fa-solid fa-calendar-plus"></i>
-            <span class="menu-link">Đăng ký lịch làm việc</span>
-        </a>
+
     </div>
 
     <script>

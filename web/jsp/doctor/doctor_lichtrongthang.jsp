@@ -2,13 +2,13 @@
 
     <%@page contentType="text/html" pageEncoding="UTF-8" %>
         <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="/includes/doctor_header.jsp" %>
-<%@ include file="/includes/doctor_menu.jsp" %>
-<!DOCTYPE html>
-<html>
+            <%@ include file="/includes/doctor_header.jsp" %>
+                <%@ include file="/includes/doctor_menu.jsp" %>
+                    <!DOCTYPE html>
+                    <html>
 
-    <head>
-        <meta charset="UTF-8">
+                    <head>
+                        <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <title>Lịch Làm Việc - Bác Sĩ</title>
 
@@ -19,15 +19,15 @@
                         <link rel="stylesheet"
                             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
                         <!-- Custom CSS -->
-        <style>
-            body {
+                        <style>
+                            body {
                                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                                 background-color: #f8f9fa;
-            }
+                            }
 
-            .calendar-container {
-                min-height: 100vh;
-                padding-left: 282px;
+                            .calendar-container {
+                                min-height: 100vh;
+                                padding-left: 282px;
                                 padding-top: 20px;
                                 padding-right: 20px;
                                 transition: all 0.3s ease;
@@ -36,7 +36,7 @@
                             #menu-toggle:checked~.calendar-container {
                                 padding-left: 40px;
                                 transition: all 0.3s ease;
-            }
+                            }
 
                             .header-section {
                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -53,34 +53,34 @@
                                 box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
                                 overflow: hidden;
                                 margin-bottom: 2rem;
-            }
+                            }
 
                             .calendar-header {
                                 background: linear-gradient(45deg, #4facfe, #00f2fe);
-                color: white;
+                                color: white;
                                 padding: 1.5rem;
                                 text-align: center;
-            }
+                            }
 
-            .calendar-grid {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
+                            .calendar-grid {
+                                display: grid;
+                                grid-template-columns: repeat(7, 1fr);
                                 gap: 1px;
                                 background-color: #e9ecef;
-            }
+                            }
 
-            .day-header {
+                            .day-header {
                                 background: #6c757d !important;
                                 color: white !important;
                                 padding: 1rem 0.5rem;
                                 text-align: center;
                                 font-weight: 600;
                                 font-size: 0.9rem;
-                display: flex;
+                                display: flex;
                                 flex-direction: column;
                                 gap: 4px;
-                justify-content: center;
-                align-items: center;
+                                justify-content: center;
+                                align-items: center;
                                 min-height: 50px;
                                 border: 1px solid #495057;
                             }
@@ -115,12 +115,12 @@
                                 min-height: 100px;
                                 padding: 8px;
                                 position: relative;
-                cursor: pointer;
+                                cursor: pointer;
                                 transition: all 0.3s ease;
                                 border: 1px solid #dee2e6;
                                 display: flex;
                                 flex-direction: column;
-            }
+                            }
 
                             .calendar-day:hover {
                                 background-color: #f8f9fa;
@@ -139,9 +139,9 @@
                                 font-size: 0.75rem;
                                 color: #6c757d;
                                 margin-bottom: 8px;
-            }
+                            }
 
-            .today {
+                            .today {
                                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                 color: white;
                             }
@@ -152,13 +152,13 @@
 
                             .has-schedule {
                                 background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-                color: white;
-            }
+                                color: white;
+                            }
 
                             .has-schedule .day-number,
                             .has-schedule .schedule-badge {
-                color: white;
-            }
+                                color: white;
+                            }
 
                             .schedule-badge {
                                 background: rgba(255, 255, 255, 0.9);
@@ -380,11 +380,11 @@
                                 visibility: visible;
                                 bottom: -25px;
                             }
-        </style>
-    </head>
+                        </style>
+                    </head>
 
-    <body>
-        <div class="calendar-container">
+                    <body>
+                        <div class="calendar-container">
                             <!-- Header Section -->
                             <div class="header-section">
                                 <div class="row align-items-center">
@@ -399,7 +399,7 @@
                                         </div>
                                     </div>
                                 </div>
-            </div>
+                            </div>
 
                             <!-- View Toggle -->
                             <div class="view-toggle text-center">
@@ -408,8 +408,8 @@
                                 </button>
                                 <button class="btn btn-view">
                                     <i class="fas fa-calendar-week me-2"></i>Tuần
-                </button>
-            </div>
+                                </button>
+                            </div>
 
                             <!-- Calendar Section -->
                             <div class="calendar-card">
@@ -516,7 +516,7 @@
                                                 <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                                                 <h5 class="text-muted">Chưa có lịch làm việc nào được xác nhận</h5>
                                                 <p class="text-muted">Hãy đăng ký lịch làm việc để hiển thị tại đây</p>
-                                                <a href="${pageContext.request.contextPath}/DoctorScheduleServlet"
+                                                <a href="${pageContext.request.contextPath}/DoctorRegisterScheduleServlet"
                                                     class="btn btn-primary">
                                                     <i class="fas fa-plus me-2"></i>Đăng ký lịch
                                                 </a>
@@ -524,8 +524,8 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
-            </div>
-        </div>
+                            </div>
+                        </div>
 
                         <!-- Bootstrap JS -->
                         <script
@@ -714,6 +714,6 @@
                                 generateCalendar();
                             }
                         </script>
-    </body>
+                    </body>
 
-</html>
+                    </html>

@@ -21,8 +21,8 @@ public class StaffDAO {
     private static final String GET_ALL = "SELECT * FROM Staff";
     private static final String GET_BY_ID = "SELECT * FROM Staff WHERE staff_id = ?";
     private static final String GET_BY_USER_ID = "SELECT * FROM Staff WHERE user_id = ?";
-    private static final String INSERT = "INSERT INTO Staff (user_id, full_name, phone, date_of_birth, gender, address) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE Staff SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ? WHERE staff_id = ?";
+    private static final String INSERT = "INSERT INTO Staff (user_id, full_name, phone, date_of_birth, gender, address, position, employment_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE Staff SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ?, position = ?, employment_type = ? WHERE staff_id = ?";
     private static final String DELETE = "DELETE FROM Staff WHERE staff_id = ?";
     private static final String COUNT_BY_NAME = "SELECT COUNT(*) as total FROM Staff WHERE full_name = ?";
 
@@ -58,6 +58,8 @@ public class StaffDAO {
                     staff.setDateOfBirth(rs.getDate("date_of_birth"));
                     staff.setGender(rs.getString("gender"));
                     staff.setAddress(rs.getString("address"));
+                    staff.setPosition(rs.getString("position"));
+                    staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
                     
                     staffList.add(staff);
@@ -99,6 +101,8 @@ public class StaffDAO {
                     staff.setDateOfBirth(rs.getDate("date_of_birth"));
                     staff.setGender(rs.getString("gender"));
                     staff.setAddress(rs.getString("address"));
+                    staff.setPosition(rs.getString("position"));
+                    staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
                 }
             }
@@ -138,6 +142,8 @@ public class StaffDAO {
                     staff.setDateOfBirth(rs.getDate("date_of_birth"));
                     staff.setGender(rs.getString("gender"));
                     staff.setAddress(rs.getString("address"));
+                    staff.setPosition(rs.getString("position"));
+                    staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
                 }
             }
@@ -154,7 +160,7 @@ public class StaffDAO {
     /**
      * Thêm nhân viên mới
      */
-    public static boolean insert(int userId, String fullName, String phone, String dateOfBirth, String gender, String address) {
+    public static boolean insert(int userId, String fullName, String phone, String dateOfBirth, String gender, String address, String position, String employmentType) {
         Connection conn = null;
         PreparedStatement ptm = null;
         try {
@@ -167,6 +173,8 @@ public class StaffDAO {
                 ptm.setString(4, dateOfBirth);
                 ptm.setString(5, gender);
                 ptm.setString(6, address);
+                ptm.setString(7, position);
+                ptm.setString(8, employmentType);
                 int rowsAffected = ptm.executeUpdate();
                 return rowsAffected > 0;
             }
@@ -198,7 +206,9 @@ public class StaffDAO {
                 ptm.setDate(3, new java.sql.Date(staff.getDateOfBirth().getTime()));
                 ptm.setString(4, staff.getGender());
                 ptm.setString(5, staff.getAddress());
-                ptm.setInt(6, (int) staff.getStaffId());
+                ptm.setString(6, staff.getPosition());
+                ptm.setString(7, staff.getEmploymentType());
+                ptm.setInt(8, (int) staff.getStaffId());
                 int rowsAffected = ptm.executeUpdate();
                 return rowsAffected > 0;
             }
@@ -345,5 +355,9 @@ public class StaffDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void close() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

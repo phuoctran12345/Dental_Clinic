@@ -139,7 +139,11 @@ public class DoctorScheduleDAO {
                 ps = conn.prepareStatement(INSERT);
                 ps.setLong(1, schedule.getDoctorId());
                 ps.setDate(2, schedule.getWorkDate());
-                ps.setInt(3, schedule.getSlotId());
+                if (schedule.getSlotId() == null) {
+                    ps.setNull(3, java.sql.Types.INTEGER);
+                } else {
+                    ps.setInt(3, schedule.getSlotId());
+                }
                 ps.setString(4, "Chờ xác nhận"); // Đặt tiếng Việt chuẩn
                 int result = ps.executeUpdate();
                 System.out.println("Insert result: " + result); // In ra để debug
@@ -391,69 +395,120 @@ public class DoctorScheduleDAO {
         return workDates;
     }
 
-    public static List<Integer> getApprovedSlotIdsByDoctorAndDate(int doctorId, String workDate) {
-        List<Integer> slotIds = new ArrayList<>();
+    /**
+     * ✅ HÀM MỚI: Lấy danh sách slot khả dụng theo logic mới
+     * Logic: Nếu bác sĩ KHÔNG nghỉ phép thì trả về tất cả 3 ca (1,2,3), nếu nghỉ thì trả về rỗng
+     */
+    public static List<Integer> getAvailableSlotIdsByDoctorAndDate(int doctorId, String workDate) {
+        List<Integer> availableSlots = new ArrayList<>();
+        
+        System.out.println("🔍 [NEW LOGIC] getAvailableSlotIdsByDoctorAndDate");
+        System.out.println("   - Doctor ID: " + doctorId);
+        System.out.println("   - Work Date: " + workDate);
+        
+        // Kiểm tra bác sĩ có đang làm việc không (không nghỉ phép)
+        boolean isWorking = isDoctorWorkingOnDate(doctorId, workDate);
+        
+        if (isWorking) {
+            // Bác sĩ làm việc -> trả về tất cả 3 ca
+            availableSlots.add(1); // Ca sáng
+            availableSlots.add(2); // Ca chiều  
+            availableSlots.add(3); // Ca cả ngày
+            System.out.println("   ✅ Bác sĩ đang làm việc -> trả về tất cả 3 ca: " + availableSlots);
+        } else {
+            // Bác sĩ nghỉ phép -> không có ca nào
+            System.out.println("   ❌ Bác sĩ đang nghỉ phép -> không có ca nào");
+        }
+        
+        return availableSlots;
+    }
+
+    /**
+     * ✅ HÀM MỚI: Lấy ngày làm việc của bác sĩ bằng cách loại bỏ ngày nghỉ
+     * Logic đúng: Bác sĩ làm việc tất cả ngày TRỪ ngày có trong DoctorSchedule (ngày nghỉ)
+     */
+    public static List<String> getWorkDatesExcludingLeaves(int doctorId, int daysAhead) {
+        List<String> workDates = new ArrayList<>();
+        
+        // Lấy danh sách ngày nghỉ của bác sĩ
+        List<String> leaveDates = getLeaveDatasByDoctorId(doctorId);
+        
+        // Tạo danh sách ngày làm việc (loại bỏ ngày nghỉ)
+        java.time.LocalDate today = java.time.LocalDate.now();
+        for (int i = 0; i < daysAhead; i++) {
+            java.time.LocalDate date = today.plusDays(i);
+            String dateStr = date.toString();
+            
+            // Chỉ thêm vào nếu KHÔNG phải ngày nghỉ
+            if (!leaveDates.contains(dateStr)) {
+                workDates.add(dateStr);
+            }
+        }
+        
+        return workDates;
+    }
+
+    /**
+     * ✅ HÀM MỚI: Lấy danh sách ngày NGHỈ của bác sĩ
+     */
+    public static List<String> getLeaveDatasByDoctorId(int doctorId) {
+        List<String> leaveDates = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        System.out.println("🔍 [DEBUG] getApprovedSlotIdsByDoctorAndDate");
-        System.out.println("   - Doctor ID: " + doctorId);
-        System.out.println("   - Work Date: " + workDate);
+        // SQL lấy ngày nghỉ (slot_id = null hoặc status chứa "nghỉ")
+        String sql = "SELECT DISTINCT work_date FROM DoctorSchedule " +
+                    "WHERE doctor_id = ? " +
+                    "AND (slot_id IS NULL OR status LIKE N'%nghỉ%' OR status LIKE N'%leave%') " +
+                    "ORDER BY work_date ASC";
         
         try {
             conn = DBContext.getConnection();
-            ps = conn.prepareStatement(GET_APPROVED_SLOTS_BY_DOCTOR_DATE);
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, doctorId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                leaveDates.add(rs.getDate("work_date").toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (ps != null) try { ps.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return leaveDates;
+    }
+
+    /**
+     * ✅ HÀM MỚI: Kiểm tra bác sĩ có làm việc vào ngày cụ thể không
+     * @param doctorId ID bác sĩ
+     * @param workDate Ngày cần kiểm tra (format: yyyy-MM-dd)
+     * @return true nếu bác sĩ làm việc (không nghỉ), false nếu nghỉ
+     */
+    public static boolean isDoctorWorkingOnDate(int doctorId, String workDate) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        // Kiểm tra có bản ghi nghỉ phép trong ngày đó không
+        String sql = "SELECT COUNT(*) FROM DoctorSchedule " +
+                    "WHERE doctor_id = ? AND work_date = ? " +
+                    "AND (slot_id IS NULL OR status LIKE N'%nghỉ%' OR status LIKE N'%leave%')";
+        
+        try {
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(sql);
             ps.setInt(1, doctorId);
             ps.setDate(2, java.sql.Date.valueOf(workDate));
             rs = ps.executeQuery();
             
-            while (rs.next()) {
-                int slotId = rs.getInt("slot_id");
-                String status = rs.getString("status");
-                slotIds.add(slotId);
-                System.out.println("   - Found slot: " + slotId + " with status: " + status);
+            if (rs.next()) {
+                int leaveCount = rs.getInt(1);
+                return leaveCount == 0; // Không có bản ghi nghỉ = đang làm việc
             }
-            
-            if (slotIds.isEmpty()) {
-                System.out.println("   ❌ No slots found! Checking raw data...");
-                
-                // Debug query - check all schedules for this doctor and date
-                String debugSql = "SELECT ds.slot_id, ds.status FROM DoctorSchedule ds WHERE ds.doctor_id = ? AND ds.work_date = ?";
-                try (PreparedStatement debugPs = conn.prepareStatement(debugSql)) {
-                    debugPs.setInt(1, doctorId);
-                    debugPs.setDate(2, java.sql.Date.valueOf(workDate));
-                    ResultSet debugRs = debugPs.executeQuery();
-                    
-                    System.out.println("   🔍 All schedules for this doctor/date:");
-                    while (debugRs.next()) {
-                        System.out.println("      - Slot: " + debugRs.getInt("slot_id") + ", Status: '" + debugRs.getString("status") + "'");
-                    }
-                }
-                
-                // Check if appointments exist for this doctor/date
-                String appointmentSql = "SELECT ap.slot_id, ap.status FROM Appointment ap WHERE ap.doctor_id = ? AND ap.work_date = ?";
-                try (PreparedStatement apPs = conn.prepareStatement(appointmentSql)) {
-                    apPs.setInt(1, doctorId);
-                    apPs.setDate(2, java.sql.Date.valueOf(workDate));
-                    ResultSet apRs = apPs.executeQuery();
-                    
-                    System.out.println("   🔍 All appointments for this doctor/date:");
-                    boolean hasAppointments = false;
-                    while (apRs.next()) {
-                        hasAppointments = true;
-                        System.out.println("      - Appointment Slot: " + apRs.getInt("slot_id") + ", Status: '" + apRs.getString("status") + "'");
-                    }
-                    if (!hasAppointments) {
-                        System.out.println("      - No appointments found");
-                    }
-                }
-            } else {
-                System.out.println("   ✅ Found " + slotIds.size() + " approved slots: " + slotIds);
-            }
-            
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi lấy slot_id: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
@@ -461,7 +516,28 @@ public class DoctorScheduleDAO {
             if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         
-        return slotIds;
+        return true; // Mặc định là đang làm việc nếu không có dữ liệu
+    }
+
+    /**
+     * ✅ FIXED: Kiểm tra đã có lịch nghỉ cho bác sĩ, ngày chưa 
+     * (Hàm này chỉ để kiểm tra tránh trùng lặp khi thêm nghỉ phép)
+     */
+    public boolean existsSchedule(long doctorId, java.sql.Date workDate, int slotId) {
+        String sql = "SELECT COUNT(*) FROM DoctorSchedule WHERE doctor_id = ? AND work_date = ? AND slot_id = ?";
+        try {
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1, doctorId);
+            ps.setDate(2, workDate);
+            ps.setInt(3, slotId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // Utility Methods
@@ -497,6 +573,38 @@ public class DoctorScheduleDAO {
     @Deprecated
     public static Object getAvailableDates(int parseInt) {
         throw new UnsupportedOperationException("Method deprecated. Use getWorkDatesByDoctorId instead.");
+    }
+
+    /**
+     * ⚠️ DEPRECATED: Hàm cũ dùng logic sai - sẽ được thay thế dần
+     */
+    @Deprecated
+    public static List<Integer> getApprovedSlotIdsByDoctorAndDate(int doctorId, String workDate) {
+        System.out.println("⚠️ [DEPRECATED] getApprovedSlotIdsByDoctorAndDate() - Nên dùng getAvailableSlotIdsByDoctorAndDate()");
+        
+        // Gọi hàm mới để tương thích ngược
+        return getAvailableSlotIdsByDoctorAndDate(doctorId, workDate);
+    }
+
+    /**
+     * DEPRECATED: Hàm này đã bị xóa vì sai logic.
+     * DoctorSchedule chỉ dùng để lưu LỊCH NGHỈ, không phải lịch làm việc.
+     * Mặc định bác sĩ làm việc tất cả các ngày, chỉ nghỉ khi có bản ghi trong DoctorSchedule.
+     */
+    @Deprecated
+    public void autoGenerateSchedulesForAllDoctors2Weeks() {
+        System.out.println("⚠️ [DEPRECATED] autoGenerateSchedulesForAllDoctors2Weeks() - Hàm này không còn được sử dụng");
+        System.out.println("💡 Logic mới: DoctorSchedule chỉ lưu NGÀY NGHỈ, không phải ngày làm việc");
+        // Không thực hiện gì cả
+    }
+
+    /**
+     * DEPRECATED: Hàm này đã bị xóa vì sai logic.
+     */
+    @Deprecated 
+    public void autoGenerateFullDaySchedules(long doctorId) {
+        System.out.println("⚠️ [DEPRECATED] autoGenerateFullDaySchedules() - Hàm này không còn được sử dụng");
+        // Không thực hiện gì cả
     }
 
     // Test main method

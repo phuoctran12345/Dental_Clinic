@@ -365,30 +365,10 @@
                                 <div class="stat-card">
                                     <div class="stat-content">
                                         <div class="stat-info">
-                                            <h3>Đang chờ</h3>
-                                            <div class="stat-number">${waitingCount}</div>
+                                            <h3>Đã đặt lịch</h3>
+                                            <div class="stat-number">${bookedCount}</div>
                                         </div>
-                                        <i class="fas fa-clock stat-icon"></i>
-                                    </div>
-                                </div>
-
-                                <div class="stat-card">
-                                    <div class="stat-content">
-                                        <div class="stat-info">
-                                            <h3>Đã xác nhận</h3>
-                                            <div class="stat-number">${confirmedCount}</div>
-                                        </div>
-                                        <i class="fas fa-check stat-icon"></i>
-                                    </div>
-                                </div>
-
-                                <div class="stat-card">
-                                    <div class="stat-content">
-                                        <div class="stat-info">
-                                            <h3>Đang điều trị</h3>
-                                            <div class="stat-number">${treatmentCount}</div>
-                                        </div>
-                                        <i class="fas fa-stethoscope stat-icon"></i>
+                                        <i class="fas fa-calendar-check stat-icon"></i>
                                     </div>
                                 </div>
 
@@ -399,6 +379,26 @@
                                             <div class="stat-number">${completedCount}</div>
                                         </div>
                                         <i class="fas fa-check-circle stat-icon"></i>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-content">
+                                        <div class="stat-info">
+                                            <h3>Đã hủy</h3>
+                                            <div class="stat-number">${cancelledCount}</div>
+                                        </div>
+                                        <i class="fas fa-times-circle stat-icon"></i>
+                                    </div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-content">
+                                        <div class="stat-info">
+                                            <h3>Chờ thanh toán</h3>
+                                            <div class="stat-number">${waitingPaymentCount}</div>
+                                        </div>
+                                        <i class="fas fa-credit-card stat-icon"></i>
                                     </div>
                                 </div>
                             </div>
@@ -425,25 +425,21 @@
                                                             <div class="info-row">
                                                                 <h4 class="patient-name">${appointment.patientName}</h4>
                                                                 <c:choose>
-                                                                    <c:when
-                                                                        test="${appointment.status == 'Đã xác nhận' || appointment.status == 'ĐÃ ĐẶT'}">
-                                                                        <div class="status-badge confirmed">
-                                                                            ${appointment.status}</div>
+                                                                    <c:when test="${appointment.status == 'BOOKED'}">
+                                                                        <div class="status-badge confirmed">Đã đặt lịch
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:when test="${appointment.status == 'COMPLETED'}">
+                                                                        <div class="status-badge completed">Hoàn thành
+                                                                        </div>
+                                                                    </c:when>
+                                                                    <c:when test="${appointment.status == 'CANCELLED'}">
+                                                                        <div class="status-badge other">Đã hủy</div>
                                                                     </c:when>
                                                                     <c:when
-                                                                        test="${appointment.status == 'Đang chờ' || appointment.status == 'Chờ xác nhận' || appointment.status == 'ĐANG GIỮ CHỖ' || appointment.status == 'CHờ THANH TOÁN'}">
-                                                                        <div class="status-badge waiting">
-                                                                            ${appointment.status}</div>
-                                                                    </c:when>
-                                                                    <c:when
-                                                                        test="${appointment.status == 'Đang điều trị'}">
-                                                                        <div class="status-badge treatment">
-                                                                            ${appointment.status}</div>
-                                                                    </c:when>
-                                                                    <c:when
-                                                                        test="${appointment.status == 'Hoàn thành'}">
-                                                                        <div class="status-badge completed">
-                                                                            ${appointment.status}</div>
+                                                                        test="${appointment.status == 'WAITING_PAYMENT'}">
+                                                                        <div class="status-badge waiting">Chờ thanh toán
+                                                                        </div>
                                                                     </c:when>
                                                                     <c:otherwise>
                                                                         <div class="status-badge other">
@@ -473,27 +469,53 @@
                                                         </div>
 
                                                         <div class="action-buttons">
-                                                            <!-- Status Update Dropdown -->
+                                                            <!-- Status Update Dropdown - 4 Status Mới -->
                                                             <div class="status-update-dropdown">
                                                                 <select class="status-select"
                                                                     onchange="updateAppointmentStatus(${appointment.appointmentId}, this.value)"
                                                                     title="Thay đổi trạng thái">
-                                                                    <option value="${appointment.status}" selected>
-                                                                        ${appointment.status}</option>
-                                                                    <c:if test="${appointment.status != 'Đang chờ'}">
-                                                                        <option value="Đang chờ">🕐 Đang chờ</option>
+                                                                    <!-- Current Status -->
+                                                                    <c:choose>
+                                                                        <c:when
+                                                                            test="${appointment.status == 'BOOKED'}">
+                                                                            <option value="BOOKED" selected>📅 Đã đặt
+                                                                                lịch</option>
+                                                                        </c:when>
+                                                                        <c:when
+                                                                            test="${appointment.status == 'COMPLETED'}">
+                                                                            <option value="COMPLETED" selected>✅ Hoàn
+                                                                                thành</option>
+                                                                        </c:when>
+                                                                        <c:when
+                                                                            test="${appointment.status == 'CANCELLED'}">
+                                                                            <option value="CANCELLED" selected>❌ Đã hủy
+                                                                            </option>
+                                                                        </c:when>
+                                                                        <c:when
+                                                                            test="${appointment.status == 'WAITING_PAYMENT'}">
+                                                                            <option value="WAITING_PAYMENT" selected>💳
+                                                                                Chờ thanh toán</option>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <option value="${appointment.status}"
+                                                                                selected>${appointment.status}</option>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+
+                                                                    <!-- Other Options -->
+                                                                    <c:if test="${appointment.status != 'BOOKED'}">
+                                                                        <option value="BOOKED">📅 Đã đặt lịch</option>
+                                                                    </c:if>
+                                                                    <c:if test="${appointment.status != 'COMPLETED'}">
+                                                                        <option value="COMPLETED">✅ Hoàn thành</option>
+                                                                    </c:if>
+                                                                    <c:if test="${appointment.status != 'CANCELLED'}">
+                                                                        <option value="CANCELLED">❌ Đã hủy</option>
                                                                     </c:if>
                                                                     <c:if
-                                                                        test="${appointment.status != 'Đang điều trị'}">
-                                                                        <option value="Đang điều trị">👨‍⚕️ Đang điều
-                                                                            trị</option>
-                                                                    </c:if>
-                                                                    <c:if test="${appointment.status != 'Hoàn thành'}">
-                                                                        <option value="Hoàn thành">✅ Hoàn thành</option>
-                                                                    </c:if>
-                                                                    <c:if test="${appointment.status != 'Đã xác nhận'}">
-                                                                        <option value="Đã xác nhận">🔄 Đã xác nhận
-                                                                        </option>
+                                                                        test="${appointment.status != 'WAITING_PAYMENT'}">
+                                                                        <option value="WAITING_PAYMENT">💳 Chờ thanh
+                                                                            toán</option>
                                                                     </c:if>
                                                                 </select>
                                                             </div>

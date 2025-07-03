@@ -134,15 +134,17 @@ public class BookingPageServlet extends HttpServlet {
             // Lấy danh sách bác sĩ
             List<Doctors> doctors = DoctorDAO.getAllDoctors();
             if (doctors != null) {
-                DoctorScheduleDAO dsDAO = new DoctorScheduleDAO();
                 for (Doctors doctor : doctors) {
-                    List<DoctorSchedule> schedules = dsDAO.getSchedulesByDoctorId(doctor.getDoctor_id());
+                    // ✅ LOGIC MỚI: Lấy ngày làm việc bằng cách loại bỏ ngày nghỉ
+                    List<String> workDates = DoctorScheduleDAO.getWorkDatesExcludingLeaves((int) doctor.getDoctor_id(), 14); // 14 ngày tới
+                    doctor.setWorkDates(workDates);
+                    
+                    // Vẫn giữ schedules để hiển thị thông tin nghỉ phép (nếu cần)
+                    DoctorScheduleDAO dsDAO = new DoctorScheduleDAO();
+                    List<DoctorSchedule> schedules = dsDAO.getSchedulesByDoctorId((long) doctor.getDoctor_id());
                     doctor.setSchedules(schedules);
-
-                    Set<String> workDates = schedules.stream()
-                        .map(sch -> sch.getWorkDate().toString())
-                        .collect(Collectors.toSet());
-                    doctor.setWorkDates(new ArrayList<>(workDates));
+                    
+                    System.out.println("👨‍⚕️ Bác sĩ " + doctor.getFull_name() + " có " + workDates.size() + " ngày làm việc");
                 }
             }
             request.setAttribute("doctors", doctors);
@@ -287,8 +289,8 @@ public class BookingPageServlet extends HttpServlet {
             System.out.println("Getting timeslots for doctorId: " + doctorId + ", workDate: " + workDate);
             
             // Lấy danh sách slot_id mà bác sĩ đã đăng ký và được xác nhận
-            List<Integer> approvedSlotIds = DoctorScheduleDAO.getApprovedSlotIdsByDoctorAndDate(doctorId, workDate);
-            System.out.println("Approved slot IDs: " + approvedSlotIds);
+            List<Integer> approvedSlotIds = DoctorScheduleDAO.getAvailableSlotIdsByDoctorAndDate(doctorId, workDate);
+            System.out.println("✅ Available slot IDs (NEW LOGIC): " + approvedSlotIds);
             
             // Lấy danh sách slot đã được đặt
             List<Integer> bookedSlotIds = AppointmentDAO.getBookedSlots(doctorId, localDate);

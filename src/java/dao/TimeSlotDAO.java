@@ -236,4 +236,30 @@ public class TimeSlotDAO {
         
         return slots;
     }
+
+    /**
+     * Lấy 3 ca chính trong ngày (slotId = 1, 2, 3)
+     */
+    public List<TimeSlot> getMainTimeSlots() {
+        List<TimeSlot> timeSlots = new ArrayList<>();
+        String sql = "SELECT * FROM TimeSlot WHERE slot_id IN (1,2,3) ORDER BY slot_id ASC";
+        try {
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                TimeSlot slot = new TimeSlot();
+                slot.setSlotId(rs.getInt("slot_id"));
+                Time startTime = rs.getTime("start_time");
+                Time endTime = rs.getTime("end_time");
+                if (startTime != null && endTime != null) {
+                    slot.setStartTime(startTime.toLocalTime());
+                    slot.setEndTime(endTime.toLocalTime());
+                }
+                timeSlots.add(slot);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return timeSlots;
+    }
 }

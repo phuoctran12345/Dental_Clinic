@@ -496,7 +496,7 @@
                                 modal.show();
 
                                 // Load service detail
-                                fetch('/RoleStaff/services?action=detail&id=' + serviceId + '&format=json')
+                                fetch('/TestFull/services?action=detail&id=' + serviceId + '&format=json')
                                     .then(response => response.json())
                                     .then(service => {
                                         document.getElementById('serviceDetailContent').innerHTML =

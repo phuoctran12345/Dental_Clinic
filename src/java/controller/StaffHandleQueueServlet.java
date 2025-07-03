@@ -146,33 +146,32 @@ public class StaffHandleQueueServlet extends HttpServlet {
                 }
             }
             
-            // Tính số lượng theo status THỜI GIAN THỰC sử dụng constants
+            // Tính số lượng theo status THỜI GIAN THỰC sử dụng constants mới (4 trạng thái)
             int totalAppointments = appointmentsToUse.size();
-            int confirmedCount = 0, waitingCount = 0, completedCount = 0, treatmentCount = 0;
+            int bookedCount = 0, completedCount = 0, cancelledCount = 0, waitingPaymentCount = 0;
             
             System.out.println("📊 REALTIME STATUS COUNT for all appointments:");
             for (Appointment apt : appointmentsToUse) {
                 String status = apt.getStatus();
                 System.out.println("  - ID:" + apt.getAppointmentId() + " | Status: '" + status + "' | Patient: " + apt.getPatientName());
                 
-                // Sử dụng constants để đếm chính xác
-                if (STATUS_CONFIRMED_ALT.equals(status) || STATUS_CONFIRMED.equals(status)) {
-                    confirmedCount++;
-                } else if (STATUS_WAITING.equals(status) || STATUS_RESERVED.equals(status) || 
-                          STATUS_WAITING_PAYMENT.equals(status) || "Chờ xác nhận".equals(status)) {
-                    waitingCount++;
-                } else if (STATUS_IN_TREATMENT.equals(status)) {
-                    treatmentCount++;
-                } else if (STATUS_COMPLETED.equals(status)) {
+                // Sử dụng constants mới để đếm chính xác (4 trạng thái)
+                if (AppointmentDAO.STATUS_BOOKED.equals(status) || "Đã đặt".equals(status)) {
+                    bookedCount++;
+                } else if (AppointmentDAO.STATUS_COMPLETED.equals(status) || "Hoàn thành".equals(status)) {
                     completedCount++;
+                } else if (AppointmentDAO.STATUS_CANCELLED.equals(status) || "Đã hủy".equals(status)) {
+                    cancelledCount++;
+                } else if (AppointmentDAO.STATUS_WAITING_PAYMENT.equals(status) || "Chờ thanh toán".equals(status)) {
+                    waitingPaymentCount++;
                 }
             }
             
             System.out.println("📈 FINAL COUNTS: Total=" + totalAppointments + 
-                             " | Confirmed=" + confirmedCount + 
-                             " | Waiting=" + waitingCount + 
-                             " | Treatment=" + treatmentCount +
-                             " | Completed=" + completedCount);
+                             " | Booked=" + bookedCount + 
+                             " | Completed=" + completedCount + 
+                             " | Cancelled=" + cancelledCount +
+                             " | WaitingPayment=" + waitingPaymentCount);
             
             // DEBUG: Kiểm tra appointments trước khi gửi cho JSP
             System.out.println("🔍 DEBUG - Appointments list before sending to JSP:");
@@ -192,10 +191,10 @@ public class StaffHandleQueueServlet extends HttpServlet {
             // Gửi dữ liệu THỜI GIAN THỰC cho JSP
             request.setAttribute("appointments", appointmentsToUse);
             request.setAttribute("totalAppointments", totalAppointments);
-            request.setAttribute("confirmedCount", confirmedCount);
-            request.setAttribute("waitingCount", waitingCount);
-            request.setAttribute("treatmentCount", treatmentCount);
+            request.setAttribute("bookedCount", bookedCount);
             request.setAttribute("completedCount", completedCount);
+            request.setAttribute("cancelledCount", cancelledCount);
+            request.setAttribute("waitingPaymentCount", waitingPaymentCount);
             
             System.out.println("✅ Forwarding to JSP with " + appointmentsToUse.size() + " appointments");
             
@@ -243,8 +242,6 @@ public class StaffHandleQueueServlet extends HttpServlet {
             handleQueueManagement(request, response);
         }
     }
-
-
 
     /**
      * Xử lý chức năng gọi bệnh nhân từ số staff

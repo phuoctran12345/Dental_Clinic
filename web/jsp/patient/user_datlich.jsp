@@ -440,6 +440,61 @@
                                         </c:forEach>
                                     </div>
 
+                                    <!-- Bảng hiển thị lịch làm việc của tất cả bác sĩ (2 tuần tới) -->
+                                    <h3 class="mt-5">Lịch làm việc của tất cả bác sĩ (2 tuần tới)</h3>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Lưu ý:</strong> Bảng này hiển thị ngày làm việc thực tế (đã loại bỏ ngày
+                                        nghỉ phép của bác sĩ)
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Bác sĩ</th>
+                                                    <th>Ngày làm việc</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach items="${doctors}" var="doctor">
+                                                    <c:forEach items="${doctor.workDates}" var="workDate">
+                                                        <tr>
+                                                            <td>${doctor.full_name} - ${doctor.specialty}</td>
+                                                            <td>${workDate}</td>
+                                                            <td><span class="badge bg-success">Đang làm việc</span></td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-primary"
+                                                                    onclick="openBookingModal('${doctor.doctor_id}', '${workDate}')">
+                                                                    Đặt lịch
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <script>
+                                        function openBookingModal(doctorId, workDate) {
+                                            // Tìm modal của bác sĩ tương ứng
+                                            const modal = document.getElementById('bookingModal' + doctorId);
+                                            if (modal) {
+                                                // Set ngày đã chọn vào input date
+                                                const dateInput = modal.querySelector('input[name="workDate"]');
+                                                if (dateInput) {
+                                                    dateInput.value = workDate;
+                                                }
+
+                                                // Hiển thị modal
+                                                const bootstrapModal = new bootstrap.Modal(modal);
+                                                bootstrapModal.show();
+                                            }
+                                        }
+                                    </script>
+
                                     <!-- Danh sách lịch hẹn -->
                                     <div class="appointment-list">
                                         <h3>Lịch hẹn của bạn</h3>
@@ -482,11 +537,11 @@
                                             minDate: "today", // Không cho chọn ngày cũ
                                             locale: {
                                                 firstDayOfWeek: 1 // Thứ 2 là ngày đầu tuần
-                                            },
+                                                },
                                             onChange: function (selectedDates, dateStr) {
                                                 updateSchedules(dateStr, ${ doctor.doctor_id });
-                                            }
-                                        });
+                                                }
+                                            });
                                         </c:forEach>
                                     });
 
