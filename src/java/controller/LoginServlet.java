@@ -40,11 +40,28 @@ import org.json.JSONObject;
  */
 public class LoginServlet extends HttpServlet {
 
-   private static final String CLIENT_ID = "20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com";
-    private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI = "http://localhost:8080/TestFull/login-google";
+    /*
+    Tóm lại: Nếu email Google chưa có trong database, hãy tự động tạo tài khoản mới rồi đăng nhập luôn. Nếu đã có thì đăng nhập như bình thường.
+    */
+
+    private static final String CLIENT_ID = "YOUR_CLIENT_ID";
+    private static final String CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+ 
+    private String REDIRECT_URI;
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // Get the context path dynamically
+        String contextPath = "/TestFull";  // Hardcode context path
+        REDIRECT_URI = "http://localhost:8080" + contextPath + "/LoginGG/LoginGoogleHandler";
+        System.out.println("[DEBUG] REDIRECT_URI initialized: " + REDIRECT_URI);
+        System.out.println("[DEBUG] CLIENT_ID: " + CLIENT_ID);
+        // Don't log the full client secret for security
+        System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): " + CLIENT_SECRET.substring(0, 4));
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -84,149 +101,119 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Xử lý callback từ Google OAuth2
-        String code = request.getParameter("code");
-        System.out.println("Received code from Google: " + code);
+        HttpSession session = request.getSession();
+        String userEmail = (String) session.getAttribute("userEmail");
         
-        if (code != null) {
-            try {
-                // Lấy access token từ code
-                GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                    HTTP_TRANSPORT,
-                    JSON_FACTORY,
-                    CLIENT_ID,
-                    CLIENT_SECRET,
-                    code,
-                    REDIRECT_URI)
-                    .execute();
+        if (userEmail != null) {
+            // Đã có thông tin email từ Google OAuth
+            User user = UserDAO.getUserByEmail(userEmail);
+            
+            if (user != null) {
+                // Người dùng đã tồn tại -> Đăng nhập
+                session.setAttribute("user", user);
+                session.setAttribute("role", user.getRole());
+                session.setAttribute("userId", user.getId());
+                System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
 
-                String accessToken = tokenResponse.getAccessToken();
-                System.out.println("Got access token: " + accessToken);
+                Patients patient = UserDAO.getPatientByUserId(user.getId());
+                session.setAttribute("patient", patient);
 
-                // Lấy thông tin người dùng từ Google API
-                URL url = new URL("https://www.googleapis.com/oauth2/v2/userinfo");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
+                List<Doctors> doctors = DoctorDAO.getAllDoctorsOnline();
+                request.setAttribute("doctors", doctors);
+                
+                String role = user.getRole();
 
-                int responseCode = conn.getResponseCode();
-                System.out.println("Google API Response Code: " + responseCode);
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    StringBuilder result = new StringBuilder();
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            result.append(line);
-                        }
+                if ("DOCTOR".equalsIgnoreCase(role)) {
+                    Doctors doctor = DoctorDAO.getDoctorByUserId(user.getId());
+                    if (doctor != null) {
+                        session.setAttribute("doctor_id", doctor.getDoctor_id());
+                        session.setAttribute("doctor", doctor);
+                        System.out.println("Google login - doctor_id set in session: " + doctor.getDoctor_id());
                     }
-
-                    String jsonResponse = result.toString();
-                    System.out.println("Google API Response: " + jsonResponse);
-
-                    // Parse thông tin người dùng từ JSON
-                    JSONObject userInfo = new JSONObject(jsonResponse);
-                    String email = userInfo.getString("email");
-                    String name = userInfo.getString("name");
-                    
-                    System.out.println("User info from Google - Email: " + email + ", Name: " + name);
-                    
-                    // Kiểm tra email trong database
-                    User user = UserDAO.getUserByEmail(email);
-                    
-                    if (user != null) {
-                        System.out.println("User found in database with role: " + user.getRole());
-                        // Người dùng đã tồn tại -> Đăng nhập
-                        HttpSession session = request.getSession();
-                        
-                        // Lưu user vào session (password_hash đã được hash trong UserDAO)
-                        session.setAttribute("user", user);
-                        session.setAttribute("role", user.getRole());
-                        session.setAttribute("userId", user.getId());
-                        System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
-
-                        Patients patient = UserDAO.getPatientByUserId(user.getId());
-                        session.setAttribute("patient", patient);
-
-                        List<Doctors> doctors = DoctorDAO.getAllDoctorsOnline();
-                        request.setAttribute("doctors", doctors);
-                        
-                        String role = user.getRole();
-
-                        if ("DOCTOR".equalsIgnoreCase(role)) {
-                            // Lấy doctor_id từ DB bằng user_id
-                            Doctors doctor = DoctorDAO.getDoctorByUserId(user.getId());
-                            if (doctor != null) {
-                                session.setAttribute("doctor_id", doctor.getDoctor_id());
-                                session.setAttribute("doctor", doctor); // ✅ SỬA LỖI: Thêm doctor object vào session
-                                System.out.println("Google login - doctor_id set in session: " + doctor.getDoctor_id());
-                            } else {
-                                System.out.println("Google login - Không tìm thấy doctor theo user_id: " + user.getId());
-                            }
-                            response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
-                        } else if ("PATIENT".equalsIgnoreCase(role)) {
-                            request.getRequestDispatcher("jsp/patient/user_homepage.jsp").forward(request, response);
-                        } else if ("STAFF".equalsIgnoreCase(role)) {
-                            request.getRequestDispatcher("/jsp/staff/staff_tongquan.jsp").forward(request, response);
-                        } else if ("MANAGER".equalsIgnoreCase(role)) {
-                            request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
-                        } else {
-                            System.out.println("Invalid role: " + role);
-                            response.sendRedirect("login.jsp?error=invalid_role");
-                        }
-                    } else {
-                        System.out.println("User not found, creating new account");
-                        // Tạo mật khẩu ngẫu nhiên cho người dùng mới
-                        String randomPassword = generateRandomPassword();
-                        
-                        // Đăng ký người dùng mới với role PATIENT
-                        int userId = UserDAO.registerPatient(email, randomPassword);
-                        
-                        if (userId > 0) {
-                            System.out.println("New user created with ID: " + userId);
-                            // Lấy thông tin user vừa tạo
-                            user = UserDAO.getUserByEmail(email);
-                            
-                            // Đăng nhập
-                            HttpSession session = request.getSession();
-                            
-                            // Lưu user vào session (password_hash đã được hash trong UserDAO)
-                            session.setAttribute("user", user);
-                            session.setAttribute("role", user.getRole());
-                            session.setAttribute("userId", user.getId());
-                            System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
-                            
-                            // Chuyển đến trang đăng ký thông tin bệnh nhân
-                            request.setAttribute("googleEmail", email);
-                            request.setAttribute("googleName", name);
-                            request.getRequestDispatcher("signup.jsp").forward(request, response);
-                        } else {
-                            System.out.println("Failed to create new user");
-                            response.sendRedirect("login.jsp?error=" + java.net.URLEncoder.encode("registration_failed", "UTF-8"));
-                        }
-                    }
+                    response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
+                } else if ("PATIENT".equalsIgnoreCase(role)) {
+                    request.getRequestDispatcher("jsp/patient/user_homepage.jsp").forward(request, response);
+                } else if ("STAFF".equalsIgnoreCase(role)) {
+                    request.getRequestDispatcher("/jsp/staff/staff_tongquan.jsp").forward(request, response);
+                } else if ("MANAGER".equalsIgnoreCase(role)) {
+                    request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
                 } else {
-                    // Đọc error stream nếu có
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
-                        StringBuilder errorResult = new StringBuilder();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            errorResult.append(line);
-                        }
-                        System.out.println("Google API Error Response: " + errorResult.toString());
-                    }
-                    System.out.println("Failed to get user info from Google API");
-                    response.sendRedirect("login.jsp?error=" + java.net.URLEncoder.encode("google_api_failed", "UTF-8"));
+                    System.out.println("Invalid role: " + role);
+                    response.sendRedirect("login.jsp?error=invalid_role");
                 }
-            } catch (Exception e) {
-                System.out.println("Error during Google OAuth2 process: " + e.getMessage());
-                e.printStackTrace();
-                response.sendRedirect("login.jsp?error=" + java.net.URLEncoder.encode("google_auth_failed", "UTF-8"));
+            } else {
+                // Người dùng chưa tồn tại -> Chuyển đến trang đăng ký
+                response.sendRedirect(request.getContextPath() + "/signup.jsp");
             }
         } else {
-            // Nếu không phải callback từ Google -> Xử lý đăng nhập thông thường
-            processRequest(request, response);
+            // Xử lý OAuth callback từ Google
+            String code = request.getParameter("code");
+            String error = request.getParameter("error");
+            
+            System.out.println("[DEBUG] Google OAuth callback - code: " + code);
+            System.out.println("[DEBUG] Google OAuth callback - error: " + error);
+            
+            if (error != null) {
+                System.out.println("[ERROR] Google OAuth error: " + error);
+                response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_oauth_error");
+                return;
+            }
+            
+            if (code != null) {
+                try {
+                    System.out.println("[DEBUG] Starting token request...");
+                    // Lấy access token từ code
+                    GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                        HTTP_TRANSPORT,
+                        JSON_FACTORY,
+                        CLIENT_ID,
+                        CLIENT_SECRET,
+                        code,
+                        REDIRECT_URI)
+                        .execute();
+
+                    String accessToken = tokenResponse.getAccessToken();
+                    System.out.println("Got access token: " + accessToken);
+
+                    // Lấy thông tin người dùng từ Google API
+                    URL url = new URL("https://www.googleapis.com/oauth2/v2/userinfo");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                    conn.setRequestMethod("GET");
+                    conn.setRequestProperty("Accept", "application/json");
+
+                    int responseCode = conn.getResponseCode();
+                    System.out.println("Google API Response Code: " + responseCode);
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        StringBuilder result = new StringBuilder();
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result.append(line);
+                            }
+                        }
+
+                        String jsonResponse = result.toString();
+                        System.out.println("Google API Response: " + jsonResponse);
+
+                        // Parse thông tin người dùng từ JSON
+                        JSONObject userInfo = new JSONObject(jsonResponse);
+                        String email = userInfo.getString("email");
+                        String name = userInfo.getString("name");
+                        
+                        System.out.println("User info from Google - Email: " + email + ", Name: " + name);
+                        
+                        // Lưu thông tin vào session và redirect lại để xử lý
+                        session.setAttribute("userEmail", email);
+                        session.setAttribute("userName", name);
+                        response.sendRedirect(request.getContextPath() + "/LoginServlet");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_auth_failed");
+                }
+            }
         }
     }
 
