@@ -25,10 +25,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.annotation.WebServlet;
 import java.util.List;
 import model.DoctorSchedule;
 import model.User;
-import jakarta.servlet.annotation.WebServlet;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -183,31 +183,7 @@ public class BookingPageServlet extends HttpServlet {
             }
             request.setAttribute("workDates", workDates);
             
-            String bookingFor = request.getParameter("bookingFor");
-            Integer relativeId = null;
-            if ("relative".equals(bookingFor)) {
-                String relativeName = request.getParameter("relativeName");
-                String relativePhone = request.getParameter("relativePhone");
-                String relativeDob = request.getParameter("relativeDob");
-                String relativeGender = request.getParameter("relativeGender");
-                String relativeRelationship = request.getParameter("relativeRelationship");
-                if (relativeName == null || relativeName.trim().isEmpty() ||
-                    relativePhone == null || relativePhone.trim().isEmpty() ||
-                    relativeDob == null || relativeDob.trim().isEmpty() ||
-                    relativeGender == null || relativeGender.trim().isEmpty() ||
-                    relativeRelationship == null || relativeRelationship.trim().isEmpty()) {
-                    request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin người thân!");
-                    doGet(request, response);
-                    return;
-                }
-                int userId = patient.getId();
-                relativeId = RelativesDAO.getOrCreateRelative(userId, relativeName, relativePhone, relativeDob, relativeGender, relativeRelationship);
-                if (relativeId == -1) {
-                    request.setAttribute("error", "Không thể lưu thông tin người thân. Vui lòng kiểm tra lại!");
-                    doGet(request, response);
-                    return;
-                }
-            }
+            // Không cần validate thông tin người thân ở doGet nữa - xử lý ở doPost
             
             request.getRequestDispatcher("/jsp/patient/user_datlich.jsp").forward(request, response);
             
@@ -234,6 +210,26 @@ public class BookingPageServlet extends HttpServlet {
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+        
+        HttpSession session = request.getSession();
+        User patient = (User) session.getAttribute("user");
+
+        // Kiểm tra session
+        if (patient == null) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Phiên đăng nhập đã hết hạn\"}");
+            return;
+        }
+        
+        String action = request.getParameter("action");
+        
+        // Xử lý tạo/lấy relative_id
+        if ("createRelative".equals(action)) {
+            handleCreateRelative(request, response, patient);
+            return;
+        }
+        
+        // Xử lý đặt lịch bình thường
         response.setContentType("text/html;charset=UTF-8");
         
         // Lấy dữ liệu từ form đặt lịch
@@ -244,21 +240,50 @@ public class BookingPageServlet extends HttpServlet {
         String serviceIdStr = request.getParameter("serviceId"); // Nhận serviceId từ form
         String bookingFor = request.getParameter("bookingFor");
         String relativeIdStr = request.getParameter("relativeId");
-        
-        HttpSession session = request.getSession();
-        User patient = (User) session.getAttribute("user");
-
-        // Kiểm tra session
-        if (patient == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
 
         // Kiểm tra dữ liệu đầu vào
         if (doctorIdStr == null || workDate == null || slotIdStr == null) {
             request.setAttribute("error", "Thiếu thông tin đặt lịch!");
             doGet(request, response);
             return;
+        }
+        
+        // TẠO RELATIVE_ID TỰ ĐỘNG KHI CHỌN "RELATIVE"
+        if ("relative".equals(bookingFor)) {
+            System.out.println("🎯 User chọn đặt lịch cho người thân - Tạo relative_id tự động");
+            
+            // Tạo thông tin người thân mặc định từ thông tin user
+            String defaultName = "Người thân của " + patient.getUsername();
+            String defaultPhone = patient.getPhone() != null ? patient.getPhone() : "0000000000";
+            String defaultDob = "1990-01-01"; // Ngày sinh mặc định
+            String defaultGender = "Khác";
+            String defaultRelationship = "Khác";
+            
+            try {
+                RelativesDAO relativesDAO = new RelativesDAO();
+                int relativeId = relativesDAO.getOrCreateRelative(
+                    patient.getId(),
+                    defaultName,
+                    defaultPhone,
+                    defaultDob,
+                    defaultGender,
+                    defaultRelationship
+                );
+                
+                if (relativeId > 0) {
+                    relativeIdStr = String.valueOf(relativeId);
+                    System.out.println("✅ Đã tạo relative_id tự động: " + relativeId + " cho user_id: " + patient.getId());
+                } else {
+                    request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
+                    doGet(request, response);
+                    return;
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Lỗi tạo relative_id: " + e.getMessage());
+                request.setAttribute("error", "Có lỗi khi tạo thông tin người thân!");
+                doGet(request, response);
+                return;
+            }
         }
 
         try {
@@ -310,6 +335,58 @@ public class BookingPageServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
             doGet(request, response);
+        }
+    }
+    
+    /**
+     * Xử lý tạo/lấy thông tin người thân
+     */
+    private void handleCreateRelative(HttpServletRequest request, HttpServletResponse response, User patient) 
+            throws ServletException, IOException {
+        
+        try {
+            String relativeName = request.getParameter("relativeName");
+            String relativePhone = request.getParameter("relativePhone");
+            String relativeDob = request.getParameter("relativeDob");
+            String relativeGender = request.getParameter("relativeGender");
+            String relativeRelationship = request.getParameter("relativeRelationship");
+            
+            // Validate dữ liệu
+            if (relativeName == null || relativeName.trim().isEmpty() ||
+                relativePhone == null || relativePhone.trim().isEmpty() ||
+                relativeDob == null || relativeDob.trim().isEmpty() ||
+                relativeGender == null || relativeGender.trim().isEmpty() ||
+                relativeRelationship == null || relativeRelationship.trim().isEmpty()) {
+                
+                response.getWriter().write("{\"success\": false, \"message\": \"Vui lòng nhập đầy đủ thông tin người thân!\"}");
+                return;
+            }
+            
+            // Tạo/lấy relative_id
+            RelativesDAO relativesDAO = new RelativesDAO();
+            int relativeId = relativesDAO.getOrCreateRelative(
+                patient.getId(),
+                relativeName.trim(),
+                relativePhone.trim(),
+                relativeDob,
+                relativeGender.trim(),
+                relativeRelationship.trim()
+            );
+            
+            if (relativeId > 0) {
+                System.out.println("✅ [RELATIVE BOOKING] Created/found relative_id: " + relativeId 
+                    + " for user_id: " + patient.getId() 
+                    + " | Name: " + relativeName);
+                
+                response.getWriter().write("{\"success\": true, \"relativeId\": " + relativeId + "}");
+            } else {
+                response.getWriter().write("{\"success\": false, \"message\": \"Không thể tạo thông tin người thân!\"}");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error in handleCreateRelative: " + e.getMessage());
+            e.printStackTrace();
+            response.getWriter().write("{\"success\": false, \"message\": \"Lỗi hệ thống: " + e.getMessage() + "\"}");
         }
     }
     

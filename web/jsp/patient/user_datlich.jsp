@@ -74,44 +74,6 @@
 
                                     .time-slots {
                                         display: grid;
-                                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                                        gap: 10px;
-                                        margin-top: 10px;
-                                    }
-
-                                    .time-slot-item {
-                                        border: 1px solid #ddd;
-                                        border-radius: 5px;
-                                        padding: 10px;
-                                        text-align: center;
-                                        cursor: pointer;
-                                        transition: all 0.3s ease;
-                                    }
-
-                                    .time-slot-item:hover {
-                                        background-color: #f8f9fa;
-                                        border-color: #00796b;
-                                    }
-
-                                    .time-slot-label {
-                                        margin: 0;
-                                        cursor: pointer;
-                                        display: block;
-                                        padding: 5px;
-                                    }
-
-                                    input[type="radio"] {
-                                        display: none;
-                                    }
-
-                                    input[type="radio"]:checked+.time-slot-label {
-                                        background-color: #00796b;
-                                        color: white;
-                                        border-radius: 3px;
-                                    }
-
-                                    .time-slots {
-                                        display: grid;
                                         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
                                         gap: 10px;
                                         margin-top: 15px;
@@ -161,6 +123,61 @@
                                         right: 5px;
                                         font-size: 12px;
                                     }
+
+                                    /* Tab styles cho modal */
+                                    .nav-tabs .nav-link {
+                                        border: none;
+                                        border-bottom: 3px solid transparent;
+                                        color: #6c757d;
+                                        font-weight: 500;
+                                        padding: 12px 20px;
+                                    }
+
+                                    .nav-tabs .nav-link:hover {
+                                        border-color: transparent;
+                                        color: #00796b;
+                                        background-color: #f8f9fa;
+                                    }
+
+                                    .nav-tabs .nav-link.active {
+                                        color: #00796b;
+                                        background-color: transparent;
+                                        border-color: transparent transparent #00796b transparent;
+                                        font-weight: 600;
+                                    }
+
+                                    .relative-info-card {
+                                        border: 1px solid #e3f2fd;
+                                        background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+                                        border-radius: 10px;
+                                        margin-top: 15px;
+                                    }
+
+                                    .relative-info-card .card-header {
+                                        background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+                                        color: white;
+                                        border-bottom: none;
+                                    }
+
+                                    .service-item {
+                                        border: 2px solid #dee2e6;
+                                        background: #f8f9fa;
+                                        padding: 12px;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        transition: all 0.3s ease;
+                                        min-height: 120px;
+                                    }
+
+                                    .service-item:hover {
+                                        border-color: #00796b;
+                                        background: #e8f5e8;
+                                    }
+
+                                    .service-item.selected {
+                                        border-color: #00796b;
+                                        background: #e8f5e8;
+                                    }
                                 </style>
                             </head>
 
@@ -168,104 +185,18 @@
                                 <div class="container">
                                     <h2 class="mb-4">Đặt lịch khám bệnh</h2>
 
-                                    <!-- Tab chuyển đổi giữa đặt cho mình và người thân -->
-                                    <div class="booking-type-tabs mb-4">
-                                        <ul class="nav nav-tabs" id="bookingTypeTabs" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="self-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#self-booking" type="button" role="tab"
-                                                    aria-controls="self-booking" aria-selected="true">
-                                                    <i class="fas fa-user me-2"></i>Đặt cho mình
-                                                </button>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="relative-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#relative-booking" type="button" role="tab"
-                                                    aria-controls="relative-booking" aria-selected="false">
-                                                    <i class="fas fa-users me-2"></i>Đặt cho người thân
-                                                </button>
-                                            </li>
+                                    <!-- Hướng dẫn sử dụng -->
+                                    <div class="alert alert-info mb-4">
+                                        <h5><i class="fas fa-info-circle me-2"></i>Hướng dẫn đặt lịch:</h5>
+                                        <ul class="mb-0">
+                                            <li><strong>🧑 Đặt cho bản thân:</strong> Chọn tab "Đặt cho mình"</li>
+                                            <li><strong>👨‍👩‍👧‍👦 Đặt cho người thân:</strong> Chọn tab "Đặt cho người
+                                                thân" và điền thông tin</li>
+                                            <li><strong>⚙️ Server tự động xử lý:</strong> Servlet sẽ validate và lưu
+                                                database</li>
+                                            <li><strong>🎯 Kết quả:</strong> Bản thân → patient_id có giá trị | Người
+                                                thân → relative_id có giá trị</li>
                                         </ul>
-                                        <div class="tab-content" id="bookingTypeTabContent">
-                                            <!-- Tab đặt cho mình -->
-                                            <div class="tab-pane fade show active" id="self-booking" role="tabpanel"
-                                                aria-labelledby="self-tab">
-                                                <div class="alert alert-info mt-3">
-                                                    <i class="fas fa-info-circle me-2"></i>
-                                                    <strong>Đặt lịch cho bản thân:</strong> Sử dụng thông tin tài khoản
-                                                    của bạn
-                                                </div>
-                                            </div>
-                                            <!-- Tab đặt cho người thân -->
-                                            <div class="tab-pane fade" id="relative-booking" role="tabpanel"
-                                                aria-labelledby="relative-tab">
-                                                <div class="alert alert-warning mt-3">
-                                                    <i class="fas fa-users me-2"></i>
-                                                    <strong>Đặt lịch cho người thân:</strong> Vui lòng nhập đầy đủ thông
-                                                    tin người cần khám
-                                                </div>
-                                                <!-- Form thông tin người thân -->
-                                                <div class="relative-info-form card">
-                                                    <div class="card-header">
-                                                        <h6><i class="fas fa-user-plus me-2"></i>Thông tin người thân
-                                                        </h6>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="col-md-6 mb-3">
-                                                                <label class="form-label">Họ và tên <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="text" id="relativeName" name="relativeName"
-                                                                    class="form-control"
-                                                                    placeholder="Nhập họ tên người thân" required>
-                                                            </div>
-                                                            <div class="col-md-6 mb-3">
-                                                                <label class="form-label">Số điện thoại <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="tel" id="relativePhone"
-                                                                    name="relativePhone" class="form-control"
-                                                                    placeholder="Nhập số điện thoại" required>
-                                                            </div>
-                                                            <div class="col-md-4 mb-3">
-                                                                <label class="form-label">Ngày sinh <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="date" id="relativeDob" name="relativeDob"
-                                                                    class="form-control" required>
-                                                            </div>
-                                                            <div class="col-md-4 mb-3">
-                                                                <label class="form-label">Giới tính <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select id="relativeGender" name="relativeGender"
-                                                                    class="form-control" required>
-                                                                    <option value="">Chọn giới tính</option>
-                                                                    <option value="Nam">Nam</option>
-                                                                    <option value="Nữ">Nữ</option>
-                                                                    <option value="Khác">Khác</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-4 mb-3">
-                                                                <label class="form-label">Mối quan hệ <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select id="relativeRelationship"
-                                                                    name="relativeRelationship" class="form-control"
-                                                                    required>
-                                                                    <option value="">Chọn mối quan hệ</option>
-                                                                    <option value="Cha">Cha</option>
-                                                                    <option value="Mẹ">Mẹ</option>
-                                                                    <option value="Con">Con</option>
-                                                                    <option value="Anh">Anh</option>
-                                                                    <option value="Chị">Chị</option>
-                                                                    <option value="Em">Em</option>
-                                                                    <option value="Vợ">Vợ</option>
-                                                                    <option value="Chồng">Chồng</option>
-                                                                    <option value="Khác">Khác</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <!-- Hiển thị dịch vụ đã chọn -->
@@ -299,7 +230,6 @@
                                     <div class="search-box">
                                         <form id="searchForm" method="GET"
                                             action="${pageContext.request.contextPath}/BookingPageServlet">
-                                            <!-- Truyền serviceId trong search -->
                                             <c:if test="${not empty selectedService}">
                                                 <input type="hidden" name="serviceId"
                                                     value="${selectedService.serviceId}" />
@@ -311,8 +241,7 @@
                                                     <option value="">Chọn chuyên khoa</option>
                                                     <c:forEach items="${specialties}" var="spec">
                                                         <option value="${spec}" ${param.specialty==spec ? 'selected'
-                                                            : '' }>
-                                                            ${spec}</option>
+                                                            : '' }>${spec}</option>
                                                     </c:forEach>
                                                 </select>
                                                 <button type="submit" class="btn btn-primary">Tìm kiếm</button>
@@ -327,8 +256,6 @@
                                                 <div class="doctor-card">
                                                     <h4>${doctor.full_name}</h4>
                                                     <p><i class="fas fa-stethoscope"></i> ${doctor.specialty}</p>
-
-
                                                     <p>Số điện thoại: <i>${doctor.phone}</i></p>
                                                     <p>
                                                         <span>Trạng thái:</span>
@@ -345,11 +272,11 @@
                                                         </c:choose>
                                                     </p>
 
-
                                                     <button class="btn btn-book" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#bookingModal${doctor.doctor_id}">
                                                         Đặt lịch với bác sĩ này
                                                     </button>
+
                                                     <!-- workDates riêng cho từng bác sĩ -->
                                                     <script>
                                                         window['workDates_${doctor.doctor_id}'] = [
@@ -358,111 +285,87 @@
                                                             </c:forEach>
                                                         ];
                                                     </script>
-                                                    <!-- Modal riêng cho từng bác sĩ -->
+
+                                                    <!-- Modal đặt lịch -->
                                                     <div class="modal fade" id="bookingModal${doctor.doctor_id}"
                                                         tabindex="-1"
                                                         aria-labelledby="bookingModalLabel${doctor.doctor_id}"
                                                         aria-hidden="true">
-                                                        <div class="modal-dialog">
+                                                        <div class="modal-dialog modal-lg">
                                                             <div class="modal-content">
-                                                                <form
-                                                                    action="${pageContext.request.contextPath}/BookingPageServlet"
-                                                                    method="post">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title"
-                                                                            id="bookingModalLabel${doctor.doctor_id}">
-                                                                            Đăng
-                                                                            ký
-                                                                            lịch với ${doctor.full_name}</h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Đóng"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <input type="hidden" name="doctorId"
-                                                                            value="${doctor.doctor_id}" />
-                                                                        <!-- Truyền serviceId -->
-                                                                        <c:if test="${not empty selectedService}">
-                                                                            <input type="hidden" name="serviceId"
-                                                                                value="${selectedService.serviceId}" />
-                                                                        </c:if>
-                                                                        <!-- Hidden inputs cho đặt lịch người thân -->
-                                                                        <input type="hidden" name="bookingFor"
-                                                                            value="self" />
-                                                                        <input type="hidden" name="relativeId"
-                                                                            value="" />
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="bookingModalLabel${doctor.doctor_id}">
+                                                                        Đăng ký lịch với ${doctor.full_name}
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"></button>
+                                                                </div>
 
-                                                                        <!-- Chọn dịch vụ -->
-                                                                        <div class="mb-3">
-                                                                            <label class="form-label">Chọn dịch vụ
-                                                                                khám:</label>
+                                                                <div class="modal-body">
+                                                                    <!-- Tab Navigation -->
+                                                                    <ul class="nav nav-tabs"
+                                                                        id="bookingTabs${doctor.doctor_id}"
+                                                                        role="tablist">
+                                                                        <li class="nav-item" role="presentation">
+                                                                            <button class="nav-link active"
+                                                                                id="self-tab-${doctor.doctor_id}"
+                                                                                data-bs-toggle="tab"
+                                                                                data-bs-target="#self-${doctor.doctor_id}"
+                                                                                type="button" role="tab">
+                                                                                <i class="fas fa-user me-2"></i>Đặt cho
+                                                                                mình
+                                                                            </button>
+                                                                        </li>
+                                                                        <li class="nav-item" role="presentation">
+                                                                            <button class="nav-link"
+                                                                                id="relative-tab-${doctor.doctor_id}"
+                                                                                data-bs-toggle="tab"
+                                                                                data-bs-target="#relative-${doctor.doctor_id}"
+                                                                                type="button" role="tab">
+                                                                                <i class="fas fa-users me-2"></i>Đặt cho
+                                                                                người thân
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
 
-                                                                            <!-- Fallback: Load services trực tiếp nếu servlet không có -->
-                                                                            <c:if test="${empty services}">
-                                                                                <% try { dao.ServiceDAO fallbackDAO=new
-                                                                                    dao.ServiceDAO();
-                                                                                    java.util.List<model.Service>
-                                                                                    fallbackServices =
-                                                                                    fallbackDAO.getAllServices();
-                                                                                    request.setAttribute("services",
-                                                                                    fallbackServices);
-                                                                                    } catch (Exception e) {
-                                                                                    // Ignore
-                                                                                    } %>
-                                                                            </c:if>
-
-                                                                            <!-- Debug info -->
-                                                                            <div class="alert alert-info mb-3"
-                                                                                style="font-size: 0.85em;">
-                                                                                <strong>Debug:</strong> Số dịch vụ:
-                                                                                ${fn:length(services)}
-                                                                                <c:if test="${empty services}">
-                                                                                    <br><span class="text-warning">⚠️
-                                                                                        Không
-                                                                                        load được dịch vụ!</span>
+                                                                    <!-- Tab Content -->
+                                                                    <div class="tab-content"
+                                                                        id="bookingTabContent${doctor.doctor_id}">
+                                                                        <!-- Tab đặt lịch cho bản thân -->
+                                                                        <div class="tab-pane fade show active"
+                                                                            id="self-${doctor.doctor_id}"
+                                                                            role="tabpanel">
+                                                                            <form
+                                                                                action="${pageContext.request.contextPath}/BookingPageServlet"
+                                                                                method="post" class="mt-3">
+                                                                                <input type="hidden" name="doctorId"
+                                                                                    value="${doctor.doctor_id}" />
+                                                                                <input type="hidden" name="bookingFor"
+                                                                                    value="self" />
+                                                                                <c:if
+                                                                                    test="${not empty selectedService}">
+                                                                                    <input type="hidden"
+                                                                                        name="serviceId"
+                                                                                        value="${selectedService.serviceId}" />
                                                                                 </c:if>
-                                                                            </div>
 
-                                                                            <div class="row">
-                                                                                <c:choose>
-                                                                                    <c:when test="${empty services}">
-                                                                                        <div class="col-12">
-                                                                                            <div
-                                                                                                class="alert alert-warning text-center">
-                                                                                                <i
-                                                                                                    class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                                                                                                <h6>Không có dịch vụ nào
-                                                                                                </h6>
-                                                                                                <p class="mb-0 small">
-                                                                                                    Vấn đề
-                                                                                                    với ServiceDAO hoặc
-                                                                                                    database connection
-                                                                                                </p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
+                                                                                <!-- Chọn dịch vụ -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Chọn dịch
+                                                                                        vụ khám:</label>
+                                                                                    <div class="row">
                                                                                         <c:forEach items="${services}"
                                                                                             var="service">
                                                                                             <div class="col-md-6 mb-2">
                                                                                                 <div class="service-item"
-                                                                                                    style="
-                                                                                                border: 2px solid #dee2e6; 
-                                                                                                background: #f8f9fa; 
-                                                                                                padding: 12px; 
-                                                                                                border-radius: 8px; 
-                                                                                                cursor: pointer;
-                                                                                                transition: all 0.3s ease;
-                                                                                                min-height: 120px;
-                                                                                            " onmouseover="this.style.borderColor='#00796b'; this.style.background='#e8f5e8';"
-                                                                                                    onmouseout="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa';"
-                                                                                                    onclick="selectService_${doctor.doctor_id}(${service.serviceId}, '${service.serviceName}', ${service.price})">
+                                                                                                    onclick="selectService(this, ${service.serviceId}, '${service.serviceName}', ${service.price}, 'self_${doctor.doctor_id}')">
                                                                                                     <h6
-                                                                                                        style="color: #00796b; margin-bottom: 6px; font-size: 0.95em;">
+                                                                                                        style="color: #00796b; margin-bottom: 6px;">
                                                                                                         ${service.serviceName}
                                                                                                     </h6>
                                                                                                     <p class="text-muted mb-2"
-                                                                                                        style="font-size: 0.8em; line-height: 1.3;">
+                                                                                                        style="font-size: 0.85em;">
                                                                                                         ${service.description}
                                                                                                     </p>
                                                                                                     <div
@@ -471,8 +374,7 @@
                                                                                                             class="badge bg-info"
                                                                                                             style="font-size: 0.7em;">${service.category}</span>
                                                                                                         <strong
-                                                                                                            class="text-success"
-                                                                                                            style="font-size: 0.9em;">
+                                                                                                            class="text-success">
                                                                                                             <fmt:formatNumber
                                                                                                                 value="${service.price}"
                                                                                                                 pattern="#,##0" />
@@ -482,61 +384,255 @@
                                                                                                 </div>
                                                                                             </div>
                                                                                         </c:forEach>
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </div>
-
-                                                                            <!-- Hidden input để lưu serviceId đã chọn -->
-                                                                            <input type="hidden" name="serviceId"
-                                                                                id="selectedServiceId_${doctor.doctor_id}">
-
-                                                                            <!-- Hiển thị dịch vụ đã chọn -->
-                                                                            <div id="selectedServiceInfo_${doctor.doctor_id}"
-                                                                                class="mt-2" style="display: none;">
-                                                                                <div class="alert alert-success mb-0"
-                                                                                    style="font-size: 0.9em;">
-                                                                                    <strong>✅ Đã chọn:</strong> <span
-                                                                                        id="selectedServiceName_${doctor.doctor_id}"></span>
-                                                                                    <br><strong>Giá:</strong> <span
-                                                                                        id="selectedServicePrice_${doctor.doctor_id}"
-                                                                                        class="text-success"></span>
+                                                                                    </div>
+                                                                                    <input type="hidden"
+                                                                                        name="serviceId"
+                                                                                        id="selectedServiceId_self_${doctor.doctor_id}">
                                                                                 </div>
-                                                                            </div>
+
+                                                                                <!-- Chọn ngày khám -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Chọn ngày
+                                                                                        khám:</label>
+                                                                                    <input
+                                                                                        id="work_date_picker_self_${doctor.doctor_id}"
+                                                                                        type="text" name="workDate"
+                                                                                        class="form-control" required>
+                                                                                </div>
+
+                                                                                <!-- Chọn ca khám -->
+                                                                                <div class="mb-3"
+                                                                                    id="timeSlotsContainer_self_${doctor.doctor_id}"
+                                                                                    style="display: none;">
+                                                                                    <label class="form-label">Chọn ca
+                                                                                        khám:</label>
+                                                                                    <div class="time-slots"
+                                                                                        id="timeSlots_self_${doctor.doctor_id}">
+                                                                                    </div>
+                                                                                    <input type="hidden" name="slotId"
+                                                                                        id="selectedSlotId_self_${doctor.doctor_id}">
+                                                                                </div>
+
+                                                                                <!-- Lý do khám -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Lý do
+                                                                                        khám:</label>
+                                                                                    <textarea name="reason"
+                                                                                        class="form-control" rows="3"
+                                                                                        required></textarea>
+                                                                                </div>
+
+                                                                                <div class="text-end">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-secondary"
+                                                                                        data-bs-dismiss="modal">Đóng</button>
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Xác nhận
+                                                                                        đặt
+                                                                                        lịch</button>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
 
-                                                                        <div class="mb-3">
-                                                                            <label>Chọn ngày khám:</label>
-                                                                            <input
-                                                                                id="work_date_picker_${doctor.doctor_id}"
-                                                                                type="text" name="workDate"
-                                                                                class="form-control" required>
-                                                                        </div>
-                                                                        <div class="mb-3"
-                                                                            id="timeSlotsContainer_${doctor.doctor_id}"
-                                                                            style="display: none;">
-                                                                            <label>Chọn ca khám:</label>
-                                                                            <div class="time-slots"
-                                                                                id="timeSlots_${doctor.doctor_id}">
-                                                                                <!-- Khung giờ sẽ được load bằng AJAX -->
-                                                                            </div>
-                                                                            <input type="hidden" name="slotId"
-                                                                                id="selectedSlotId_${doctor.doctor_id}">
-                                                                        </div>
-                                                                        <div class="mb-3">
-                                                                            <label>Lý do khám:</label>
-                                                                            <textarea name="reason" class="form-control"
-                                                                                required></textarea>
+                                                                        <!-- Tab đặt lịch cho người thân -->
+                                                                        <div class="tab-pane fade"
+                                                                            id="relative-${doctor.doctor_id}"
+                                                                            role="tabpanel">
+                                                                            <form
+                                                                                action="${pageContext.request.contextPath}/BookingPageServlet"
+                                                                                method="post" class="mt-3">
+                                                                                <input type="hidden" name="doctorId"
+                                                                                    value="${doctor.doctor_id}" />
+                                                                                <input type="hidden" name="bookingFor"
+                                                                                    value="relative" />
+                                                                                <c:if
+                                                                                    test="${not empty selectedService}">
+                                                                                    <input type="hidden"
+                                                                                        name="serviceId"
+                                                                                        value="${selectedService.serviceId}" />
+                                                                                </c:if>
+
+                                                                                <!-- Thông tin người thân -->
+                                                                                <div
+                                                                                    class="relative-info-card card mb-3">
+                                                                                    <div class="card-header">
+                                                                                        <h6 class="mb-0"><i
+                                                                                                class="fas fa-users me-2"></i>Thông
+                                                                                            tin
+                                                                                            người thân</h6>
+                                                                                        <small class="text-light">💡 Có
+                                                                                            thể bỏ trống, hệ thống sẽ
+                                                                                            tạo thông tin mặc
+                                                                                            định</small>
+                                                                                    </div>
+                                                                                    <div class="card-body">
+                                                                                        <div class="row">
+                                                                                            <div class="col-md-6 mb-3">
+                                                                                                <label
+                                                                                                    class="form-label">Họ
+                                                                                                    và tên:</label>
+                                                                                                <input type="text"
+                                                                                                    name="relativeName"
+                                                                                                    class="form-control"
+                                                                                                    placeholder="Nhập họ tên người thân">
+                                                                                            </div>
+                                                                                            <div class="col-md-6 mb-3">
+                                                                                                <label
+                                                                                                    class="form-label">Số
+                                                                                                    điện thoại:</label>
+                                                                                                <input type="tel"
+                                                                                                    name="relativePhone"
+                                                                                                    class="form-control"
+                                                                                                    placeholder="Nhập số điện thoại">
+                                                                                            </div>
+                                                                                            <div class="col-md-4 mb-3">
+                                                                                                <label
+                                                                                                    class="form-label">Ngày
+                                                                                                    sinh:</label>
+                                                                                                <input type="date"
+                                                                                                    name="relativeDob"
+                                                                                                    class="form-control">
+                                                                                            </div>
+                                                                                            <div class="col-md-4 mb-3">
+                                                                                                <label
+                                                                                                    class="form-label">Giới
+                                                                                                    tính:</label>
+                                                                                                <select
+                                                                                                    name="relativeGender"
+                                                                                                    class="form-control">
+                                                                                                    <option value="">
+                                                                                                        Chọn giới tính
+                                                                                                    </option>
+                                                                                                    <option value="Nam">
+                                                                                                        Nam</option>
+                                                                                                    <option value="Nữ">
+                                                                                                        Nữ</option>
+                                                                                                    <option
+                                                                                                        value="Khác">
+                                                                                                        Khác</option>
+                                                                                                </select>
+                                                                                            </div>
+                                                                                            <div class="col-md-4 mb-3">
+                                                                                                <label
+                                                                                                    class="form-label">Mối
+                                                                                                    quan hệ:</label>
+                                                                                                <select
+                                                                                                    name="relativeRelationship"
+                                                                                                    class="form-control">
+                                                                                                    <option value="">
+                                                                                                        Chọn mối quan hệ
+                                                                                                    </option>
+                                                                                                    <option value="Cha">
+                                                                                                        Cha</option>
+                                                                                                    <option value="Mẹ">
+                                                                                                        Mẹ</option>
+                                                                                                    <option value="Con">
+                                                                                                        Con</option>
+                                                                                                    <option value="Anh">
+                                                                                                        Anh</option>
+                                                                                                    <option value="Chị">
+                                                                                                        Chị</option>
+                                                                                                    <option value="Em">
+                                                                                                        Em</option>
+                                                                                                    <option value="Vợ">
+                                                                                                        Vợ</option>
+                                                                                                    <option
+                                                                                                        value="Chồng">
+                                                                                                        Chồng</option>
+                                                                                                    <option
+                                                                                                        value="Khác">
+                                                                                                        Khác</option>
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <!-- Chọn dịch vụ -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Chọn dịch
+                                                                                        vụ khám:</label>
+                                                                                    <div class="row">
+                                                                                        <c:forEach items="${services}"
+                                                                                            var="service">
+                                                                                            <div class="col-md-6 mb-2">
+                                                                                                <div class="service-item"
+                                                                                                    onclick="selectService(this, ${service.serviceId}, '${service.serviceName}', ${service.price}, 'relative_${doctor.doctor_id}')">
+                                                                                                    <h6
+                                                                                                        style="color: #00796b; margin-bottom: 6px;">
+                                                                                                        ${service.serviceName}
+                                                                                                    </h6>
+                                                                                                    <p class="text-muted mb-2"
+                                                                                                        style="font-size: 0.85em;">
+                                                                                                        ${service.description}
+                                                                                                    </p>
+                                                                                                    <div
+                                                                                                        class="d-flex justify-content-between align-items-center">
+                                                                                                        <span
+                                                                                                            class="badge bg-info"
+                                                                                                            style="font-size: 0.7em;">${service.category}</span>
+                                                                                                        <strong
+                                                                                                            class="text-success">
+                                                                                                            <fmt:formatNumber
+                                                                                                                value="${service.price}"
+                                                                                                                pattern="#,##0" />
+                                                                                                            VNĐ
+                                                                                                        </strong>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </c:forEach>
+                                                                                    </div>
+                                                                                    <input type="hidden"
+                                                                                        name="serviceId"
+                                                                                        id="selectedServiceId_relative_${doctor.doctor_id}">
+                                                                                </div>
+
+                                                                                <!-- Chọn ngày khám -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Chọn ngày
+                                                                                        khám:</label>
+                                                                                    <input
+                                                                                        id="work_date_picker_relative_${doctor.doctor_id}"
+                                                                                        type="text" name="workDate"
+                                                                                        class="form-control" required>
+                                                                                </div>
+
+                                                                                <!-- Chọn ca khám -->
+                                                                                <div class="mb-3"
+                                                                                    id="timeSlotsContainer_relative_${doctor.doctor_id}"
+                                                                                    style="display: none;">
+                                                                                    <label class="form-label">Chọn ca
+                                                                                        khám:</label>
+                                                                                    <div class="time-slots"
+                                                                                        id="timeSlots_relative_${doctor.doctor_id}">
+                                                                                    </div>
+                                                                                    <input type="hidden" name="slotId"
+                                                                                        id="selectedSlotId_relative_${doctor.doctor_id}">
+                                                                                </div>
+
+                                                                                <!-- Lý do khám -->
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Lý do
+                                                                                        khám:</label>
+                                                                                    <textarea name="reason"
+                                                                                        class="form-control" rows="3"
+                                                                                        required></textarea>
+                                                                                </div>
+
+                                                                                <div class="text-end">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-secondary"
+                                                                                        data-bs-dismiss="modal">Đóng</button>
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Xác nhận
+                                                                                        đặt
+                                                                                        lịch</button>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Đóng</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn-primary">Xác
-                                                                            nhận
-                                                                            đặt lịch</button>
-                                                                    </div>
-                                                                </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -544,90 +640,37 @@
                                             </div>
                                         </c:forEach>
                                     </div>
+                                </div>
 
-                                    <!-- Bảng hiển thị lịch làm việc của tất cả bác sĩ (2 tuần tới) -->
-                                    <h3 class="mt-5">Lịch làm việc của tất cả bác sĩ (2 tuần tới)</h3>
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle"></i>
-                                        <strong>Lưu ý:</strong> Bảng này hiển thị ngày làm việc thực tế (đã loại bỏ ngày
-                                        nghỉ phép của bác sĩ)
-                                    </div>
+                                <!-- Danh sách lịch hẹn -->
+                                <div class="appointment-list">
+                                    <h3>Lịch hẹn của bạn</h3>
                                     <div class="table-responsive">
-                                        <table class="table table-bordered">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
+                                                    <th>Ngày khám</th>
+                                                    <th>Giờ khám</th>
                                                     <th>Bác sĩ</th>
-                                                    <th>Ngày làm việc</th>
                                                     <th>Trạng thái</th>
-                                                    <th>Thao tác</th>
+                                                    <th>Lý do</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <c:forEach items="${doctors}" var="doctor">
-                                                    <c:forEach items="${doctor.workDates}" var="workDate">
-                                                        <tr>
-                                                            <td>${doctor.full_name} - ${doctor.specialty}</td>
-                                                            <td>${workDate}</td>
-                                                            <td><span class="badge bg-success">Đang làm việc</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-primary"
-                                                                    onclick="openBookingModal('${doctor.doctor_id}', '${workDate}')">
-                                                                    Đặt lịch
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </c:forEach>
+                                                <c:forEach items="${appointments}" var="apt">
+                                                    <tr>
+                                                        <td>${apt.workDate}</td>
+                                                        <td>${apt.startTime} - ${apt.endTime}</td>
+                                                        <td>${apt.doctorName}</td>
+                                                        <td>${apt.status}</td>
+                                                        <td>${apt.reason}</td>
+                                                    </tr>
                                                 </c:forEach>
                                             </tbody>
                                         </table>
                                     </div>
-
-                                    <script>
-                                        function openBookingModal(doctorId, workDate) {
-                                            // Tìm modal của bác sĩ tương ứng
-                                            const modal = document.getElementById('bookingModal' + doctorId);
-                                            if (modal) {
-                                                // Set ngày đã chọn vào input date
-                                                const dateInput = modal.querySelector('input[name="workDate"]');
-                                                if (dateInput) {
-                                                    dateInput.value = workDate;
-                                                }
-
-                                                // Hiển thị modal
-                                                const bootstrapModal = new bootstrap.Modal(modal);
-                                                bootstrapModal.show();
-                                            }
-                                        }
-                                    </script>
-
-                                    <!-- Danh sách lịch hẹn -->
-                                    <div class="appointment-list">
-                                        <h3>Lịch hẹn của bạn</h3>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Ngày khám</th>
-                                                        <th>Giờ khám</th>
-                                                        <th>Bác sĩ</th>
-                                                        <th>Trạng thái</th>
-                                                        <th>Lý do</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <c:forEach items="${appointments}" var="apt">
-                                                        <tr>
-                                                            <td>${apt.workDate}</td>
-                                                            <td>${apt.startTime} - ${apt.endTime}</td>
-                                                            <td>${apt.doctorName}</td>
-                                                            <td>${apt.status}</td>
-                                                            <td>${apt.reason}</td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                </div>
+                                </div>
                                 </div>
 
                                 <script
@@ -635,36 +678,51 @@
                                 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                                 <script>
                                     document.addEventListener('DOMContentLoaded', function () {
+                                        // Initialize flatpickr cho cả hai tab của mỗi bác sĩ
                                         <c:forEach items="${doctors}" var="doctor">
-                                            flatpickr("#work_date_picker_${doctor.doctor_id}", {
+                                    // Tab self
+                                            flatpickr("#work_date_picker_self_${doctor.doctor_id}", {
                                                 dateFormat: "Y-m-d",
                                             enable: window['workDates_${doctor.doctor_id}'],
-                                            minDate: "today", // Không cho chọn ngày cũ
+                                            minDate: "today",
                                             locale: {
-                                                firstDayOfWeek: 1 // Thứ 2 là ngày đầu tuần
-                                                },
+                                                firstDayOfWeek: 1
+                                        },
                                             onChange: function (selectedDates, dateStr) {
-                                                updateSchedules(dateStr, ${ doctor.doctor_id });
-                                                }
-                                            });
+                                                updateSchedules(dateStr, ${ doctor.doctor_id }, 'self');
+                                        }
+                                    });
+
+                                            // Tab relative
+                                            flatpickr("#work_date_picker_relative_${doctor.doctor_id}", {
+                                                dateFormat: "Y-m-d",
+                                            enable: window['workDates_${doctor.doctor_id}'],
+                                            minDate: "today",
+                                            locale: {
+                                                firstDayOfWeek: 1
+                                        },
+                                            onChange: function (selectedDates, dateStr) {
+                                                updateSchedules(dateStr, ${ doctor.doctor_id }, 'relative');
+                                        }
+                                    });
                                         </c:forEach>
                                     });
 
-                                    function updateSchedules(selectedDate, doctorId) {
+                                    function updateSchedules(selectedDate, doctorId, tabType) {
                                         var url = '${pageContext.request.contextPath}/BookingPageServlet?ajax=true&doctorId=' + doctorId + '&workDate=' + selectedDate;
 
                                         // Hiển thị container và loading
-                                        document.getElementById('timeSlotsContainer_' + doctorId).style.display = 'block';
-                                        document.getElementById('timeSlots_' + doctorId).innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải khung giờ...</div>';
+                                        document.getElementById('timeSlotsContainer_' + tabType + '_' + doctorId).style.display = 'block';
+                                        document.getElementById('timeSlots_' + tabType + '_' + doctorId).innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải khung giờ...</div>';
 
                                         fetch(url)
                                             .then(function (response) {
                                                 return response.json();
                                             })
                                             .then(function (slots) {
-                                                console.log('Dữ liệu khung giờ trả về:', slots); // Debug
+                                                console.log('Dữ liệu khung giờ trả về:', slots);
 
-                                                var timeSlotsDiv = document.getElementById('timeSlots_' + doctorId);
+                                                var timeSlotsDiv = document.getElementById('timeSlots_' + tabType + '_' + doctorId);
                                                 var html = '';
 
                                                 if (slots.length === 0) {
@@ -679,7 +737,7 @@
                                                             slotClass += ' booked';
                                                             statusText = '<small class="text-muted">Đã được đặt</small>';
                                                         } else {
-                                                            clickHandler = 'onclick="selectTimeSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\', ' + doctorId + ')"';
+                                                            clickHandler = 'onclick="selectTimeSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\', ' + doctorId + ', \'' + tabType + '\')"';
                                                             statusText = '<small class="text-success">Còn trống</small>';
                                                         }
 
@@ -694,11 +752,11 @@
                                             })
                                             .catch(function (error) {
                                                 console.error('Error loading timeslots:', error);
-                                                document.getElementById('timeSlots_' + doctorId).innerHTML = '<div class="alert alert-danger">Có lỗi khi tải khung giờ</div>';
+                                                document.getElementById('timeSlots_' + tabType + '_' + doctorId).innerHTML = '<div class="alert alert-danger">Có lỗi khi tải khung giờ</div>';
                                             });
                                     }
 
-                                    function selectTimeSlot(slotId, startTime, endTime, doctorId) {
+                                    function selectTimeSlot(slotId, startTime, endTime, doctorId, tabType) {
                                         // Kiểm tra nếu slot đã được đặt
                                         if (event.currentTarget.classList.contains('booked')) {
                                             alert('Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!');
@@ -706,118 +764,30 @@
                                         }
 
                                         // Set giá trị vào hidden input
-                                        document.getElementById('selectedSlotId_' + doctorId).value = slotId;
+                                        document.getElementById('selectedSlotId_' + tabType + '_' + doctorId).value = slotId;
 
-                                        // Highlight selected time slot (chỉ với slot chưa được đặt)
-                                        document.querySelectorAll('#timeSlots_' + doctorId + ' .time-slot:not(.booked)').forEach(slot => slot.classList.remove('selected'));
+                                        // Highlight selected time slot
+                                        document.querySelectorAll('#timeSlots_' + tabType + '_' + doctorId + ' .time-slot:not(.booked)').forEach(slot => slot.classList.remove('selected'));
                                         event.currentTarget.classList.add('selected');
 
-                                        console.log('Selected slot:', slotId, startTime, endTime, 'for doctor:', doctorId);
+                                        console.log('Selected slot:', slotId, startTime, endTime, 'for doctor:', doctorId, 'tab:', tabType);
                                     }
 
-                                    // Tạo function riêng cho từng doctor để tránh conflict
-                                    <c:forEach items="${doctors}" var="doctor">
-                                        window['selectService_${doctor.doctor_id}'] = function(serviceId, serviceName, servicePrice) {
-                                            // Reset tất cả service cards
-                                            document.querySelectorAll('#bookingModal${doctor.doctor_id} .service-item').forEach(card => {
-                                                card.style.borderColor = '#dee2e6';
-                                                card.style.background = '#f8f9fa';
-                                            });
+                                    function selectService(element, serviceId, serviceName, servicePrice, tabType) {
+                                        // Reset tất cả service cards trong tab hiện tại
+                                        var tabContainer = element.closest('.tab-pane');
+                                        tabContainer.querySelectorAll('.service-item').forEach(function (card) {
+                                            card.classList.remove('selected');
+                                        });
 
                                         // Highlight card được chọn
-                                        event.currentTarget.style.borderColor = '#00796b';
-                                        event.currentTarget.style.background = '#e8f5e8';
+                                        element.classList.add('selected');
 
                                         // Cập nhật hidden input
-                                        document.getElementById('selectedServiceId_${doctor.doctor_id}').value = serviceId;
+                                        document.getElementById('selectedServiceId_' + tabType).value = serviceId;
 
-                                        // Hiển thị thông tin service đã chọn
-                                        document.getElementById('selectedServiceName_${doctor.doctor_id}').textContent = serviceName;
-                                        document.getElementById('selectedServicePrice_${doctor.doctor_id}').textContent =
-                                        new Intl.NumberFormat('vi-VN').format(servicePrice) + ' VNĐ';
-                                        document.getElementById('selectedServiceInfo_${doctor.doctor_id}').style.display = 'block';
-
-                                        console.log('Selected service for doctor ${doctor.doctor_id}:', serviceId, serviceName, servicePrice);
-                                    };
-                                    </c:forEach>
-
-                                    // Logic xử lý tab chuyển đổi
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        // Handle tab switching
-                                        const selfTab = document.getElementById('self-tab');
-                                        const relativeTab = document.getElementById('relative-tab');
-
-                                        selfTab.addEventListener('click', function () {
-                                            // Khi chọn đặt cho mình, xóa các field người thân required
-                                            const relativeFields = document.querySelectorAll('#relative-booking input, #relative-booking select');
-                                            relativeFields.forEach(field => {
-                                                field.removeAttribute('required');
-                                            });
-                                        });
-
-                                        relativeTab.addEventListener('click', function () {
-                                            // Khi chọn đặt cho người thân, thêm required cho các field
-                                            const relativeFields = document.querySelectorAll('#relative-booking input, #relative-booking select');
-                                            relativeFields.forEach(field => {
-                                                if (!field.id.includes('hidden')) {
-                                                    field.setAttribute('required', 'required');
-                                                }
-                                            });
-                                        });
-                                    });
-
-                                    // Override form submit để thêm bookingFor và thông tin người thân
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const forms = document.querySelectorAll('form[action*="BookingPageServlet"]');
-                                        forms.forEach(form => {
-                                            form.addEventListener('submit', function (e) {
-                                                // Kiểm tra tab nào đang active
-                                                const relativeTab = document.querySelector('#relative-tab');
-                                                const isRelativeBooking = relativeTab.classList.contains('active');
-
-                                                // Thêm hidden input cho bookingFor
-                                                let bookingForInput = form.querySelector('input[name="bookingFor"]');
-                                                if (!bookingForInput) {
-                                                    bookingForInput = document.createElement('input');
-                                                    bookingForInput.type = 'hidden';
-                                                    bookingForInput.name = 'bookingFor';
-                                                    form.appendChild(bookingForInput);
-                                                }
-
-                                                if (isRelativeBooking) {
-                                                    bookingForInput.value = 'relative';
-
-                                                    // Thêm thông tin người thân vào form
-                                                    const relativeFields = ['relativeName', 'relativePhone', 'relativeDob', 'relativeGender', 'relativeRelationship'];
-                                                    relativeFields.forEach(fieldName => {
-                                                        const sourceField = document.getElementById(fieldName);
-                                                        let targetField = form.querySelector(`input[name="${fieldName}"], select[name="${fieldName}"]`);
-
-                                                        if (!targetField) {
-                                                            targetField = document.createElement('input');
-                                                            targetField.type = 'hidden';
-                                                            targetField.name = fieldName;
-                                                            form.appendChild(targetField);
-                                                        }
-
-                                                        if (sourceField) {
-                                                            targetField.value = sourceField.value;
-
-                                                            // Validate required fields
-                                                            if (!sourceField.value.trim()) {
-                                                                e.preventDefault();
-                                                                alert(`Vui lòng nhập ${sourceField.previousElementSibling.textContent}`);
-                                                                sourceField.focus();
-                                                                return false;
-                                                            }
-                                                        }
-                                                    });
-                                                } else {
-                                                    bookingForInput.value = 'self';
-                                                }
-                                            });
-                                        });
-                                    });
+                                        console.log('Selected service for', tabType, ':', serviceId, serviceName, servicePrice);
+                                    }
                                 </script>
                             </body>
 

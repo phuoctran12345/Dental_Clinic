@@ -333,19 +333,19 @@ public class StaffBookingServlet extends HttpServlet {
                 // Gọi DAO riêng cho người thân (RelativesAppointmentDAO)
                 // ... logic đặt lịch cho người thân ...
             } else {
-                int patientId = Integer.parseInt(request.getParameter("patientId"));
-                int doctorId = Integer.parseInt(request.getParameter("doctorId"));
-                int slotId = Integer.parseInt(request.getParameter("slotId"));
-                Date workDate = Date.valueOf(request.getParameter("workDate"));
-                String reason = request.getParameter("reason");
-                Appointment appointment = new Appointment();
-                appointment.setPatientId(patientId);
-                appointment.setDoctorId(doctorId);
-                appointment.setSlotId(slotId);
+            int patientId = Integer.parseInt(request.getParameter("patientId"));
+            int doctorId = Integer.parseInt(request.getParameter("doctorId"));
+            int slotId = Integer.parseInt(request.getParameter("slotId"));
+            Date workDate = Date.valueOf(request.getParameter("workDate"));
+            String reason = request.getParameter("reason");
+            Appointment appointment = new Appointment();
+            appointment.setPatientId(patientId);
+            appointment.setDoctorId(doctorId);
+            appointment.setSlotId(slotId);
                 appointment.setWorkDate(workDate.toLocalDate());
-                appointment.setReason(reason);
+            appointment.setReason(reason);
                 appointment.setStatus(AppointmentDAO.STATUS_BOOKED);
-                AppointmentDAO appointmentDAO = new AppointmentDAO();
+            AppointmentDAO appointmentDAO = new AppointmentDAO();
                 int appointmentId = appointmentDAO.createAppointment(appointment);
                 // ... xử lý tiếp ...
             }

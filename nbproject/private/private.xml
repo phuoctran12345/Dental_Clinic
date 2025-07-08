@@ -5,7 +5,9 @@
         <group>
             <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/patient/user_homepage.jsp</file>
             <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/patient/user_menu.jsp</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/patient/user_datlich_fixed.jsp</file>
             <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/BookingPageServlet.java</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/patient/user_datlich.jsp</file>
         </group>
     </open-files>
 </project-private>

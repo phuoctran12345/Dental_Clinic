@@ -271,7 +271,14 @@
                             <li>
                                 <a href="${pageContext.request.contextPath}/BookingPageServlet" class="dropdown-item">
                                     <i class="fa-solid fa-calendar-plus"></i>
-                                    <span>Đặt lịch khám</span>
+                                    <span>Đặt lịch cho mình</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="${pageContext.request.contextPath}/BookingPageServlet?bookingFor=relative"
+                                    class="dropdown-item">
+                                    <i class="fa-solid fa-users"></i>
+                                    <span>Đặt lịch cho người thân</span>
                                 </a>
                             </li>
                         </ul>
