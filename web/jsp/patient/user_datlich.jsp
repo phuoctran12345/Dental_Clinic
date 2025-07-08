@@ -386,6 +386,11 @@
                                                                             <input type="hidden" name="serviceId"
                                                                                 value="${selectedService.serviceId}" />
                                                                         </c:if>
+                                                                        <!-- Hidden inputs cho đặt lịch người thân -->
+                                                                        <input type="hidden" name="bookingFor"
+                                                                            value="self" />
+                                                                        <input type="hidden" name="relativeId"
+                                                                            value="" />
 
                                                                         <!-- Chọn dịch vụ -->
                                                                         <div class="mb-3">

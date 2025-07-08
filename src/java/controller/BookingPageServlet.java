@@ -9,8 +9,12 @@ import dao.DoctorDAO;
 import dao.ServiceDAO;
 import dao.TimeSlotDAO;
 import dao.DoctorScheduleDAO;
+import dao.RelativesDAO;
+import dao.PatientDAO;
+import utils.N8nWebhookService;
 import model.Appointment;
 import model.Doctors;
+import model.Patients;
 import model.Service;
 import model.TimeSlot;
 
@@ -36,10 +40,6 @@ import java.sql.Time;
 import java.sql.Date;
 import java.util.Map;
 import java.util.HashMap;
-import dao.RelativesDAO;
-import utils.N8nWebhookService;
-import dao.PatientDAO;
-import model.Patients;
 
 /**
  *
@@ -242,6 +242,8 @@ public class BookingPageServlet extends HttpServlet {
         String slotIdStr = request.getParameter("slotId");
         String reason = request.getParameter("reason");
         String serviceIdStr = request.getParameter("serviceId"); // Nhận serviceId từ form
+        String bookingFor = request.getParameter("bookingFor");
+        String relativeIdStr = request.getParameter("relativeId");
         
         HttpSession session = request.getSession();
         User patient = (User) session.getAttribute("user");
@@ -275,7 +277,9 @@ public class BookingPageServlet extends HttpServlet {
             // Sử dụng serviceId từ form, nếu không có thì dùng mặc định
             String finalServiceId = (serviceIdStr != null && !serviceIdStr.isEmpty()) ? serviceIdStr : "1";
             
-            String paymentUrl = String.format(
+            // Tạo URL với tham số người thân (nếu có)
+            StringBuilder paymentUrlBuilder = new StringBuilder();
+            paymentUrlBuilder.append(String.format(
                 "%s/payment?serviceId=%s&doctorId=%s&workDate=%s&slotId=%s&reason=%s",
                 request.getContextPath(),
                 finalServiceId,
@@ -283,7 +287,14 @@ public class BookingPageServlet extends HttpServlet {
                 workDate,
                 slotId,
                 reason != null ? java.net.URLEncoder.encode(reason, "UTF-8") : ""
-            );
+            ));
+            
+            // Thêm thông tin người thân vào URL nếu có
+            if ("relative".equals(bookingFor) && relativeIdStr != null && !relativeIdStr.isEmpty()) {
+                paymentUrlBuilder.append("&bookingFor=relative&relativeId=").append(relativeIdStr);
+            }
+            
+            String paymentUrl = paymentUrlBuilder.toString();
             
             System.out.println("🎯 BOOKING REQUEST -> PAYMENT");
             System.out.println("🏥 Service: " + finalServiceId + " | Doctor: " + doctorId + " | Date: " + workDate + " | Slot: " + slotId);
