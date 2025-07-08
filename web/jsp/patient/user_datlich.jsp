@@ -168,6 +168,106 @@
                                 <div class="container">
                                     <h2 class="mb-4">Đặt lịch khám bệnh</h2>
 
+                                    <!-- Tab chuyển đổi giữa đặt cho mình và người thân -->
+                                    <div class="booking-type-tabs mb-4">
+                                        <ul class="nav nav-tabs" id="bookingTypeTabs" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="self-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#self-booking" type="button" role="tab"
+                                                    aria-controls="self-booking" aria-selected="true">
+                                                    <i class="fas fa-user me-2"></i>Đặt cho mình
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="relative-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#relative-booking" type="button" role="tab"
+                                                    aria-controls="relative-booking" aria-selected="false">
+                                                    <i class="fas fa-users me-2"></i>Đặt cho người thân
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="bookingTypeTabContent">
+                                            <!-- Tab đặt cho mình -->
+                                            <div class="tab-pane fade show active" id="self-booking" role="tabpanel"
+                                                aria-labelledby="self-tab">
+                                                <div class="alert alert-info mt-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Đặt lịch cho bản thân:</strong> Sử dụng thông tin tài khoản
+                                                    của bạn
+                                                </div>
+                                            </div>
+                                            <!-- Tab đặt cho người thân -->
+                                            <div class="tab-pane fade" id="relative-booking" role="tabpanel"
+                                                aria-labelledby="relative-tab">
+                                                <div class="alert alert-warning mt-3">
+                                                    <i class="fas fa-users me-2"></i>
+                                                    <strong>Đặt lịch cho người thân:</strong> Vui lòng nhập đầy đủ thông
+                                                    tin người cần khám
+                                                </div>
+                                                <!-- Form thông tin người thân -->
+                                                <div class="relative-info-form card">
+                                                    <div class="card-header">
+                                                        <h6><i class="fas fa-user-plus me-2"></i>Thông tin người thân
+                                                        </h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Họ và tên <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="text" id="relativeName" name="relativeName"
+                                                                    class="form-control"
+                                                                    placeholder="Nhập họ tên người thân" required>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">Số điện thoại <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="tel" id="relativePhone"
+                                                                    name="relativePhone" class="form-control"
+                                                                    placeholder="Nhập số điện thoại" required>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label">Ngày sinh <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="date" id="relativeDob" name="relativeDob"
+                                                                    class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label">Giới tính <span
+                                                                        class="text-danger">*</span></label>
+                                                                <select id="relativeGender" name="relativeGender"
+                                                                    class="form-control" required>
+                                                                    <option value="">Chọn giới tính</option>
+                                                                    <option value="Nam">Nam</option>
+                                                                    <option value="Nữ">Nữ</option>
+                                                                    <option value="Khác">Khác</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label">Mối quan hệ <span
+                                                                        class="text-danger">*</span></label>
+                                                                <select id="relativeRelationship"
+                                                                    name="relativeRelationship" class="form-control"
+                                                                    required>
+                                                                    <option value="">Chọn mối quan hệ</option>
+                                                                    <option value="Cha">Cha</option>
+                                                                    <option value="Mẹ">Mẹ</option>
+                                                                    <option value="Con">Con</option>
+                                                                    <option value="Anh">Anh</option>
+                                                                    <option value="Chị">Chị</option>
+                                                                    <option value="Em">Em</option>
+                                                                    <option value="Vợ">Vợ</option>
+                                                                    <option value="Chồng">Chồng</option>
+                                                                    <option value="Khác">Khác</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Hiển thị dịch vụ đã chọn -->
                                     <c:if test="${not empty selectedService}">
                                         <div class="alert alert-info mb-4">
@@ -635,6 +735,84 @@
                                         console.log('Selected service for doctor ${doctor.doctor_id}:', serviceId, serviceName, servicePrice);
                                     };
                                     </c:forEach>
+
+                                    // Logic xử lý tab chuyển đổi
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Handle tab switching
+                                        const selfTab = document.getElementById('self-tab');
+                                        const relativeTab = document.getElementById('relative-tab');
+
+                                        selfTab.addEventListener('click', function () {
+                                            // Khi chọn đặt cho mình, xóa các field người thân required
+                                            const relativeFields = document.querySelectorAll('#relative-booking input, #relative-booking select');
+                                            relativeFields.forEach(field => {
+                                                field.removeAttribute('required');
+                                            });
+                                        });
+
+                                        relativeTab.addEventListener('click', function () {
+                                            // Khi chọn đặt cho người thân, thêm required cho các field
+                                            const relativeFields = document.querySelectorAll('#relative-booking input, #relative-booking select');
+                                            relativeFields.forEach(field => {
+                                                if (!field.id.includes('hidden')) {
+                                                    field.setAttribute('required', 'required');
+                                                }
+                                            });
+                                        });
+                                    });
+
+                                    // Override form submit để thêm bookingFor và thông tin người thân
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const forms = document.querySelectorAll('form[action*="BookingPageServlet"]');
+                                        forms.forEach(form => {
+                                            form.addEventListener('submit', function (e) {
+                                                // Kiểm tra tab nào đang active
+                                                const relativeTab = document.querySelector('#relative-tab');
+                                                const isRelativeBooking = relativeTab.classList.contains('active');
+
+                                                // Thêm hidden input cho bookingFor
+                                                let bookingForInput = form.querySelector('input[name="bookingFor"]');
+                                                if (!bookingForInput) {
+                                                    bookingForInput = document.createElement('input');
+                                                    bookingForInput.type = 'hidden';
+                                                    bookingForInput.name = 'bookingFor';
+                                                    form.appendChild(bookingForInput);
+                                                }
+
+                                                if (isRelativeBooking) {
+                                                    bookingForInput.value = 'relative';
+
+                                                    // Thêm thông tin người thân vào form
+                                                    const relativeFields = ['relativeName', 'relativePhone', 'relativeDob', 'relativeGender', 'relativeRelationship'];
+                                                    relativeFields.forEach(fieldName => {
+                                                        const sourceField = document.getElementById(fieldName);
+                                                        let targetField = form.querySelector(`input[name="${fieldName}"], select[name="${fieldName}"]`);
+
+                                                        if (!targetField) {
+                                                            targetField = document.createElement('input');
+                                                            targetField.type = 'hidden';
+                                                            targetField.name = fieldName;
+                                                            form.appendChild(targetField);
+                                                        }
+
+                                                        if (sourceField) {
+                                                            targetField.value = sourceField.value;
+
+                                                            // Validate required fields
+                                                            if (!sourceField.value.trim()) {
+                                                                e.preventDefault();
+                                                                alert(`Vui lòng nhập ${sourceField.previousElementSibling.textContent}`);
+                                                                sourceField.focus();
+                                                                return false;
+                                                            }
+                                                        }
+                                                    });
+                                                } else {
+                                                    bookingForInput.value = 'self';
+                                                }
+                                            });
+                                        });
+                                    });
                                 </script>
                             </body>
 
