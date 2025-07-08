@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/TestFull" reloadable="true">
+    <!-- Database Connection Pool -->
+    <Resource name="jdbc/BenhVien" 
+              auth="Container"
+              type="jakarta.sql.DataSource"
+              maxTotal="20" 
+              maxIdle="5"
+              maxWaitMillis="10000"
+              username="sa" 
+              password="Phuoc12345@"
+              driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+              url="jdbc:sqlserver://localhost:1433;databaseName=BenhVien;encrypt=false;trustServerCertificate=true;"/>
+              
+    <!-- Session Configuration -->
+    <Manager pathname="" />
+    
+    <!-- Security -->
+    <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+           allow="127\.0\.0\.1|::1|0:0:0:0:0:0:0:1" />
+</Context> 
