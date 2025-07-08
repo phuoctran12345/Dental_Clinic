@@ -26,6 +26,8 @@ public class Appointment {
     private java.sql.Date appointmentDate;
     private String timeSlot;
     private String note;
+    private Integer relativeId; // Người thân
+    private Integer bookedByUserId; // Ai là người thân đặt lịch
 
     public Appointment() {
     }
@@ -274,5 +276,17 @@ public class Appointment {
         return utils.FormatUtils.formatDate(workDate);
     }
 
+    public Integer getRelativeId() {
+        return relativeId;
+    }
+    public void setRelativeId(Integer relativeId) {
+        this.relativeId = relativeId;
+    }
+    public Integer getBookedByUserId() {
+        return bookedByUserId;
+    }
+    public void setBookedByUserId(Integer bookedByUserId) {
+        this.bookedByUserId = bookedByUserId;
+    }
 
 }

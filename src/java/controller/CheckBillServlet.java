@@ -1,7 +1,15 @@
 package controller;
 
 import dao.BillDAO;
+import dao.DoctorDAO;
+import dao.ServiceDAO;
+import dao.TimeSlotDAO;
+import dao.UserDAO;
 import model.Bill;
+import model.Service;
+import model.TimeSlot;
+import model.User;
+import utils.N8nWebhookService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -154,7 +162,58 @@ public class CheckBillServlet extends HttpServlet {
             
             if (updated) {
                 System.out.println("🧪 TEST UPDATE: Payment marked as success for " + orderId);
-                out.println("{\"success\": true, \"message\": \"Payment marked as successful\", \"status\": \"success\"}");
+                
+                // 🎯 GỬI EMAIL THÔNG BÁO KHI CẬP NHẬT PAYMENT SUCCESS
+                try {
+                    // 🎯 FIX: Lấy email từ USER_ID thay vì PATIENT_ID
+                    UserDAO userDAO = new UserDAO();
+                    System.out.println("🔍 CHECKBILL DEBUG: Getting user by USER_ID = " + bill.getUserId());
+                    User user = userDAO.getUserById(bill.getUserId());
+                    System.out.println("🔍 CHECKBILL DEBUG: Retrieved user = " + (user != null ? user.getEmail() : "NULL"));
+                    String userEmail = user.getEmail();
+                    System.out.println("🔍 CHECKBILL DEBUG: Final email = " + userEmail);
+                    
+                    // Lấy thông tin bác sĩ
+                    DoctorDAO doctorDAO = new DoctorDAO();
+                    String doctorName = doctorDAO.getDoctorNameById(bill.getDoctorId());
+                    String doctorEmail = "de180577tranhongphuoc@gmail.com";
+                    
+                    // Lấy service thật từ bill
+                    ServiceDAO serviceDAO = new ServiceDAO();
+                    Service service = serviceDAO.getServiceById(bill.getServiceId());
+                    String serviceName = service != null ? service.getServiceName() : "Khám tổng quát";
+                    
+                    // Lấy thời gian thật từ slot ID trong bill notes
+                    String appointmentTime = extractRealTimeFromBill(bill);
+                    String appointmentDate = bill.getAppointmentDate() != null ? 
+                                           bill.getAppointmentDate().toString() : 
+                                           java.time.LocalDate.now().toString();
+                    
+                    System.out.println("📋 CHECKBILLSERVLET - REAL DATA:");
+                    System.out.println("   User Email: " + userEmail);
+                    System.out.println("   Service: " + serviceName + " (ID: " + bill.getServiceId() + ")");
+                    System.out.println("   Date: " + appointmentDate);
+                    System.out.println("   Time: " + appointmentTime);
+                    System.out.println("   Doctor: " + doctorName);
+                    
+                    // Gửi email qua N8n
+                    N8nWebhookService.sendAppointmentToN8n(
+                        userEmail,
+                        doctorEmail,
+                        appointmentDate,
+                        appointmentTime,
+                        doctorName,
+                        serviceName
+                    );
+                    
+                    System.out.println("📧 CHECKBILLSERVLET - ĐÃ GỬI EMAIL QUA N8N");
+                    
+                } catch (Exception emailError) {
+                    System.err.println("❌ CHECKBILLSERVLET - LỖI GỬI EMAIL: " + emailError.getMessage());
+                    emailError.printStackTrace();
+                }
+                
+                out.println("{\"success\": true, \"message\": \"Payment marked as successful\", \"status\": \"success\", \"emailSent\": true}");
             } else {
                 out.println("{\"success\": false, \"message\": \"Failed to update payment status\"}");
             }
@@ -169,6 +228,55 @@ public class CheckBillServlet extends HttpServlet {
     private void handleManualUpdate(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Implementation of manual update logic
+    }
+    
+    /**
+     * 🎯 LẤY THỜI GIAN THẬT từ slot ID trong bill (copied from PayOSServlet)
+     */
+    private String extractRealTimeFromBill(Bill bill) {
+        try {
+            // Lấy slot ID từ notes
+            int slotId = extractSlotIdFromNotes(bill.getAppointmentNotes());
+            if (slotId > 0) {
+                // Lấy thông tin TimeSlot từ database
+                TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
+                TimeSlot timeSlot = timeSlotDAO.getTimeSlotById(slotId);
+                if (timeSlot != null) {
+                    String realTime = timeSlot.getStartTime() + " - " + timeSlot.getEndTime();
+                    System.out.println("⏰ REAL TIME EXTRACTED: " + realTime + " (Slot ID: " + slotId + ")");
+                    return realTime;
+                }
+            }
+            
+            // Fallback: Dùng thời gian mặc định
+            System.out.println("⚠️ NO SLOT ID FOUND - Using default time");
+            return "09:00 - 09:30";
+            
+        } catch (Exception e) {
+            System.err.println("❌ LỖI EXTRACT REAL TIME: " + e.getMessage());
+            return "09:00 - 09:30";
+        }
+    }
+    
+    /**
+     * Extract slot ID từ appointment notes (copied from PayOSServlet)
+     */
+    private int extractSlotIdFromNotes(String notes) {
+        if (notes == null) return 0;
+        
+        try {
+            // Tìm pattern "SlotID:X"
+            String[] parts = notes.split("\\|");
+            for (String part : parts) {
+                part = part.trim();
+                if (part.startsWith("SlotID:")) {
+                    return Integer.parseInt(part.substring(7));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("❌ LỖI TRÍCH XUẤT Slot ID từ ghi chú: " + notes);
+        }
+        return 0;
     }
     
     private void displayBillInfo(PrintWriter out, Bill bill, String title) {

@@ -36,6 +36,10 @@ import java.sql.Time;
 import java.sql.Date;
 import java.util.Map;
 import java.util.HashMap;
+import dao.RelativesDAO;
+import utils.N8nWebhookService;
+import dao.PatientDAO;
+import model.Patients;
 
 /**
  *
@@ -178,6 +182,32 @@ public class BookingPageServlet extends HttpServlet {
                 }
             }
             request.setAttribute("workDates", workDates);
+            
+            String bookingFor = request.getParameter("bookingFor");
+            Integer relativeId = null;
+            if ("relative".equals(bookingFor)) {
+                String relativeName = request.getParameter("relativeName");
+                String relativePhone = request.getParameter("relativePhone");
+                String relativeDob = request.getParameter("relativeDob");
+                String relativeGender = request.getParameter("relativeGender");
+                String relativeRelationship = request.getParameter("relativeRelationship");
+                if (relativeName == null || relativeName.trim().isEmpty() ||
+                    relativePhone == null || relativePhone.trim().isEmpty() ||
+                    relativeDob == null || relativeDob.trim().isEmpty() ||
+                    relativeGender == null || relativeGender.trim().isEmpty() ||
+                    relativeRelationship == null || relativeRelationship.trim().isEmpty()) {
+                    request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin người thân!");
+                    doGet(request, response);
+                    return;
+                }
+                int userId = patient.getId();
+                relativeId = RelativesDAO.getOrCreateRelative(userId, relativeName, relativePhone, relativeDob, relativeGender, relativeRelationship);
+                if (relativeId == -1) {
+                    request.setAttribute("error", "Không thể lưu thông tin người thân. Vui lòng kiểm tra lại!");
+                    doGet(request, response);
+                    return;
+                }
+            }
             
             request.getRequestDispatcher("/jsp/patient/user_datlich.jsp").forward(request, response);
             

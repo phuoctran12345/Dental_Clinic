@@ -1,641 +1,967 @@
-<%-- Document : user_datlich Created on : 11 thg 6, 2025, 00:44:05 Author : tranhongphuoc --%>
+<%@page import="java.util.Date" %>
+<%@page import="java.text.SimpleDateFormat" %>
+<%@page import="model.User" %>
+<%@page import="model.Patients" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ include file="user_header.jsp" %>
+<%@ include file="user_menu.jsp" %>
 
-    <%@ page contentType="text/html; charset=UTF-8" %>
-        <%@ include file="../patient/user_header.jsp" %>
-            <%@ include file="../patient/user_menu.jsp" %>
-                <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-                    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-                        <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-                            <!DOCTYPE html>
-                            <html lang="vi">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thông Tin Cá Nhân</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #F9FAFB;
+            margin: 0;
+            width: 100%;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
 
-                            <head>
-                                <meta charset="UTF-8">
-                                <title>Đặt lịch khám bệnh</title>
-                                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-                                    rel="stylesheet">
-                                <link rel="stylesheet"
-                                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-                                <link rel="stylesheet"
-                                    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-                                <style>
-                                    body {
-                                        font-family: 'Segoe UI', sans-serif;
-                                        background: #f5f5f5;
-                                        margin: 0;
-                                    }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 270px;
+            height: 100%;
+            background: #ffffff;
+            z-index: 100;
+            border-right: 1px solid #eaeaea;
+        }
 
-                                    .container {
-                                        margin-left: 300px;
-                                        padding: 20px;
-                                    }
+        .dashboard {
+            padding-left: 270px;
+            padding-top: 30px;
+            display: grid;
+            gap: 20px;
+            padding-right: 30px;
+            padding-bottom: 50px;
+            box-sizing: border-box;
+            min-height: 90vh;
+            justify-content: center;
+        }
 
-                                    .doctor-card {
-                                        background: white;
-                                        border-radius: 10px;
-                                        padding: 20px;
-                                        margin-bottom: 20px;
-                                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                                    }
+        .profile-card {
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 30px;
+            width: 1200px;
+            max-width: 2000px;
+        }
 
-                                    .appointment-list {
-                                        background: white;
-                                        border-radius: 10px;
-                                        padding: 20px;
-                                        margin-top: 30px;
-                                    }
+        .dashboard h2 {
+            color: #4E80EE;
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
 
-                                    .modal-content {
-                                        border-radius: 15px;
-                                    }
+        .dashboard p {
+            font-size: 18px;
+            color: #333333;
+            margin: 0;
+            padding: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
 
-                                    .btn-book {
-                                        background: #00796b;
-                                        color: white;
-                                        border: none;
-                                        padding: 8px 20px;
-                                        border-radius: 5px;
-                                        transition: 0.3s;
-                                    }
+        .dashboard strong {
+            color: #333333;
+            font-weight: 600;
+            min-width: 150px;
+            font-size: 18px;
+        }
 
-                                    .btn-book:hover {
-                                        background: #004d40;
-                                        color: white;
-                                    }
+        .edit-btn {
+            background: #4E80EE;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-                                    .search-box {
-                                        margin-bottom: 20px;
-                                    }
+        .password-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 320px;
+        }
 
-                                    .error-message {
-                                        color: #dc3545;
-                                        margin-bottom: 15px;
-                                    }
+        .password-display {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 40px 12px 15px;
+            font-size: 18px;
+            color: #333333;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-                                    .time-slots {
-                                        display: grid;
-                                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                                        gap: 10px;
-                                        margin-top: 10px;
-                                    }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #7a7a7a;
+            cursor: pointer;
+            font-size: 18px;
+        }
 
-                                    .time-slot-item {
-                                        border: 1px solid #ddd;
-                                        border-radius: 5px;
-                                        padding: 10px;
-                                        text-align: center;
-                                        cursor: pointer;
-                                        transition: all 0.3s ease;
-                                    }
+        .editable-field {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            color: #333333;
+            padding: 12px 15px;
+            font-size: 18px;
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+        }
 
-                                    .time-slot-item:hover {
-                                        background-color: #f8f9fa;
-                                        border-color: #00796b;
-                                    }
+        .editable-field:focus {
+            border-color: #4E80EE;
+            outline: none;
+        }
 
-                                    .time-slot-label {
-                                        margin: 0;
-                                        cursor: pointer;
-                                        display: block;
-                                        padding: 5px;
-                                    }
+        .save-btn {
+            background: #4E80EE;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+        }
 
-                                    input[type="radio"] {
-                                        display: none;
-                                    }
+        .cancel-btn {
+            background: #a0a0a0;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 10px;
+            font-size: 16px;
+        }
 
-                                    input[type="radio"]:checked+.time-slot-label {
-                                        background-color: #00796b;
-                                        color: white;
-                                        border-radius: 3px;
-                                    }
+        .error-message {
+            color: #e74c3c;
+            font-size: 16px;
+            margin-top: 8px;
+            display: none;
+        }
 
-                                    .time-slots {
-                                        display: grid;
-                                        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                                        gap: 10px;
-                                        margin-top: 15px;
-                                    }
+        .server-error {
+            color: #e74c3c;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #fde8e8;
+            border-radius: 6px;
+        }
 
-                                    .time-slot {
-                                        padding: 10px;
-                                        text-align: center;
-                                        border: 1px solid #ddd;
-                                        border-radius: 5px;
-                                        cursor: pointer;
-                                        transition: all 0.2s;
-                                        background: white;
-                                    }
+        .server-success {
+            color: #27ae60;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #d5f4e6;
+            border-radius: 6px;
+        }
 
-                                    .time-slot:hover {
-                                        background: #f8f9fa;
-                                        border-color: #00796b;
-                                    }
+        .field-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
 
-                                    .time-slot.selected {
-                                        background: #00796b;
-                                        color: white;
-                                        border-color: #00796b;
-                                    }
+        .field-content {
+            flex: 1;
+            min-width: 250px;
+        }
 
-                                    .time-slot.booked {
-                                        background: linear-gradient(135deg, #dc3545, #c82333);
-                                        color: white;
-                                        border-color: #dc3545;
-                                        cursor: not-allowed;
-                                        opacity: 0.8;
-                                        position: relative;
-                                    }
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
 
-                                    .time-slot.booked:hover {
-                                        background: linear-gradient(135deg, #dc3545, #c82333);
-                                        color: white;
-                                        border-color: #dc3545;
-                                        transform: none;
-                                    }
+        .patient-table th, .patient-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: left;
+        }
 
-                                    .time-slot.booked::after {
-                                        content: '🚫';
-                                        position: absolute;
-                                        top: 2px;
-                                        right: 5px;
-                                        font-size: 12px;
-                                    }
-                                </style>
-                            </head>
+        .patient-table th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #333333;
+        }
 
-                            <body>
-                                <div class="container">
-                                    <h2 class="mb-4">Đặt lịch khám bệnh</h2>
+        .new-patient-form .field-row {
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
 
-                                    <!-- Hiển thị dịch vụ đã chọn -->
-                                    <c:if test="${not empty selectedService}">
-                                        <div class="alert alert-info mb-4">
-                                            <h5><i class="fas fa-tooth me-2"></i>Dịch vụ đã chọn</h5>
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <strong>${selectedService.serviceName}</strong><br>
-                                                    <small class="text-muted">${selectedService.description}</small><br>
-                                                    <span class="badge bg-primary">${selectedService.category}</span>
-                                                </div>
-                                                <div class="col-md-4 text-end">
-                                                    <h4 class="text-success mb-0">
-                                                        <fmt:formatNumber value="${selectedService.price}"
-                                                            pattern="#,##0" /> VNĐ
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:if>
+        .new-patient-form label {
+            display: block;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
 
-                                    <!-- Hiển thị thông báo lỗi -->
-                                    <c:if test="${not empty error}">
-                                        <div class="alert alert-danger" role="alert">
-                                            ${error}
-                                        </div>
-                                    </c:if>
+        .new-patient-form .editable-field {
+            width: 100%;
+            max-width: 320px;
+        }
 
-                                    <!-- Tìm kiếm -->
-                                    <div class="search-box">
-                                        <form id="searchForm" method="GET"
-                                            action="${pageContext.request.contextPath}/BookingPageServlet">
-                                            <!-- Truyền serviceId trong search -->
-                                            <c:if test="${not empty selectedService}">
-                                                <input type="hidden" name="serviceId"
-                                                    value="${selectedService.serviceId}" />
-                                            </c:if>
-                                            <div class="form-group">
-                                                <input type="text" name="keyword" placeholder="Tìm kiếm bác sĩ..."
-                                                    value="${param.keyword}">
-                                                <select name="specialty">
-                                                    <option value="">Chọn chuyên khoa</option>
-                                                    <c:forEach items="${specialties}" var="spec">
-                                                        <option value="${spec}" ${param.specialty==spec ? 'selected'
-                                                            : '' }>
-                                                            ${spec}</option>
-                                                    </c:forEach>
-                                                </select>
-                                                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                                            </div>
-                                        </form>
-                                    </div>
+        .new-patient-form .error-message {
+            margin-top: 5px;
+        }
 
-                                    <!-- Danh sách bác sĩ -->
-                                    <div class="row">
-                                        <c:forEach items="${doctors}" var="doctor">
-                                            <div class="col-md-6 mb-4">
-                                                <div class="doctor-card">
-                                                    <h4>${doctor.full_name}</h4>
-                                                    <p><i class="fas fa-stethoscope"></i> ${doctor.specialty}</p>
+        .new-patient-form .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
 
+        .profile-picture-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
 
-                                                    <p>Số điện thoại: <i>${doctor.phone}</i></p>
-                                                    <p>
-                                                        <span>Trạng thái:</span>
-                                                        <c:choose>
-                                                            <c:when test="${doctor.status == 'Active'}">
-                                                                <i style="color:green;"
-                                                                    class="fa-solid fa-circle fa-fade"></i>
-                                                                <span style="color: green;">Đang trực</span>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <i style="color:gray;" class="fa-solid fa-circle"></i>
-                                                                <span style="color: gray;">Ngoại tuyến</span>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </p>
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            background: #f9f9f9;
+        }
 
+        .profile-picture-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a7a7a;
+            font-size: 14px;
+            text-align: center;
+        }
 
-                                                    <button class="btn btn-book" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#bookingModal${doctor.doctor_id}">
-                                                        Đặt lịch với bác sĩ này
-                                                    </button>
-                                                    <!-- workDates riêng cho từng bác sĩ -->
-                                                    <script>
-                                                        window['workDates_${doctor.doctor_id}'] = [
-                                                            <c:forEach items="${doctor.workDates}" var="date" varStatus="loop">
-                                                                "${date}"<c:if test="${!loop.last}">,</c:if>
-                                                            </c:forEach>
-                                                        ];
-                                                    </script>
-                                                    <!-- Modal riêng cho từng bác sĩ -->
-                                                    <div class="modal fade" id="bookingModal${doctor.doctor_id}"
-                                                        tabindex="-1"
-                                                        aria-labelledby="bookingModalLabel${doctor.doctor_id}"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <form
-                                                                    action="${pageContext.request.contextPath}/BookingPageServlet"
-                                                                    method="post">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title"
-                                                                            id="bookingModalLabel${doctor.doctor_id}">
-                                                                            Đăng
-                                                                            ký
-                                                                            lịch với ${doctor.full_name}</h5>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Đóng"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <input type="hidden" name="doctorId"
-                                                                            value="${doctor.doctor_id}" />
-                                                                        <!-- Truyền serviceId -->
-                                                                        <c:if test="${not empty selectedService}">
-                                                                            <input type="hidden" name="serviceId"
-                                                                                value="${selectedService.serviceId}" />
-                                                                        </c:if>
+        .profile-picture-input {
+            display: none;
+        }
 
-                                                                        <!-- Chọn dịch vụ -->
-                                                                        <div class="mb-3">
-                                                                            <label class="form-label">Chọn dịch vụ
-                                                                                khám:</label>
+        .profile-picture-label {
+            background: #4E80EE;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+        }
 
-                                                                            <!-- Fallback: Load services trực tiếp nếu servlet không có -->
-                                                                            <c:if test="${empty services}">
-                                                                                <% try { dao.ServiceDAO fallbackDAO=new
-                                                                                    dao.ServiceDAO();
-                                                                                    java.util.List<model.Service>
-                                                                                    fallbackServices =
-                                                                                    fallbackDAO.getAllServices();
-                                                                                    request.setAttribute("services",
-                                                                                    fallbackServices);
-                                                                                    } catch (Exception e) {
-                                                                                    // Ignore
-                                                                                    } %>
-                                                                            </c:if>
+        .profile-picture-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none;
+            border: 2px solid #e0e0e0;
+            margin-left: 20px;
+        }
 
-                                                                            <!-- Debug info -->
-                                                                            <div class="alert alert-info mb-3"
-                                                                                style="font-size: 0.85em;">
-                                                                                <strong>Debug:</strong> Số dịch vụ:
-                                                                                ${fn:length(services)}
-                                                                                <c:if test="${empty services}">
-                                                                                    <br><span class="text-warning">⚠️
-                                                                                        Không
-                                                                                        load được dịch vụ!</span>
-                                                                                </c:if>
-                                                                            </div>
+        @media (max-width: 768px) {
+            .dashboard {
+                padding-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
 
-                                                                            <div class="row">
-                                                                                <c:choose>
-                                                                                    <c:when test="${empty services}">
-                                                                                        <div class="col-12">
-                                                                                            <div
-                                                                                                class="alert alert-warning text-center">
-                                                                                                <i
-                                                                                                    class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                                                                                                <h6>Không có dịch vụ nào
-                                                                                                </h6>
-                                                                                                <p class="mb-0 small">
-                                                                                                    Vấn đề
-                                                                                                    với ServiceDAO hoặc
-                                                                                                    database connection
-                                                                                                </p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        <c:forEach items="${services}"
-                                                                                            var="service">
-                                                                                            <div class="col-md-6 mb-2">
-                                                                                                <div class="service-item"
-                                                                                                    style="
-                                                                                                border: 2px solid #dee2e6; 
-                                                                                                background: #f8f9fa; 
-                                                                                                padding: 12px; 
-                                                                                                border-radius: 8px; 
-                                                                                                cursor: pointer;
-                                                                                                transition: all 0.3s ease;
-                                                                                                min-height: 120px;
-                                                                                            " onmouseover="this.style.borderColor='#00796b'; this.style.background='#e8f5e8';"
-                                                                                                    onmouseout="this.style.borderColor='#dee2e6'; this.style.background='#f8f9fa';"
-                                                                                                    onclick="selectService_${doctor.doctor_id}(${service.serviceId}, '${service.serviceName}', ${service.price})">
-                                                                                                    <h6
-                                                                                                        style="color: #00796b; margin-bottom: 6px; font-size: 0.95em;">
-                                                                                                        ${service.serviceName}
-                                                                                                    </h6>
-                                                                                                    <p class="text-muted mb-2"
-                                                                                                        style="font-size: 0.8em; line-height: 1.3;">
-                                                                                                        ${service.description}
-                                                                                                    </p>
-                                                                                                    <div
-                                                                                                        class="d-flex justify-content-between align-items-center">
-                                                                                                        <span
-                                                                                                            class="badge bg-info"
-                                                                                                            style="font-size: 0.7em;">${service.category}</span>
-                                                                                                        <strong
-                                                                                                            class="text-success"
-                                                                                                            style="font-size: 0.9em;">
-                                                                                                            <fmt:formatNumber
-                                                                                                                value="${service.price}"
-                                                                                                                pattern="#,##0" />
-                                                                                                            VNĐ
-                                                                                                        </strong>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </c:forEach>
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </div>
+            .sidebar {
+                width: 250px;
+                transform: translateX(-100%);
+            }
 
-                                                                            <!-- Hidden input để lưu serviceId đã chọn -->
-                                                                            <input type="hidden" name="serviceId"
-                                                                                id="selectedServiceId_${doctor.doctor_id}">
+            .sidebar.active {
+                transform: translateX(0);
+            }
 
-                                                                            <!-- Hiển thị dịch vụ đã chọn -->
-                                                                            <div id="selectedServiceInfo_${doctor.doctor_id}"
-                                                                                class="mt-2" style="display: none;">
-                                                                                <div class="alert alert-success mb-0"
-                                                                                    style="font-size: 0.9em;">
-                                                                                    <strong>✅ Đã chọn:</strong> <span
-                                                                                        id="selectedServiceName_${doctor.doctor_id}"></span>
-                                                                                    <br><strong>Giá:</strong> <span
-                                                                                        id="selectedServicePrice_${doctor.doctor_id}"
-                                                                                        class="text-success"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
+            .profile-card {
+                max-width: 100%;
+                padding: 20px;
+            }
 
-                                                                        <div class="mb-3">
-                                                                            <label>Chọn ngày khám:</label>
-                                                                            <input
-                                                                                id="work_date_picker_${doctor.doctor_id}"
-                                                                                type="text" name="workDate"
-                                                                                class="form-control" required>
-                                                                        </div>
-                                                                        <div class="mb-3"
-                                                                            id="timeSlotsContainer_${doctor.doctor_id}"
-                                                                            style="display: none;">
-                                                                            <label>Chọn ca khám:</label>
-                                                                            <div class="time-slots"
-                                                                                id="timeSlots_${doctor.doctor_id}">
-                                                                                <!-- Khung giờ sẽ được load bằng AJAX -->
-                                                                            </div>
-                                                                            <input type="hidden" name="slotId"
-                                                                                id="selectedSlotId_${doctor.doctor_id}">
-                                                                        </div>
-                                                                        <div class="mb-3">
-                                                                            <label>Lý do khám:</label>
-                                                                            <textarea name="reason" class="form-control"
-                                                                                required></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Đóng</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn-primary">Xác
-                                                                            nhận
-                                                                            đặt lịch</button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </c:forEach>
-                                    </div>
+            .dashboard h2 {
+                font-size: 24px;
+            }
 
-                                    <!-- Bảng hiển thị lịch làm việc của tất cả bác sĩ (2 tuần tới) -->
-                                    <h3 class="mt-5">Lịch làm việc của tất cả bác sĩ (2 tuần tới)</h3>
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle"></i>
-                                        <strong>Lưu ý:</strong> Bảng này hiển thị ngày làm việc thực tế (đã loại bỏ ngày
-                                        nghỉ phép của bác sĩ)
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Bác sĩ</th>
-                                                    <th>Ngày làm việc</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Thao tác</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach items="${doctors}" var="doctor">
-                                                    <c:forEach items="${doctor.workDates}" var="workDate">
-                                                        <tr>
-                                                            <td>${doctor.full_name} - ${doctor.specialty}</td>
-                                                            <td>${workDate}</td>
-                                                            <td><span class="badge bg-success">Đang làm việc</span></td>
-                                                            <td>
-                                                                <button class="btn btn-sm btn-primary"
-                                                                    onclick="openBookingModal('${doctor.doctor_id}', '${workDate}')">
-                                                                    Đặt lịch
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
+            .dashboard p {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
 
-                                    <script>
-                                        function openBookingModal(doctorId, workDate) {
-                                            // Tìm modal của bác sĩ tương ứng
-                                            const modal = document.getElementById('bookingModal' + doctorId);
-                                            if (modal) {
-                                                // Set ngày đã chọn vào input date
-                                                const dateInput = modal.querySelector('input[name="workDate"]');
-                                                if (dateInput) {
-                                                    dateInput.value = workDate;
-                                                }
+            .dashboard strong {
+                min-width: 100%;
+            }
 
-                                                // Hiển thị modal
-                                                const bootstrapModal = new bootstrap.Modal(modal);
-                                                bootstrapModal.show();
-                                            }
-                                        }
-                                    </script>
+            .edit-btn {
+                align-self: flex-end;
+            }
 
-                                    <!-- Danh sách lịch hẹn -->
-                                    <div class="appointment-list">
-                                        <h3>Lịch hẹn của bạn</h3>
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Ngày khám</th>
-                                                        <th>Giờ khám</th>
-                                                        <th>Bác sĩ</th>
-                                                        <th>Trạng thái</th>
-                                                        <th>Lý do</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <c:forEach items="${appointments}" var="apt">
-                                                        <tr>
-                                                            <td>${apt.workDate}</td>
-                                                            <td>${apt.startTime} - ${apt.endTime}</td>
-                                                            <td>${apt.doctorName}</td>
-                                                            <td>${apt.status}</td>
-                                                            <td>${apt.reason}</td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+            .new-patient-form .editable-field {
+                max-width: 100%;
+            }
+
+            .profile-picture-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-picture, .profile-picture-placeholder, .profile-picture-preview {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="profile-card">
+            <h2>Thông Tin Cá Nhân</h2>
+
+            <!-- Hiển thị thông báo lỗi -->
+            <% String error = (String) request.getAttribute("error"); 
+               if (error == null) { error = request.getParameter("error"); } 
+               if (error != null) { %>
+                <div class="server-error">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <!-- Hiển thị thông báo thành công -->
+            <% String success = (String) request.getAttribute("success"); 
+               if (success == null) { success = request.getParameter("success"); } 
+               if (success != null) { %>
+                <div class="server-success">
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <% 
+                Object userObj = session.getAttribute("user"); 
+                User users = null; 
+                if (userObj instanceof User) { users = (User) userObj; }
+                Object patientObj = session.getAttribute("patient"); 
+                Patients patient = null; 
+                if (patientObj instanceof Patients) { patient = (Patients) patientObj; } 
+                if (users == null && patient == null) { %>
+                    <p>Không tìm thấy thông tin người dùng hoặc bệnh nhân.</p>
+            <% } else { 
+                if (users != null) { 
+                    String passwordMask = users.getPasswordHash() != null ? "•".repeat(users.getPasswordHash().length()) : "--"; 
+            %>
+
+                    <!-- Email Field -->
+                    <p>
+                        <strong>Email:</strong>
+                        <div class="field-row">
+                            <div class="field-content">
+                                <span id="emailDisplay">
+                                    <%= users.getEmail() != null ? users.getEmail() : "--" %>
+                                </span>
+                                <form id="emailForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                    <input type="hidden" name="field" value="email">
+                                    <input type="email" name="value" class="editable-field" id="emailInput" 
+                                           value="<%= users.getEmail() != null ? users.getEmail() : "" %>" required>
+                                    <div class="error-message" id="emailError">Vui lòng nhập email hợp lệ.</div>
+                                    <button type="submit" class="save-btn">Lưu</button>
+                                    <button type="button" class="cancel-btn" onclick="cancelEdit('email')">Hủy</button>
+                                </form>
+                            </div>
+                            <button class="edit-btn" id="emailEditBtn" onclick="editField('email')">Sửa</button>
+                        </div>
+                    </p>
+
+                    <!-- Password Field -->
+                    <p>
+                        <strong>Mật khẩu:</strong>
+                        <div class="field-row">
+                            <div class="field-content">
+                                <div id="passwordDisplay" class="password-container">
+                                    <span class="password-display">
+                                        <%= passwordMask %>
+                                    </span>
+                                    <button class="toggle-password" onclick="togglePassword()" title="Hiển thị/Ẩn mật khẩu">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                 </div>
+                                <form id="passwordForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                    <input type="hidden" name="type" value="password">
+                                    <!-- Mật khẩu cũ -->
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px;">Mật khẩu cũ:</label>
+                                        <input type="password" name="oldPassword" class="editable-field" required>
+                                    </div>
+                                    <!-- Mật khẩu mới -->
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px;">Mật khẩu mới:</label>
+                                        <input type="password" name="newPassword" class="editable-field" required>
+                                    </div>
+                                    <!-- Xác nhận mật khẩu mới -->
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px;">Xác nhận mật khẩu mới:</label>
+                                        <input type="password" name="confirmPassword" class="editable-field" required>
+                                    </div>
+                                    <!-- Thông báo lỗi -->
+                                    <div class="error-message" style="color: red; margin-bottom: 10px;"></div>
+                                    <!-- Nút submit và hủy -->
+                                    <div>
+                                        <button type="submit" class="save-btn">Lưu thay đổi</button>
+                                        <button type="button" class="cancel-btn" onclick="hidePasswordForm()">Hủy</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <button class="edit-btn" id="passwordEditBtn" onclick="showPasswordForm()">Sửa</button>
+                        </div>
+                    </p>
+            <% } %>
 
-                                <script
-                                    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        <c:forEach items="${doctors}" var="doctor">
-                                            flatpickr("#work_date_picker_${doctor.doctor_id}", {
-                                                dateFormat: "Y-m-d",
-                                            enable: window['workDates_${doctor.doctor_id}'],
-                                            minDate: "today", // Không cho chọn ngày cũ
-                                            locale: {
-                                                firstDayOfWeek: 1 // Thứ 2 là ngày đầu tuần
-                                                },
-                                            onChange: function (selectedDates, dateStr) {
-                                                updateSchedules(dateStr, ${ doctor.doctor_id });
+            <!-- Patient Information -->
+            <h2>Thông Tin Bệnh Nhân</h2>
+            <% if (patient != null) { %>
+                <!-- Profile Picture Field -->
+                <p>
+                    <strong>Ảnh đại diện:</strong>
+                    <div class="field-row profile-picture-container">
+                        <div class="field-content">
+                            <% String avatar = patient.getAvatar() != null ? patient.getAvatar() : ""; %>
+                            <% if (!avatar.isEmpty()) { %>
+                                <img src="${pageContext.request.contextPath}<%= avatar %>" class="profile-picture" alt="Ảnh đại diện">
+                            <% } else { %>
+                                <div class="profile-picture-placeholder">Không có ảnh</div>
+                            <% } %>
+                            <form id="profilePictureForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" enctype="multipart/form-data" style="display: inline-block;">
+                                <input type="hidden" name="type" value="profile_picture">
+                                <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+                                <input type="file" name="profilePicture" id="profilePictureInput" class="profile-picture-input" accept="image/png,image/jpeg,image/jpg" required>
+                                <label for="profilePictureInput" class="profile-picture-label">Chọn ảnh</label>
+                                <img id="profilePicturePreview" class="profile-picture-preview" alt="Ảnh xem trước">
+                                <div class="error-message" id="profilePictureError">Vui lòng chọn file ảnh (PNG, JPG).</div>
+                                <button type="submit" class="save-btn">Lưu</button>
+                                <button type="button" class="cancel-btn" onclick="cancelProfilePicture()">Hủy</button>
+                            </form>
+                        </div>
+                    </div>
+                </p>
+
+                <table class="patient-table">
+                    <tr>
+                        <th>Họ tên</th>
+                        <td>
+                            <div class="field-row">
+                                <div class="field-content">
+                                    <span id="fullNameDisplay">
+                                        <%= patient.getFullName() != null ? patient.getFullName() : "--" %>
+                                    </span>
+                                    <form id="fullNameForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                        <input type="hidden" name="type" value="update_patient_info">
+                                        <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+                                        <input type="text" name="fullName" class="editable-field" id="fullNameInput"
+                                               value="<%= patient.getFullName() != null ? patient.getFullName() : "" %>" required>
+                                        <div class="error-message" id="fullNameError">Vui lòng nhập họ tên hợp lệ.</div>
+                                        <input type="hidden" name="phone" value="<%= patient.getPhone() != null ? patient.getPhone() : "" %>">
+                                        <input type="hidden" name="dateOfBirth" value="<%= patient.getDateOfBirth() != null ? new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth()) : "" %>">
+                                        <input type="hidden" name="gender" value="<%= patient.getGender() != null ? patient.getGender() : "" %>">
+                                        <button type="submit" class="save-btn">Lưu</button>
+                                        <button type="button" class="cancel-btn" onclick="cancelEdit('fullName')">Hủy</button>
+                                    </form>
+                                </div>
+                                <button class="edit-btn" id="fullNameEditBtn" onclick="editField('fullName')">Sửa</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Điện thoại</th>
+                        <td>
+                            <div class="field-row">
+                                <div class="field-content">
+                                    <span id="phoneDisplay">
+                                        <%= patient.getPhone() != null ? patient.getPhone() : "--" %>
+                                    </span>
+                                    <form id="phoneForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                        <input type="hidden" name="type" value="update_patient_info">
+                                        <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+                                        <input type="tel" name="phone" class="editable-field" id="phoneInput"
+                                               value="<%= patient.getPhone() != null ? patient.getPhone() : "" %>"
+                                               pattern="[0-9]{10,11}" required>
+                                        <div class="error-message" id="phoneError">Vui lòng nhập số điện thoại hợp lệ (10-11 số).</div>
+                                        <input type="hidden" name="fullName" value="<%= patient.getFullName() != null ? patient.getFullName() : "" %>">
+                                        <input type="hidden" name="dateOfBirth" value="<%= patient.getDateOfBirth() != null ? new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth()) : "" %>">
+                                        <input type="hidden" name="gender" value="<%= patient.getGender() != null ? patient.getGender() : "" %>">
+                                        <button type="submit" class="save-btn">Lưu</button>
+                                        <button type="button" class="cancel-btn" onclick="cancelEdit('phone')">Hủy</button>
+                                    </form>
+                                </div>
+                                <button class="edit-btn" id="phoneEditBtn" onclick="editField('phone')">Sửa</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ngày sinh</th>
+                        <td>
+                            <div class="field-row">
+                                <div class="field-content">
+                                    <span id="dobDisplay">
+                                        <% 
+                                            Date dob = patient.getDateOfBirth(); 
+                                            String formattedDob = "--"; 
+                                            if (dob != null) { 
+                                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+                                                formattedDob = sdf.format(dob); 
+                                            } 
+                                        %>
+                                        <%= formattedDob %>
+                                    </span>
+                                    <form id="dobForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                        <input type="hidden" name="type" value="update_patient_info">
+                                        <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+                                        <input type="date" name="dateOfBirth" class="editable-field" id="dobInput"
+                                               value="<%= formattedDob != "--" ? formattedDob : "" %>" required>
+                                        <div class="error-message" id="dobError">Vui lòng nhập ngày sinh hợp lệ.</div>
+                                        <input type="hidden" name="fullName" value="<%= patient.getFullName() != null ? patient.getFullName() : "" %>">
+                                        <input type="hidden" name="phone" value="<%= patient.getPhone() != null ? patient.getPhone() : "" %>">
+                                        <input type="hidden" name="gender" value="<%= patient.getGender() != null ? patient.getGender() : "" %>">
+                                        <button type="submit" class="save-btn">Lưu</button>
+                                        <button type="button" class="cancel-btn" onclick="cancelEdit('dob')">Hủy</button>
+                                    </form>
+                                </div>
+                                <button class="edit-btn" id="dobEditBtn" onclick="editField('dob')">Sửa</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Giới tính</th>
+                        <td>
+                            <div class="field-row">
+                                <div class="field-content">
+                                    <span id="genderDisplay">
+                                        <% 
+                                            String genderDisplay = "--";
+                                            if (patient.getGender() != null) {
+                                                switch (patient.getGender()) {
+                                                    case "male":
+                                                        genderDisplay = "Nam";
+                                                        break;
+                                                    case "female":
+                                                        genderDisplay = "Nữ";
+                                                        break;
+                                                    case "other":
+                                                        genderDisplay = "Khác";
+                                                        break;
+                                                    default:
+                                                        genderDisplay = patient.getGender();
                                                 }
-                                            });
-                                        </c:forEach>
-                                    });
+                                            }
+                                        %>
+                                        <%= genderDisplay %>
+                                    </span>
+                                    <form id="genderForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" style="display: none;">
+                                        <input type="hidden" name="type" value="update_patient_info">
+                                        <input type="hidden" name="patientId" value="<%= patient.getPatientId() %>">
+                                        <select name="gender" class="editable-field" id="genderInput" required>
+                                            <option value="male" <%= patient.getGender() != null && patient.getGender().equals("male") ? "selected" : "" %>>Nam</option>
+                                            <option value="female" <%= patient.getGender() != null && patient.getGender().equals("female") ? "selected" : "" %>>Nữ</option>
+                                            <option value="other" <%= patient.getGender() != null && patient.getGender().equals("other") ? "selected" : "" %>>Khác</option>
+                                        </select>
+                                        <div class="error-message" id="genderError">Vui lòng chọn giới tính.</div>
+                                        <input type="hidden" name="fullName" value="<%= patient.getFullName() != null ? patient.getFullName() : "" %>">
+                                        <input type="hidden" name="phone" value="<%= patient.getPhone() != null ? patient.getPhone() : "" %>">
+                                        <input type="hidden" name="dateOfBirth" value="<%= patient.getDateOfBirth() != null ? new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth()) : "" %>">
+                                        <button type="submit" class="save-btn">Lưu</button>
+                                        <button type="button" class="cancel-btn" onclick="cancelEdit('gender')">Hủy</button>
+                                    </form>
+                                </div>
+                                <button class="edit-btn" id="genderEditBtn" onclick="editField('gender')">Sửa</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <% } else { %>
+                <p>Không tìm thấy thông tin bệnh nhân.</p>
+                <form id="newPatientForm" action="${pageContext.request.contextPath}/UpdateUserServlet" method="post" class="new-patient-form" enctype="multipart/form-data">
+                    <input type="hidden" name="type" value="update_patient_info">
+                    <h3>Thêm Thông Tin Bệnh Nhân</h3>
+                    <!-- Profile Picture Field for New Patient -->
+                    <div class="field-row profile-picture-container">
+                        <div class="field-content">
+                            <div class="profile-picture-placeholder">Không có ảnh</div>
+                            <input type="file" name="profilePicture" id="newProfilePictureInput" class="profile-picture-input" accept="image/png,image/jpeg,image/jpg">
+                            <label for="newProfilePictureInput" class="profile-picture-label">Chọn ảnh</label>
+                            <img id="newProfilePicturePreview" class="profile-picture-preview" alt="Ảnh xem trước">
+                            <div class="error-message" id="newProfilePictureError">Vui lòng chọn file ảnh (PNG, JPG).</div>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-content">
+                            <label for="newFullNameInput">Họ tên:</label>
+                            <input type="text" name="fullName" id="newFullNameInput" class="editable-field" required>
+                            <div class="error-message" id="newFullNameError">Vui lòng nhập họ tên hợp lệ.</div>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-content">
+                            <label for="newPhoneInput">Điện thoại:</label>
+                            <input type="tel" name="phone" id="newPhoneInput" class="editable-field" pattern="[0-9]{10,11}" required>
+                            <div class="error-message" id="newPhoneError">Vui lòng nhập số điện thoại hợp lệ (10-11 số).</div>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-content">
+                            <label for="newDobInput">Ngày sinh:</label>
+                            <input type="date" name="dateOfBirth" id="newDobInput" class="editable-field" required>
+                            <div class="error-message" id="newDobError">Vui lòng nhập ngày sinh hợp lệ.</div>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field-content">
+                            <label for="newGenderInput">Giới tính:</label>
+                            <select name="gender" id="newGenderInput" class="editable-field" required>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                            <div class="error-message" id="newGenderError">Vui lòng chọn giới tính.</div>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="save-btn">Thêm Bệnh Nhân</button>
+                        <button type="button" class="cancel-btn" onclick="cancelNewPatient()">Hủy</button>
+                    </div>
+                </form>
+            <% } %>
+            <% } %>
+        </div>
+    </div>
 
-                                    function updateSchedules(selectedDate, doctorId) {
-                                        var url = '${pageContext.request.contextPath}/BookingPageServlet?ajax=true&doctorId=' + doctorId + '&workDate=' + selectedDate;
+    <script>
+        let isPasswordVisible = false;
 
-                                        // Hiển thị container và loading
-                                        document.getElementById('timeSlotsContainer_' + doctorId).style.display = 'block';
-                                        document.getElementById('timeSlots_' + doctorId).innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải khung giờ...</div>';
+        function togglePassword() {
+            const passwordDisplay = document.querySelector('#passwordDisplay .password-display');
+            const toggleIcon = document.querySelector('#passwordDisplay .toggle-password i');
+            if (isPasswordVisible) {
+                passwordDisplay.textContent = '<%= users != null && users.getPasswordHash() != null ? "•".repeat(users.getPasswordHash().length()) : "--"%>';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+                isPasswordVisible = false;
+            } else {
+                passwordDisplay.textContent = '<%= users != null && users.getPasswordHash() != null ? users.getPasswordHash() : "--"%>';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+                isPasswordVisible = true;
+            }
+        }
 
-                                        fetch(url)
-                                            .then(function (response) {
-                                                return response.json();
-                                            })
-                                            .then(function (slots) {
-                                                console.log('Dữ liệu khung giờ trả về:', slots); // Debug
+        function editField(field) {
+            document.getElementById(field + 'Display').style.display = 'none';
+            document.getElementById(field + 'EditBtn').style.display = 'none';
+            document.getElementById(field + 'Form').style.display = 'block';
+            document.getElementById(field + 'Input').focus();
+        }
 
-                                                var timeSlotsDiv = document.getElementById('timeSlots_' + doctorId);
-                                                var html = '';
+        function cancelEdit(field) {
+            document.getElementById(field + 'Display').style.display = 'block';
+            document.getElementById(field + 'EditBtn').style.display = 'inline-block';
+            document.getElementById(field + 'Form').style.display = 'none';
+            document.getElementById(field + 'Error').style.display = 'none';
+            
+            if (field === 'email') {
+                document.getElementById('emailInput').value = '<%= users != null && users.getEmail() != null ? users.getEmail() : ""%>';
+            } else if (field === 'fullName') {
+                document.getElementById('fullNameInput').value = '<%= patient != null && patient.getFullName() != null ? patient.getFullName() : ""%>';
+            } else if (field === 'phone') {
+                document.getElementById('phoneInput').value = '<%= patient != null && patient.getPhone() != null ? patient.getPhone() : ""%>';
+            } else if (field === 'dob') {
+                document.getElementById('dobInput').value = '<%= patient != null && patient.getDateOfBirth() != null ? new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth()) : ""%>';
+            } else if (field === 'gender') {
+                document.getElementById('genderInput').value = '<%= patient != null && patient.getGender() != null ? patient.getGender() : ""%>';
+            }
+        }
 
-                                                if (slots.length === 0) {
-                                                    html = '<div class="alert alert-warning">Không có khung giờ nào khả dụng cho ngày này</div>';
-                                                } else {
-                                                    slots.forEach(function (slot) {
-                                                        var slotClass = 'time-slot';
-                                                        var clickHandler = '';
-                                                        var statusText = '';
+        function cancelProfilePicture() {
+            const profilePictureInput = document.getElementById('profilePictureInput');
+            const profilePicturePreview = document.getElementById('profilePicturePreview');
+            const profilePictureError = document.getElementById('profilePictureError');
+            profilePictureInput.value = '';
+            profilePicturePreview.style.display = 'none';
+            profilePictureError.style.display = 'none';
+        }
 
-                                                        if (slot.isBooked) {
-                                                            slotClass += ' booked';
-                                                            statusText = '<small class="text-muted">Đã được đặt</small>';
-                                                        } else {
-                                                            clickHandler = 'onclick="selectTimeSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\', ' + doctorId + ')"';
-                                                            statusText = '<small class="text-success">Còn trống</small>';
-                                                        }
+        function cancelNewPatient() {
+            const form = document.getElementById('newPatientForm');
+            const newProfilePictureInput = document.getElementById('newProfilePictureInput');
+            const newProfilePicturePreview = document.getElementById('newProfilePicturePreview');
+            const newProfilePictureError = document.getElementById('newProfilePictureError');
+            form.reset();
+            newProfilePicturePreview.style.display = 'none';
+            newProfilePictureError.style.display = 'none';
+        }
 
-                                                        html += '<div class="' + slotClass + '" ' + clickHandler + '>' +
-                                                            '<strong>' + slot.startTime + ' - ' + slot.endTime + '</strong><br>' +
-                                                            statusText +
-                                                            '</div>';
-                                                    });
-                                                }
+        function showPasswordForm() {
+            document.getElementById('passwordForm').style.display = 'block';
+        }
 
-                                                timeSlotsDiv.innerHTML = html;
-                                            })
-                                            .catch(function (error) {
-                                                console.error('Error loading timeslots:', error);
-                                                document.getElementById('timeSlots_' + doctorId).innerHTML = '<div class="alert alert-danger">Có lỗi khi tải khung giờ</div>';
-                                            });
-                                    }
+        function hidePasswordForm() {
+            document.getElementById('passwordForm').style.display = 'none';
+            document.getElementById('passwordForm').reset();
+            document.querySelector('#passwordForm .error-message').textContent = '';
+        }
 
-                                    function selectTimeSlot(slotId, startTime, endTime, doctorId) {
-                                        // Kiểm tra nếu slot đã được đặt
-                                        if (event.currentTarget.classList.contains('booked')) {
-                                            alert('Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!');
-                                            return;
-                                        }
+        // Profile Picture Preview and Validation (Existing Patient)
+        document.getElementById('profilePictureInput')?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const profilePictureError = document.getElementById('profilePictureError');
+            const profilePicturePreview = document.getElementById('profilePicturePreview');
+            
+            profilePictureError.style.display = 'none';
+            profilePicturePreview.style.display = 'none';
 
-                                        // Set giá trị vào hidden input
-                                        document.getElementById('selectedSlotId_' + doctorId).value = slotId;
+            if (file) {
+                const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                if (!validImageTypes.includes(file.type)) {
+                    profilePictureError.style.display = 'block';
+                    event.target.value = '';
+                    return;
+                }
 
-                                        // Highlight selected time slot (chỉ với slot chưa được đặt)
-                                        document.querySelectorAll('#timeSlots_' + doctorId + ' .time-slot:not(.booked)').forEach(slot => slot.classList.remove('selected'));
-                                        event.currentTarget.classList.add('selected');
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profilePicturePreview.src = e.target.result;
+                    profilePicturePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-                                        console.log('Selected slot:', slotId, startTime, endTime, 'for doctor:', doctorId);
-                                    }
+        // Profile Picture Preview and Validation (New Patient)
+        document.getElementById('newProfilePictureInput')?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const profilePictureError = document.getElementById('newProfilePictureError');
+            const profilePicturePreview = document.getElementById('newProfilePicturePreview');
+            
+            profilePictureError.style.display = 'none';
+            profilePicturePreview.style.display = 'none';
 
-                                    // Tạo function riêng cho từng doctor để tránh conflict
-                                    <c:forEach items="${doctors}" var="doctor">
-                                        window['selectService_${doctor.doctor_id}'] = function(serviceId, serviceName, servicePrice) {
-                                            // Reset tất cả service cards
-                                            document.querySelectorAll('#bookingModal${doctor.doctor_id} .service-item').forEach(card => {
-                                                card.style.borderColor = '#dee2e6';
-                                                card.style.background = '#f8f9fa';
-                                            });
+            if (file) {
+                const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                if (!validImageTypes.includes(file.type)) {
+                    profilePictureError.style.display = 'block';
+                    event.target.value = '';
+                    return;
+                }
 
-                                        // Highlight card được chọn
-                                        event.currentTarget.style.borderColor = '#00796b';
-                                        event.currentTarget.style.background = '#e8f5e8';
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profilePicturePreview.src = e.target.result;
+                    profilePicturePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-                                        // Cập nhật hidden input
-                                        document.getElementById('selectedServiceId_${doctor.doctor_id}').value = serviceId;
+        // Form validation
+        document.getElementById('emailForm')?.addEventListener('submit', function (event) {
+            const emailInput = document.getElementById('emailInput').value.trim();
+            const emailError = document.getElementById('emailError');
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-                                        // Hiển thị thông tin service đã chọn
-                                        document.getElementById('selectedServiceName_${doctor.doctor_id}').textContent = serviceName;
-                                        document.getElementById('selectedServicePrice_${doctor.doctor_id}').textContent =
-                                        new Intl.NumberFormat('vi-VN').format(servicePrice) + ' VNĐ';
-                                        document.getElementById('selectedServiceInfo_${doctor.doctor_id}').style.display = 'block';
+            if (!emailInput || !emailPattern.test(emailInput)) {
+                emailError.style.display = 'block';
+                event.preventDefault();
+                return false;
+            } else {
+                emailError.style.display = 'none';
+            }
+        });
 
-                                        console.log('Selected service for doctor ${doctor.doctor_id}:', serviceId, serviceName, servicePrice);
-                                    };
-                                    </c:forEach>
-                                </script>
-                            </body>
+        document.getElementById('passwordForm')?.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const oldPassword = this.querySelector('[name="oldPassword"]').value;
+            const newPassword = this.querySelector('[name="newPassword"]').value;
+            const confirmPassword = this.querySelector('[name="confirmPassword"]').value;
+            const errorDiv = this.querySelector('.error-message');
 
-                            </html>
+            errorDiv.textContent = '';
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                errorDiv.textContent = 'Vui lòng điền đầy đủ thông tin';
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                errorDiv.textContent = 'Mật khẩu mới và xác nhận mật khẩu không khớp';
+                return;
+            }
+            this.submit();
+        });
+
+        document.getElementById('fullNameForm')?.addEventListener('submit', function (event) {
+            const fullNameInput = document.getElementById('fullNameInput').value.trim();
+            const fullNameError = document.getElementById('fullNameError');
+            if (!fullNameInput || fullNameInput.length < 2) {
+                fullNameError.style.display = 'block';
+                event.preventDefault();
+                return false;
+            } else {
+                fullNameError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('phoneForm')?.addEventListener('submit', function (event) {
+            const phoneInput = document.getElementById('phoneInput').value.trim();
+            const phoneError = document.getElementById('phoneError');
+            const phonePattern = /^[0-9]{10,11}$/;
+            if (!phoneInput || !phonePattern.test(phoneInput)) {
+                phoneError.style.display = 'block';
+                event.preventDefault();
+                return false;
+            } else {
+                phoneError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('dobForm')?.addEventListener('submit', function (event) {
+            const dobInput = document.getElementById('dobInput').value;
+            const dobError = document.getElementById('dobError');
+            if (!dobInput) {
+                dobError.style.display = 'block';
+                event.preventDefault();
+                return false;
+            } else {
+                dobError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('genderForm')?.addEventListener('submit', function (event) {
+            const genderInput = document.getElementById('genderInput').value;
+            const genderError = document.getElementById('genderError');
+            if (!genderInput) {
+                genderError.style.display = 'block';
+                event.preventDefault();
+                return false;
+            } else {
+                genderError.style.display = 'none';
+            }
+        });
+
+        document.getElementById('newPatientForm')?.addEventListener('submit', function (event) {
+            const fullNameInput = this.querySelector('[name="fullName"]').value.trim();
+            const phoneInput = this.querySelector('[name="phone"]').value.trim();
+            const dobInput = this.querySelector('[name="dateOfBirth"]').value;
+            const genderInput = this.querySelector('[name="gender"]').value;
+            const profilePictureInput = this.querySelector('[name="profilePicture"]').files[0];
+            
+            const fullNameError = document.getElementById('newFullNameError');
+            const phoneError = document.getElementById('newPhoneError');
+            const dobError = document.getElementById('newDobError');
+            const genderError = document.getElementById('newGenderError');
+            const profilePictureError = document.getElementById('newProfilePictureError');
+            
+            let hasError = false;
+
+            if (!fullNameInput || fullNameInput.length < 2) {
+                fullNameError.style.display = 'block';
+                hasError = true;
+            } else {
+                fullNameError.style.display = 'none';
+            }
+
+            const phonePattern = /^[0-9]{10,11}$/;
+            if (!phoneInput || !phonePattern.test(phoneInput)) {
+                phoneError.style.display = 'block';
+                hasError = true;
+            } else {
+                phoneError.style.display = 'none';
+            }
+
+            if (!dobInput) {
+                dobError.style.display = 'block';
+                hasError = true;
+            } else {
+                dobError.style.display = 'none';
+            }
+
+            if (!genderInput) {
+                genderError.style.display = 'block';
+                hasError = true;
+            } else {
+                genderError.style.display = 'none';
+            }
+
+            if (profilePictureInput) {
+                const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                if (!validImageTypes.includes(profilePictureInput.type)) {
+                    profilePictureError.style.display = 'block';
+                    hasError = true;
+                } else {
+                    profilePictureError.style.display = 'none';
+                }
+            }
+
+            if (hasError) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+        window.addEventListener('load', function () {
+            const successMsg = document.querySelector('.server-success');
+            const errorMsg = document.querySelector('.server-error');
+            if (successMsg) {
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 5000);
+            }
+            if (errorMsg) {
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
+```

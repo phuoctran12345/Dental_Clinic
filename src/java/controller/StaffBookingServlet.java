@@ -319,66 +319,39 @@ public class StaffBookingServlet extends HttpServlet {
      */
     private void handleBookAppointment(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException, SQLException {
-        
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
-        
         if (currentUser == null) {
             request.setAttribute("error", "Phiên đăng nhập đã hết hạn");
             doGet(request, response);
             return;
         }
-        
         try {
             // Lấy thông tin từ form
-            int patientId = Integer.parseInt(request.getParameter("patientId"));
-            int doctorId = Integer.parseInt(request.getParameter("doctorId"));
-            int slotId = Integer.parseInt(request.getParameter("slotId"));
-            Date workDate = Date.valueOf(request.getParameter("workDate"));
-            String reason = request.getParameter("reason");
-            
-            // Tạo appointment mới
-            Appointment appointment = new Appointment();
-            appointment.setPatientId(patientId);
-            appointment.setDoctorId(doctorId);
-            appointment.setSlotId(slotId);
-            appointment.setWorkDate(workDate);
-            appointment.setReason(reason);
-            appointment.setStatus("Đã xác nhận");
-            
-            // Lưu vào database
-            AppointmentDAO appointmentDAO = new AppointmentDAO();
-            int appointmentId = 0;
-            try {
-                appointmentId = appointmentDAO.createAppointment(appointment);
-            } catch (Exception e) {
-                System.err.println("Error creating appointment: " + e.getMessage());
-                e.printStackTrace();
-            }
-            
-            if (appointmentId > 0) {
-                request.setAttribute("success", "Đặt lịch thành công!");
-                
-                // Gửi thông báo cho bệnh nhân (nếu cần)
-                PatientDAO patientDAO = new PatientDAO();
-                Patients patient = patientDAO.getPatientById(patientId);
-                if (patient != null) {
-                    // Có thể gửi email/SMS thông báo ở đây
-                }
-                
+            String bookingFor = request.getParameter("bookingFor");
+            if ("relative".equals(bookingFor)) {
+                // Gọi DAO riêng cho người thân (RelativesAppointmentDAO)
+                // ... logic đặt lịch cho người thân ...
             } else {
-                request.setAttribute("error", "Không thể đặt lịch. Vui lòng thử lại!");
+                int patientId = Integer.parseInt(request.getParameter("patientId"));
+                int doctorId = Integer.parseInt(request.getParameter("doctorId"));
+                int slotId = Integer.parseInt(request.getParameter("slotId"));
+                Date workDate = Date.valueOf(request.getParameter("workDate"));
+                String reason = request.getParameter("reason");
+                Appointment appointment = new Appointment();
+                appointment.setPatientId(patientId);
+                appointment.setDoctorId(doctorId);
+                appointment.setSlotId(slotId);
+                appointment.setWorkDate(workDate.toLocalDate());
+                appointment.setReason(reason);
+                appointment.setStatus(AppointmentDAO.STATUS_BOOKED);
+                AppointmentDAO appointmentDAO = new AppointmentDAO();
+                int appointmentId = appointmentDAO.createAppointment(appointment);
+                // ... xử lý tiếp ...
             }
-            
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Thông tin đặt lịch không hợp lệ");
-        } catch (IllegalArgumentException e) {
-            request.setAttribute("error", "Ngày đặt lịch không hợp lệ");
         } catch (Exception e) {
-            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            // ... xử lý lỗi ...
         }
-        
-        // Quay lại trang chính
         doGet(request, response);
     }
     

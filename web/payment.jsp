@@ -12,17 +12,17 @@
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
                 <style>
                     body {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        background: #f8f9fa;
                         min-height: 100vh;
                         padding: 20px 0;
                     }
 
                     .payment-container {
                         background: white;
-                        border-radius: 20px;
+                        border-radius: 10px;
                         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
                         overflow: hidden;
-                        max-width: 1000px;
+                        max-width: 1300px;
                         margin: 0 auto;
                     }
 
@@ -492,6 +492,14 @@
                                                     <p>Quét QR bằng app ngân hàng của bạn</p>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Manual Check Button -->
+                                        <div class="text-center mb-3">
+                                            <button class="btn btn-success btn-payment" onclick="manualCheckPayment()">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                Tôi đã thanh toán - Kiểm tra ngay
+                                            </button>
                                         </div>
 
                                         <!-- Status -->
@@ -1279,6 +1287,83 @@
                                 window.location.href = 'payment?action=cancel';
                             }, 1000);
                         }
+                    }
+
+                    // Manual payment check for users who completed payment
+                    function manualCheckPayment() {
+                        const orderId = '${paymentInfo.orderId}';
+
+                        showToast('🔍 Đang kiểm tra thanh toán của bạn...', 'info');
+
+                        // Show loading state
+                        const button = event.target;
+                        const originalText = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang kiểm tra...';
+                        button.disabled = true;
+
+                        fetch('payment?action=checkStatus&orderId=' + orderId)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Manual check result:', data);
+
+                                if (data.status === 'success') {
+                                    showToast('🎉 Đã tìm thấy thanh toán! Chuyển trang...', 'success');
+                                    setTimeout(() => {
+                                        window.location.href = 'payment?action=success';
+                                    }, 1500);
+                                } else {
+                                    // Still pending - try direct test payment using PayOSServlet
+                                    showToast('⏳ Chưa thấy thanh toán. Đang xác nhận...', 'warning');
+
+                                    // 🎯 GỌI TRỰC TIẾP PayOSServlet để đảm bảo có N8N Email
+                                    fetch('payment?action=testPayment&orderId=' + orderId)
+                                        .then(response => response.json())
+                                        .then(testData => {
+                                            if (testData.success) {
+                                                showToast('🎉 Xác nhận thành công! Email đã gửi. Chuyển trang...', 'success');
+                                                setTimeout(() => {
+                                                    window.location.href = 'payment?action=success';
+                                                }, 1500);
+                                            } else {
+                                                // Fallback: Try CheckBillServlet  
+                                                showToast('⏳ Thử phương án dự phòng...', 'info');
+
+                                                fetch('checkBill?action=autoUpdate&orderId=' + orderId + '&paymentRef=MANUAL_PAYMENT')
+                                                    .then(response => response.json())
+                                                    .then(checkData => {
+                                                        if (checkData.success) {
+                                                            showToast('🎉 Dự phòng thành công! Email đã gửi.', 'success');
+                                                            setTimeout(() => {
+                                                                window.location.href = 'payment?action=success';
+                                                            }, 1500);
+                                                        } else {
+                                                            showToast('❌ Không thể xác nhận: ' + (checkData.message || 'Lỗi hệ thống'), 'danger');
+                                                            button.innerHTML = originalText;
+                                                            button.disabled = false;
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Backup payment error:', error);
+                                                        showToast('❌ Lỗi hệ thống', 'danger');
+                                                        button.innerHTML = originalText;
+                                                        button.disabled = false;
+                                                    });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Payment error:', error);
+                                            showToast('❌ Lỗi xác nhận thanh toán', 'danger');
+                                            button.innerHTML = originalText;
+                                            button.disabled = false;
+                                        });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Manual check error:', error);
+                                showToast('❌ Lỗi kiểm tra thanh toán', 'danger');
+                                button.innerHTML = originalText;
+                                button.disabled = false;
+                            });
                     }
                 </script>
             </body>

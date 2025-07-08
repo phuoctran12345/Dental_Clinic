@@ -21,6 +21,7 @@ public class Staff {
     private String position;      // Chức vụ (NOT NULL)
     private String employmentType; // Loại nhân viên (fulltime/parttime)
     private Date createdAt;       // Ngày tạo
+    private String avatar;        // Đường dẫn avatar
 
     // Constructor mặc định
     public Staff() {
@@ -137,6 +138,14 @@ public class Staff {
         this.createdAt = createdAt;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     // toString method để in thông tin
     @Override
     public String toString() {
@@ -151,6 +160,7 @@ public class Staff {
                ", position='" + position + '\'' + 
                ", employmentType='" + employmentType + '\'' + 
                ", createdAt=" + createdAt + 
+               ", avatar='" + avatar + '\'' + 
                '}';
     }
 

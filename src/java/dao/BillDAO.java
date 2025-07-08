@@ -765,4 +765,90 @@ public class BillDAO {
         
         return java.math.BigDecimal.ZERO;
     }
+
+    // đặt lịch cho người thân
+    public boolean createBillForRelative(String billId, String orderId, int serviceId, int patientId, int userId, 
+                                       java.math.BigDecimal amount, java.math.BigDecimal originalPrice, 
+                                       String customerName, String customerPhone, String customerEmail, 
+                                       int doctorId, java.sql.Date appointmentDate, java.sql.Time appointmentTime, 
+                                       String appointmentNotes) throws SQLException {
+        String sql = """
+            INSERT INTO Bills 
+            (bill_id, order_id, service_id, patient_id, user_id, amount, original_price, 
+             discount_amount, tax_amount, payment_method, payment_status, 
+             customer_name, customer_phone, customer_email, doctor_id, 
+             appointment_date, appointment_time, appointment_notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+        
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, billId);
+            stmt.setString(2, orderId);
+            stmt.setInt(3, serviceId);
+            stmt.setInt(4, patientId);
+            stmt.setInt(5, userId);
+            stmt.setBigDecimal(6, amount);
+            stmt.setBigDecimal(7, originalPrice);
+            stmt.setBigDecimal(8, java.math.BigDecimal.ZERO); // discount_amount
+            stmt.setBigDecimal(9, java.math.BigDecimal.ZERO); // tax_amount
+            stmt.setString(10, "PayOS"); // payment_method
+            stmt.setString(11, "pending"); // payment_status
+            stmt.setString(12, customerName);
+            stmt.setString(13, customerPhone);
+            stmt.setString(14, customerEmail);
+            stmt.setInt(15, doctorId);
+            stmt.setDate(16, appointmentDate);
+            stmt.setTime(17, appointmentTime);
+            stmt.setString(18, appointmentNotes);
+            
+            System.out.println("✅ Tạo bill cho người thân:");
+            System.out.println("  - Bill ID: " + billId);
+            System.out.println("  - Customer: " + customerName);
+            System.out.println("  - Amount: " + amount);
+            System.out.println("  - Booked by User ID: " + userId);
+            
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Tạo bill mới cho người thân
+     * @return bill_id
+     */
+    public static int createBill(int appointmentId, int patientId, int userId, java.math.BigDecimal amount, String paymentMethod, String status) {
+        int billId = -1;
+        java.sql.Connection conn = null;
+        java.sql.PreparedStatement ps = null;
+        java.sql.ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "INSERT INTO Bills (appointment_id, patient_id, user_id, amount, payment_method, status) VALUES (?, ?, ?, ?, ?, ?)";
+            ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, appointmentId);
+            ps.setInt(2, patientId);
+            ps.setInt(3, userId);
+            ps.setBigDecimal(4, amount);
+            ps.setString(5, paymentMethod);
+            ps.setString(6, status);
+            ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                billId = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBContext.close(rs, ps, conn);
+        }
+        return billId;
+    }
+
+    // Đảm bảo có hàm close để tránh lỗi linter
+    public static void close(java.sql.ResultSet rs, java.sql.PreparedStatement ps, java.sql.Connection conn) {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }
 } 

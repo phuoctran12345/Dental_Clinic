@@ -225,13 +225,10 @@
         <div class="menu_group">
             <div class="menu_item" onclick="toggleDropdown(this)">
                 <i class="fa-solid fa-newspaper"></i>
-                <span>Tin tức y tế</span>
-                <a class="fa-solid fa-chevron-down dropdown-arrow"></a>
+                <a href="blog.jsp">Tin tức y tế</a>
+
             </div>
-            <div class="dropdown_list">
-                <a href="#">• Đăng tin mới</a>
-                <a href="#">• Quản lý tin tức</a>
-            </div>
+
         </div>
 
         <!-- Thông báo -->
@@ -247,7 +244,7 @@
         <div class="menu_item">
             <i class="fa-solid fa-user"></i>
             <span>
-                <a href="staff-info?id=${staff.userId}">Tài khoản của tôi</a>
+                <a href="${pageContext.request.contextPath}/StaffProfileServlet">Tài khoản của tôi</a>
             </span>
         </div>
 

@@ -22,7 +22,7 @@ public class StaffDAO {
     private static final String GET_BY_ID = "SELECT * FROM Staff WHERE staff_id = ?";
     private static final String GET_BY_USER_ID = "SELECT * FROM Staff WHERE user_id = ?";
     private static final String INSERT = "INSERT INTO Staff (user_id, full_name, phone, date_of_birth, gender, address, position, employment_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE Staff SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ?, position = ?, employment_type = ? WHERE staff_id = ?";
+    private static final String UPDATE = "UPDATE Staff SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ?, position = ?, employment_type = ?, avatar = ? WHERE staff_id = ?";
     private static final String DELETE = "DELETE FROM Staff WHERE staff_id = ?";
     private static final String COUNT_BY_NAME = "SELECT COUNT(*) as total FROM Staff WHERE full_name = ?";
 
@@ -61,6 +61,7 @@ public class StaffDAO {
                     staff.setPosition(rs.getString("position"));
                     staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
+                    staff.setAvatar(rs.getString("avatar"));
                     
                     staffList.add(staff);
                 }
@@ -104,6 +105,7 @@ public class StaffDAO {
                     staff.setPosition(rs.getString("position"));
                     staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
+                    staff.setAvatar(rs.getString("avatar"));
                 }
             }
         } catch (Exception e) {
@@ -145,6 +147,7 @@ public class StaffDAO {
                     staff.setPosition(rs.getString("position"));
                     staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
+                    staff.setAvatar(rs.getString("avatar"));
                 }
             }
         } catch (Exception e) {
@@ -200,6 +203,10 @@ public class StaffDAO {
         try {
             conn = getConnect();
             if (conn != null) {
+                System.out.println("[StaffDAO] updateStaff - Updating staff: " + staff.getStaffId());
+                System.out.println("[StaffDAO] updateStaff - Avatar value: " + staff.getAvatar());
+                System.out.println("[StaffDAO] updateStaff - SQL: " + UPDATE);
+                
                 ptm = conn.prepareStatement(UPDATE);
                 ptm.setString(1, staff.getFullName());
                 ptm.setString(2, staff.getPhone());
@@ -208,11 +215,16 @@ public class StaffDAO {
                 ptm.setString(5, staff.getAddress());
                 ptm.setString(6, staff.getPosition());
                 ptm.setString(7, staff.getEmploymentType());
-                ptm.setInt(8, (int) staff.getStaffId());
+                ptm.setString(8, staff.getAvatar());
+                ptm.setInt(9, (int) staff.getStaffId());
+                
+                System.out.println("[StaffDAO] updateStaff - Parameters set, executing update...");
                 int rowsAffected = ptm.executeUpdate();
+                System.out.println("[StaffDAO] updateStaff - Rows affected: " + rowsAffected);
                 return rowsAffected > 0;
             }
         } catch (Exception e) {
+            System.out.println("[StaffDAO] updateStaff - Exception: " + e.getMessage());
             e.printStackTrace();
         } finally {
             if (ptm != null) ptm.close();

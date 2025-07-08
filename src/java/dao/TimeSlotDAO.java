@@ -29,26 +29,24 @@ public class TimeSlotDAO {
     }
 
     public List<TimeSlot> getAllTimeSlots() {
-        List<TimeSlot> timeSlots = new ArrayList<>();
+        List<TimeSlot> allSlots = new ArrayList<>();
         String sql = "SELECT * FROM TimeSlot ORDER BY start_time";
-        try {
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
             while (rs.next()) {
                 TimeSlot slot = new TimeSlot();
                 slot.setSlotId(rs.getInt("slot_id"));
-                Time startTime = rs.getTime("start_time");
-                Time endTime = rs.getTime("end_time");
-                if (startTime != null && endTime != null) {
-                    slot.setStartTime(startTime.toLocalTime());
-                    slot.setEndTime(endTime.toLocalTime());
-                }
-                timeSlots.add(slot);
+                slot.setStartTime(rs.getTime("start_time").toLocalTime());
+                slot.setEndTime(rs.getTime("end_time").toLocalTime());
+                allSlots.add(slot);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return timeSlots;
+        return allSlots;
     }
 
     public TimeSlot getTimeSlotById(int slotId) {
@@ -113,45 +111,44 @@ public class TimeSlotDAO {
         }
     }
 
-    public static List<TimeSlot> getAvailableSlots(int doctorId, java.sql.Date workDate) {
-        List<TimeSlot> slots = new ArrayList<>();
-        
-        // Chỉ cho phép đặt lịch cho ngày hiện tại và tương lai
-        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
-        if (workDate.before(today)) {
-            return slots; // Trả về danh sách rỗng nếu là ngày quá khứ
-        }
-        
-        String sql = "SELECT ts.slot_id, ts.start_time, ts.end_time " +
-                "FROM DoctorSchedule ds " +
-                "JOIN TimeSlot ts ON ds.slot_id = ts.slot_id " +
-                "WHERE ds.doctor_id = ? AND ds.work_date = ? " +
-                "AND ds.status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved', N'Chờ xác nhận') " +
-                "AND NOT EXISTS (" +
-                "    SELECT 1 FROM Appointment ap " +
-                "    WHERE ap.doctor_id = ds.doctor_id " +
-                "      AND ap.work_date = ds.work_date " +
-                "      AND ap.slot_id = ds.slot_id " +
-                "      AND ap.status IN (N'Đã đặt', N'Đang chờ khám', N'Đã xác nhận')" +
-                ") " +
-                "ORDER BY ts.start_time ASC";
+    public List<TimeSlot> getAvailableSlots(int doctorId, java.sql.Date workDate) {
+        List<TimeSlot> availableSlots = new ArrayList<>();
+        String sql = """
+            SELECT ts.* FROM TimeSlot ts
+            WHERE ts.slot_id IN (
+                SELECT ds.slot_id FROM DoctorSchedule ds 
+                WHERE ds.doctor_id = ? AND ds.work_date = ?
+                AND ds.status = 'APPROVED'
+            )
+            AND ts.slot_id NOT IN (
+                SELECT a.slot_id FROM Appointment a 
+                WHERE a.doctor_id = ? AND a.work_date = ?
+                AND a.status != 'CANCELLED'
+            )
+            ORDER BY ts.start_time
+        """;
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            
             ps.setInt(1, doctorId);
             ps.setDate(2, workDate);
-            ResultSet rs = ps.executeQuery();
+            ps.setInt(3, doctorId);
+            ps.setDate(4, workDate);
+            
+            try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 TimeSlot slot = new TimeSlot();
                 slot.setSlotId(rs.getInt("slot_id"));
                 slot.setStartTime(rs.getTime("start_time").toLocalTime());
                 slot.setEndTime(rs.getTime("end_time").toLocalTime());
-                slots.add(slot);
+                    availableSlots.add(slot);
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return slots;
+        return availableSlots;
     }
 
     /**
@@ -200,40 +197,44 @@ public class TimeSlotDAO {
      */
     public static List<TimeSlot> getTimeSlotsByIds(List<Integer> slotIds) {
         List<TimeSlot> slots = new ArrayList<>();
-        
         if (slotIds == null || slotIds.isEmpty()) {
             return slots;
         }
-        
-        // Tạo SQL động với IN clause
-        StringBuilder sql = new StringBuilder("SELECT slot_id, start_time, end_time FROM TimeSlot WHERE slot_id IN (");
+
+        // Tạo câu query với IN clause
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM TimeSlot WHERE slot_id IN (");
         for (int i = 0; i < slotIds.size(); i++) {
             if (i > 0) sql.append(",");
             sql.append("?");
         }
         sql.append(") ORDER BY start_time ASC");
-        
+
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
             
-            // Set parameters
+            // Set parameters cho IN clause
             for (int i = 0; i < slotIds.size(); i++) {
                 ps.setInt(i + 1, slotIds.get(i));
             }
-            
-            ResultSet rs = ps.executeQuery();
+
+            try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 TimeSlot slot = new TimeSlot();
                 slot.setSlotId(rs.getInt("slot_id"));
-                slot.setStartTime(rs.getTime("start_time").toLocalTime());
-                slot.setEndTime(rs.getTime("end_time").toLocalTime());
+                    Time startTime = rs.getTime("start_time");
+                    Time endTime = rs.getTime("end_time");
+                    if (startTime != null && endTime != null) {
+                        slot.setStartTime(startTime.toLocalTime());
+                        slot.setEndTime(endTime.toLocalTime());
+                    }
                 slots.add(slot);
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi khi lấy TimeSlot theo IDs: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in getTimeSlotsByIds: " + e.getMessage());
             e.printStackTrace();
         }
-        
         return slots;
     }
 

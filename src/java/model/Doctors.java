@@ -19,12 +19,9 @@ public class Doctors {
     private String avatar;
     private List<DoctorSchedule> schedules;
     private List<String> workDates;
-    
-    
-   
-    
-    public Doctors(long doctor_id,  String full_name, String phone, String address, Date date_of_birth, String gender, String specialty, String license_number, Date created_at) {
-        this.doctor_id = doctor_id;   
+
+    public Doctors(long doctor_id, String full_name, String phone, String address, Date date_of_birth, String gender, String specialty, String license_number, Date created_at) {
+        this.doctor_id = doctor_id;
         this.full_name = full_name;
         this.phone = phone;
         this.address = address;
@@ -36,7 +33,6 @@ public class Doctors {
         this.schedules = new ArrayList<>();
         this.workDates = new ArrayList<>();
     }
-
 
     public Doctors(long doctor_id, long user_id, String full_name, String phone, String address, Date date_of_birth, String gender, String specialty, String license_number, Date created_at, String status, String avatar) {
         this.doctor_id = doctor_id;
@@ -171,11 +167,12 @@ public class Doctors {
     public void setWorkDates(List<String> workDates) {
         this.workDates = workDates;
     }
-      // Alias methods for JSP compatibility
+
+    // Alias methods for JSP compatibility
     public String getFullName() {
         return full_name;
     }
-    
+
     public long getDoctorId() {
         return doctor_id;
     }
@@ -193,4 +190,4 @@ public class Doctors {
                 ", workDates=" + workDates +
                 '}';
     }
-} 
+}

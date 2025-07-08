@@ -1,4 +1,3 @@
-
 package dao;
 
 import model.Doctors;
@@ -1664,5 +1663,52 @@ public class DoctorDAO {
 
         System.out.println("Schedules found for doctor " + doctorId + ": " + schedules.size());
         return schedules;
+    }
+
+
+      // Lấy email bác sĩ từ doctor_id (JOIN Doctors với users)
+      public static String getDoctorEmailByDoctorId(long doctorId) {
+        String sql = "SELECT u.email FROM Doctors d JOIN users u ON d.user_id = u.user_id WHERE d.doctor_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("email");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Lấy tên bác sĩ từ doctor_id
+     * @param doctorId ID của bác sĩ
+     * @return Tên đầy đủ của bác sĩ, null nếu không tìm thấy
+     */
+    public static String getDoctorNameById(int doctorId) {
+        String sql = "SELECT d.full_name FROM Doctors d WHERE d.doctor_id = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String fullname = rs.getString("full_name");
+                    System.out.println("✅ Lấy tên bác sĩ thành công: " + fullname);
+                    return fullname;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ LỖI: Không thể lấy tên bác sĩ - " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        System.err.println("⚠️ Không tìm thấy bác sĩ với ID: " + doctorId);
+        return null;
     }
 }

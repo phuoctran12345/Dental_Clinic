@@ -21,8 +21,8 @@ public class DoctorScheduleDAO {
     private static final String INSERT = "INSERT INTO DoctorSchedule (doctor_id, work_date, slot_id, status) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_STATUS = "UPDATE DoctorSchedule SET status = ? WHERE schedule_id = ?";
     private static final String DELETE = "DELETE FROM DoctorSchedule WHERE schedule_id = ?";
-    private static final String GET_PENDING = "SELECT * FROM DoctorSchedule WHERE status = N'Chờ xác nhận'";
-    private static final String GET_APPROVED_BY_DOCTOR = "SELECT * FROM DoctorSchedule WHERE doctor_id = ? AND status = N'approved'";
+    private static final String GET_PENDING = "SELECT * FROM DoctorSchedule WHERE status = 'pending'";
+    private static final String GET_APPROVED_BY_DOCTOR = "SELECT * FROM DoctorSchedule WHERE doctor_id = ? AND status = 'approved'";
     
     private static final String GET_AVAILABLE_BY_DOCTOR = 
         "SELECT ds.schedule_id, ds.doctor_id, ds.work_date, ds.slot_id, " +
@@ -30,14 +30,14 @@ public class DoctorScheduleDAO {
         "FROM DoctorSchedule ds " +
         "JOIN TimeSlot ts ON ds.slot_id = ts.slot_id " +
         "WHERE ds.doctor_id = ? " +
-        "AND ds.status = N'Đã xác nhận đăng kí lịch hẹn với bác sĩ' " +
+        "AND ds.status = 'approved' " +
         "AND ds.work_date >= CONVERT(date, GETDATE()) " +
         "AND NOT EXISTS (" +
         "    SELECT 1 FROM Appointment ap " +
         "    WHERE ap.doctor_id = ds.doctor_id " +
         "      AND ap.work_date = ds.work_date " +
         "      AND ap.slot_id = ds.slot_id " +
-        "      AND ap.status IN (N'Đã đặt', N'Đang chờ khám')" +
+        "      AND ap.status NOT IN ('cancelled', 'rejected')" +
         ") " +
         "ORDER BY ds.work_date ASC, ts.start_time ASC";
         
@@ -429,19 +429,51 @@ public class DoctorScheduleDAO {
      */
     public static List<String> getWorkDatesExcludingLeaves(int doctorId, int daysAhead) {
         List<String> workDates = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         
-        // Lấy danh sách ngày nghỉ của bác sĩ
-        List<String> leaveDates = getLeaveDatasByDoctorId(doctorId);
-        
-        // Tạo danh sách ngày làm việc (loại bỏ ngày nghỉ)
-        java.time.LocalDate today = java.time.LocalDate.now();
-        for (int i = 0; i < daysAhead; i++) {
-            java.time.LocalDate date = today.plusDays(i);
-            String dateStr = date.toString();
-            
-            // Chỉ thêm vào nếu KHÔNG phải ngày nghỉ
-            if (!leaveDates.contains(dateStr)) {
-                workDates.add(dateStr);
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                String sql = "SELECT DISTINCT work_date " +
+                           "FROM DoctorSchedule " +
+                           "WHERE doctor_id = ? " +
+                           "AND work_date >= CONVERT(date, GETDATE()) " +
+                           "AND work_date <= DATEADD(day, ?, CONVERT(date, GETDATE())) " +
+                           "AND status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved') " +
+                           "AND work_date NOT IN (" +
+                           "    SELECT work_date FROM DoctorSchedule " +
+                           "    WHERE doctor_id = ? " +
+                           "    AND (slot_id IS NULL OR status LIKE N'%nghỉ%' OR status LIKE N'%leave%')" +
+                           ") " +
+                           "ORDER BY work_date ASC";
+                
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, doctorId);
+                ps.setInt(2, daysAhead);
+                ps.setInt(3, doctorId);
+                
+                rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    // Format ngày thành yyyy-MM-dd
+                    java.sql.Date date = rs.getDate("work_date");
+                    if (date != null) {
+                        workDates.add(date.toString()); // Trả về format yyyy-MM-dd
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in getWorkDatesExcludingLeaves: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
             }
         }
         

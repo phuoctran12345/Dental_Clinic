@@ -396,30 +396,47 @@ public class PatientDAO {
         }
         return 0;
     }
-       public static int findOrInsertRelativePatient(String fullName, String dateOfBirth, String gender) {
+       public static int findOrInsertRelativePatient(String fullName, String phone, String dateOfBirth, String gender) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int patientId = -1;
+
+        try {
+            conn = DBContext.getConnection();
        
-        // 2. Không tồn tại => insert mới
-        String insertSql = "INSERT INTO Patients (full_name, date_of_birth, gender) VALUES (?, ?, ?)";
+            // Kiểm tra xem người thân đã tồn tại chưa (dựa vào SĐT)
+            String checkSql = "SELECT patient_id FROM Patients WHERE phone = ?";
+            ps = conn.prepareStatement(checkSql);
+            ps.setString(1, phone);
+            rs = ps.executeQuery();
 
-        try (Connection conn = DBContext.getConnection(); PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+            if (rs.next()) {
+                // Nếu đã tồn tại, trả về patient_id
+                patientId = rs.getInt("patient_id");
+            } else {
+                // Nếu chưa tồn tại, thêm mới
+                String insertSql = "INSERT INTO Patients (full_name, phone, date_of_birth, gender) VALUES (?, ?, ?, ?)";
+                ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, fullName);
+                ps.setString(2, phone);
+                ps.setString(3, dateOfBirth);
+                ps.setString(4, gender);
 
-            insertPs.setString(1, fullName);
-            insertPs.setString(2, dateOfBirth);
-            insertPs.setString(3, gender);
-
-            int rows = insertPs.executeUpdate();
-            if (rows > 0) {
-                ResultSet generatedKeys = insertPs.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    rs = ps.getGeneratedKeys();
+                    if (rs.next()) {
+                        patientId = rs.getInt(1);
                 }
             }
-
-        } catch (SQLException e) {
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            close(rs, ps, conn);
         }
-
-        return -1;
+        return patientId;
     }
 
     public List<Patients> searchByPhone(String phone) {
@@ -501,7 +518,128 @@ public class PatientDAO {
         }
         return patients;
     }
+
+    public int createPatient(Patients relativePatient) {
+        String sql = "INSERT INTO Patients (user_id, full_name, phone, date_of_birth, gender, avatar) VALUES (?, ?, ?, ?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setObject(1, relativePatient.getId()); // user_id có thể null cho người thân
+            ps.setString(2, relativePatient.getFullName());
+            ps.setString(3, relativePatient.getPhone());
+            ps.setDate(4, new java.sql.Date(relativePatient.getDateOfBirth().getTime()));
+            ps.setString(5, relativePatient.getGender());
+            ps.setString(6, relativePatient.getAvatar());
+            
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows > 0) {
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1); // Trả về patient_id vừa được tạo
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("createPatient: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return -1; // Trả về -1 nếu có lỗi
+    }
     
+    // Đảm bảo có hàm close để tránh lỗi linter
+    public static void close(java.sql.ResultSet rs, java.sql.PreparedStatement ps, java.sql.Connection conn) {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }
+
+    // Thêm patient mới từ Google
+    public static boolean addPatientFromGoogle(int userId, String fullName) {
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = "INSERT INTO Patients (user_id, full_name) VALUES (?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ps.setString(2, fullName);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     
+    //code của C.TRung =======================================================
+    public static boolean updatePatientAvatar(int patientId, String avatarPath) {
+        String sql = "UPDATE Patients SET avatar = ? WHERE patient_id = ?";
+        System.out.println("Executing SQL: " + sql);
+        System.out.println("Parameters: patientId=" + patientId + ", avatarPath=" + avatarPath);
+        
+        try (Connection conn = DBContext.getConnection()) {
+            if (conn == null) {
+                System.out.println("Error: Could not connect to database");
+                return false;
+            }
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, avatarPath);
+                stmt.setInt(2, patientId);
+                int rowsAffected = stmt.executeUpdate();
+                System.out.println("Rows affected: " + rowsAffected);
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean insertNewPatient(Patients patient) {
+        String sql = "INSERT INTO Patients (user_id, full_name, phone, date_of_birth, gender, avatar) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, patient.getId());
+            stmt.setString(2, patient.getFullName());
+            stmt.setString(3, patient.getPhone());
+            stmt.setDate(4, patient.getDateOfBirth());
+            stmt.setString(5, patient.getGender());
+            stmt.setString(6, patient.getAvatar() != null ? patient.getAvatar() : null);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean updatePatientInfo(Patients patient) {
+        String sql = "UPDATE Patients SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, avatar = ? WHERE patient_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, patient.getFullName());
+            stmt.setString(2, patient.getPhone());
+            stmt.setDate(3, patient.getDateOfBirth());
+            stmt.setString(4, patient.getGender());
+            stmt.setString(5, patient.getAvatar() != null ? patient.getAvatar() : null);
+            stmt.setInt(6, patient.getPatientId());
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+    
+    // =================================================================
 
 }

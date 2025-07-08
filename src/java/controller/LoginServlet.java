@@ -25,6 +25,9 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+import dao.AppointmentDAO;
+import dao.BlogDAO;
+import dao.PatientDAO;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -32,6 +35,8 @@ import java.net.URL;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import model.Appointment;
+import model.BlogPost;
 import org.json.JSONObject;
 
 /**
@@ -44,8 +49,9 @@ public class LoginServlet extends HttpServlet {
     Tóm lại: Nếu email Google chưa có trong database, hãy tự động tạo tài khoản mới rồi đăng nhập luôn. Nếu đã có thì đăng nhập như bình thường.
     */
 
-    private static final String CLIENT_ID = "YOUR_CLIENT_ID";
-    private static final String CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+    private static final String CLIENT_ID = "abc";
+    private static final String CLIENT_SECRET = "abc";
+
  
     private String REDIRECT_URI;
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -60,7 +66,8 @@ public class LoginServlet extends HttpServlet {
         System.out.println("[DEBUG] REDIRECT_URI initialized: " + REDIRECT_URI);
         System.out.println("[DEBUG] CLIENT_ID: " + CLIENT_ID);
         // Don't log the full client secret for security
-        System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): " + CLIENT_SECRET.substring(0, 4));
+        System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): " + 
+            CLIENT_SECRET.substring(0, Math.min(4, CLIENT_SECRET.length())));
     }
 
     /**
@@ -103,47 +110,66 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String userEmail = (String) session.getAttribute("userEmail");
-        
+        String userName = (String) session.getAttribute("userName");
+
         if (userEmail != null) {
-            // Đã có thông tin email từ Google OAuth
             User user = UserDAO.getUserByEmail(userEmail);
-            
-            if (user != null) {
-                // Người dùng đã tồn tại -> Đăng nhập
-                session.setAttribute("user", user);
-                session.setAttribute("role", user.getRole());
-                session.setAttribute("userId", user.getId());
-                System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
-
-                Patients patient = UserDAO.getPatientByUserId(user.getId());
-                session.setAttribute("patient", patient);
-
-                List<Doctors> doctors = DoctorDAO.getAllDoctorsOnline();
-                request.setAttribute("doctors", doctors);
-                
-                String role = user.getRole();
-
-                if ("DOCTOR".equalsIgnoreCase(role)) {
-                    Doctors doctor = DoctorDAO.getDoctorByUserId(user.getId());
-                    if (doctor != null) {
-                        session.setAttribute("doctor_id", doctor.getDoctor_id());
-                        session.setAttribute("doctor", doctor);
-                        System.out.println("Google login - doctor_id set in session: " + doctor.getDoctor_id());
-                    }
-                    response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
-                } else if ("PATIENT".equalsIgnoreCase(role)) {
-                    request.getRequestDispatcher("jsp/patient/user_homepage.jsp").forward(request, response);
-                } else if ("STAFF".equalsIgnoreCase(role)) {
-                    request.getRequestDispatcher("/jsp/staff/staff_tongquan.jsp").forward(request, response);
-                } else if ("MANAGER".equalsIgnoreCase(role)) {
-                    request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
+            if (user == null) {
+                // Chưa có user, tạo mới (password_hash NULL)
+                int userId = UserDAO.addUserGoogle(userEmail, userName);
+                if (userId > 0) {
+                    // Tạo patient mới
+                    PatientDAO.addPatientFromGoogle(userId, userName);
+                    user = UserDAO.getUserByEmail(userEmail);
                 } else {
-                    System.out.println("Invalid role: " + role);
-                    response.sendRedirect("login.jsp?error=invalid_role");
+                    response.sendRedirect("login.jsp?error=system_error");
+                    return;
                 }
+            }
+            // Đăng nhập: set session
+            session.setAttribute("user", user);
+            session.setAttribute("role", user.getRole());
+            session.setAttribute("userId", user.getId());
+            System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
+
+            Patients patient = UserDAO.getPatientByUserId(user.getId());
+            session.setAttribute("patient", patient);
+
+            List<Doctors> doctors = DoctorDAO.getAllDoctorsOnline();
+            request.setAttribute("doctors", doctors);
+            
+            String role = user.getRole();
+
+            if ("DOCTOR".equalsIgnoreCase(role)) {
+                Doctors doctor = DoctorDAO.getDoctorByUserId(user.getId());
+                if (doctor != null) {
+                    session.setAttribute("doctor_id", doctor.getDoctor_id());
+                    session.setAttribute("doctor", doctor);
+                    System.out.println("Google login - doctor_id set in session: " + doctor.getDoctor_id());
+                }
+                response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
+            } else if ("PATIENT".equalsIgnoreCase(role)) {
+                request.getRequestDispatcher("jsp/patient/user_homepage.jsp").forward(request, response);
+            } else if ("STAFF".equalsIgnoreCase(role)) {
+                try {
+                    Staff staff = StaffDAO.getStaffByUserId(user.getId());
+                    if (staff != null) {
+                        session.setAttribute("staff_id", staff.getStaffId());
+                        session.setAttribute("staff", staff);
+                        System.out.println("[DEBUG] Login STAFF - staff_id set in session: " + staff.getStaffId());
+                    } else {
+                        System.out.println("[DEBUG] Login STAFF - Không tìm thấy staff theo user_id: " + user.getId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("[ERROR] Lỗi khi lấy staff: " + e.getMessage());
+                }
+                request.getRequestDispatcher("/jsp/staff/staff_tongquan.jsp").forward(request, response);
+            } else if ("MANAGER".equalsIgnoreCase(role)) {
+                request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
             } else {
-                // Người dùng chưa tồn tại -> Chuyển đến trang đăng ký
-                response.sendRedirect(request.getContextPath() + "/signup.jsp");
+                System.out.println("Invalid role: " + role);
+                response.sendRedirect("login.jsp?error=invalid_role");
             }
         } else {
             // Xử lý OAuth callback từ Google
@@ -209,6 +235,7 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("userName", name);
                         response.sendRedirect(request.getContextPath() + "/LoginServlet");
                     }
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                     response.sendRedirect(request.getContextPath() + "/login.jsp?error=google_auth_failed");
@@ -276,8 +303,36 @@ public class LoginServlet extends HttpServlet {
     response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
 
             } else if ("PATIENT".equalsIgnoreCase(role)) {
+                 List<Appointment> upcomingAppointments = AppointmentDAO.getUpcomingAppointmentsByPatientId(patient.getPatientId());
+                request.setAttribute("upcomingAppointments", upcomingAppointments);
+
+                int totalVisits = PatientDAO.getTotalVisitsByPatientId(patient.getPatientId());
+                request.setAttribute("totalVisits", totalVisits);
+
+                System.out.println("Patient ID: " + patient.getPatientId());
+                System.out.println("Total visits: " + totalVisits);
+                
+                   BlogDAO BlogDAO = new BlogDAO();
+
+                List<BlogPost> latestBlogs = BlogDAO.getLatest(2); // hoặc tất cả nếu cần
+                request.setAttribute("latestBlogs", latestBlogs);
+                
+                
                 request.getRequestDispatcher("jsp/patient/user_homepage.jsp").forward(request, response);
             } else if ("STAFF".equalsIgnoreCase(role)) {
+                try {
+                    Staff staff = StaffDAO.getStaffByUserId(user.getId());
+                    if (staff != null) {
+                        session.setAttribute("staff_id", staff.getStaffId());
+                        session.setAttribute("staff", staff);
+                        System.out.println("[DEBUG] Login STAFF - staff_id set in session: " + staff.getStaffId());
+                    } else {
+                        System.out.println("[DEBUG] Login STAFF - Không tìm thấy staff theo user_id: " + user.getId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("[ERROR] Lỗi khi lấy staff: " + e.getMessage());
+                }
                 request.getRequestDispatcher("/jsp/staff/staff_tongquan.jsp").forward(request, response);
             } else if ("MANAGER".equalsIgnoreCase(role)) {
                 request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);

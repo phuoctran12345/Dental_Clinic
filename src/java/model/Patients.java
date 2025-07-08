@@ -22,8 +22,35 @@ public class Patients {
     private String gender;     // gender ('male', 'female', 'other')
     private Date createdAt;    // created_at
     private String avatar;
+    private String email;      // email của người thân
+    private String relationship; // mối quan hệ với người đặt lịch
+    private int bookedByUserId; // ID của user đặt lịch
     
     public Patients() {
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
+
+    public int getBookedByUserId() {
+        return bookedByUserId;
+    }
+
+    public void setBookedByUserId(int bookedByUserId) {
+        this.bookedByUserId = bookedByUserId;
     }
 
     public String getAvatar() {
@@ -92,7 +119,7 @@ public class Patients {
         this.createdAt = createdAt;
     }
 
-    public Patients(int patientId, int id, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt) {
+    public Patients(int patientId, int id, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt, String email, String relationship, int bookedByUserId) {
         this.patientId = patientId;
         this.id = id;
         this.fullName = fullName;
@@ -100,10 +127,17 @@ public class Patients {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.createdAt = createdAt;
+        this.email = email;
+        this.relationship = relationship;
+        this.bookedByUserId = bookedByUserId;
+    }
+
+    public Patients(int patientId, int id, String fullName, String phone, Date dateOfBirth, String gender, Date createdAt) {
+        this(patientId, id, fullName, phone, dateOfBirth, gender, createdAt, null, null, 0);
     }
 
     @Override
     public String toString() {
-        return "Patients{" + "patientId=" + patientId + ", id=" + id + ", fullName=" + fullName + ", phone=" + phone + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", createdAt=" + createdAt + '}';
+        return "Patients{" + "patientId=" + patientId + ", id=" + id + ", fullName=" + fullName + ", phone=" + phone + ", dateOfBirth=" + dateOfBirth + ", gender=" + gender + ", createdAt=" + createdAt + ", email=" + email + ", relationship=" + relationship + ", bookedByUserId=" + bookedByUserId + '}';
     }
 }

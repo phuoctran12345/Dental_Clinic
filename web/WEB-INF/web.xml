@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+<web-app version="5.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd">
     <welcome-file-list>
-        <welcome-file>home.jsp</welcome-file>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>LandingPageServlet</welcome-file>
     </welcome-file-list>
     <!-- Services Servlet -->
     <servlet>
@@ -16,6 +15,14 @@
     <servlet>
         <servlet-name>DoctorHomePageServlet</servlet-name>
         <servlet-class>controller.DoctorHomePageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookingPageServlet</servlet-name>
+        <servlet-class>controller.BookingPageServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserAccountServlet</servlet-name>
+        <servlet-class>controller.UserAccountServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ServiceServlet</servlet-name>
@@ -39,7 +46,6 @@
         <url-pattern>/UpdateUserServlet</url-pattern>
     </servlet-mapping>
     <!-- Doctor Schedule Servlets -->
-
     <servlet-mapping>
         <servlet-name>DoctorRegisterScheduleServlet</servlet-name>
         <url-pattern>/DoctorRegisterScheduleServlet</url-pattern>
@@ -61,9 +67,13 @@
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <servlet-class>controller.GoogleCallbackServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login-google</url-pattern>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <url-pattern>/LoginGG/LoginGoogleHandler</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
@@ -159,15 +169,6 @@
         <servlet-name>DoctorWorkDaysServlet</servlet-name>
         <url-pattern>/getDoctorWorkDays</url-pattern>
     </servlet-mapping>
-    <!-- Booking Page Servlet -->
-    <servlet>
-        <servlet-name>BookingPageServlet</servlet-name>
-        <servlet-class>controller.BookingPageServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>BookingPageServlet</servlet-name>
-        <url-pattern>/BookingPageServlet</url-pattern>
-    </servlet-mapping>
     <!-- Patient Appointments Servlet -->
     <servlet>
         <servlet-name>PatientAppointmentsServlet</servlet-name>
@@ -233,14 +234,6 @@
     <servlet-mapping>
         <servlet-name>MedicalReportDetailServlet</servlet-name>
         <url-pattern>/MedicalReportDetailServlet</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>ConfirmRelativeServlet</servlet-name>
-        <servlet-class>controller.ConfirmRelativeServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ConfirmRelativeServlet</servlet-name>
-        <url-pattern>/ConfirmRelativeServlet</url-pattern>
     </servlet-mapping>
     <!-- Schedule Approval Servlet -->
     <servlet>
@@ -320,8 +313,16 @@
         <servlet-name>DoctorHomePageServlet</servlet-name>
         <url-pattern>/DoctorHomePageServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BookingPageServlet</servlet-name>
+        <url-pattern>/BookingPageServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserAccountServlet</servlet-name>
+        <url-pattern>/UserAccountServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
-        <session-timeout>30</session-timeout>
+        <session-timeout>360</session-timeout>
         <cookie-config>
             <http-only>true</http-only>
             <secure>false</secure>
@@ -339,4 +340,32 @@
         <extension>js</extension>
         <mime-type>application/javascript</mime-type>
     </mime-mapping>
+    <!-- Booking Relative Page Servlet -->
+    <!-- Mapping cho UserRegisterWhenTheyNotRegisterInformation -->
+    <servlet>
+        <servlet-name>UserRegisterWhenTheyNotRegisterInformation</servlet-name>
+        <servlet-class>controller.UserRegisterWhenTheyNotRegisterInformation</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserRegisterWhenTheyNotRegisterInformation</servlet-name>
+        <url-pattern>/UserRegisterWhenTheyNotRegisterInformation</url-pattern>
+    </servlet-mapping>
+    <!-- Thêm mapping cho LandingPageServlet -->
+    <servlet>
+        <servlet-name>LandingPageServlet</servlet-name>
+        <servlet-class>controller.LandingPageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LandingPageServlet</servlet-name>
+        <url-pattern>/LandingPageServlet</url-pattern>
+    </servlet-mapping>
+
+      <servlet>
+      <servlet-name>StaffProfileServlet</servlet-name>
+      <servlet-class>controller.StaffProfileServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>StaffProfileServlet</servlet-name>
+      <url-pattern>/StaffProfileServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

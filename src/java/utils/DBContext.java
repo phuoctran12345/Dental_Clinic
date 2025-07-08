@@ -44,6 +44,13 @@ public class DBContext {
         }
     }
 
+    // Bổ sung hàm close cho tiện dùng ở các DAO
+    public static void close(ResultSet rs, PreparedStatement ps, Connection conn) {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
+    }
+
     public static void main(String[] args) {
         try(Connection con = getConnection()) {
             if(con != null) {

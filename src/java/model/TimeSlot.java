@@ -16,15 +16,26 @@ public class TimeSlot {
     private LocalTime startTime;
     private LocalTime endTime;
     private String slotName; //  tên ca làm việc 
+    private boolean isBooked; // Thêm field để kiểm tra slot đã đặt chưa // xử lý để đặt lịch cho nguời thân 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public TimeSlot() {
+        this.isBooked = false; // Mặc định chưa đặt
     }
 
     public TimeSlot(int slotId, LocalTime startTime, LocalTime endTime) {
         this.slotId = slotId;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.isBooked = false;
+        this.slotName = String.format("Ca %d (%s)", slotId, getFormattedTime());
+    }
+
+    public TimeSlot(int slotId, LocalTime startTime, LocalTime endTime, boolean isBooked) {
+        this.slotId = slotId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isBooked = isBooked;
         this.slotName = String.format("Ca %d (%s)", slotId, getFormattedTime());
     }
 
@@ -61,6 +72,14 @@ public class TimeSlot {
 
     public void setSlotName(String slotName) {
         this.slotName = slotName;
+    }
+
+    public boolean isBooked() {
+        return isBooked;
+    }
+
+    public void setBooked(boolean booked) {
+        isBooked = booked;
     }
 
     /**
@@ -102,17 +121,13 @@ public class TimeSlot {
                endTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
-    
-
     @Override
     public String toString() {
         return "TimeSlot{" + 
                "slotId=" + slotId + 
                ", startTime=" + (startTime != null ? startTime.format(TIME_FORMATTER) : "null") + 
                ", endTime=" + (endTime != null ? endTime.format(TIME_FORMATTER) : "null") + 
+               ", isBooked=" + isBooked +
                '}';
     }
-    
-    
-    
 }

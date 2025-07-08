@@ -355,6 +355,31 @@ public class ServiceDAO {
         }
     }
 
+    /**
+     * Lấy giá dịch vụ theo serviceId
+     */
+    public static java.math.BigDecimal getServicePriceById(int serviceId) {
+        java.math.BigDecimal price = java.math.BigDecimal.ZERO;
+        java.sql.Connection conn = null;
+        java.sql.PreparedStatement ps = null;
+        java.sql.ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "SELECT price FROM Service WHERE service_id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, serviceId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                price = rs.getBigDecimal("price");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBContext.close(rs, ps, conn);
+        }
+        return price;
+    }
+
     // Test main method
     public static void main(String[] args) {
         ServiceDAO dao = new ServiceDAO();
@@ -400,5 +425,12 @@ public class ServiceDAO {
         for (String category : categories) {
             System.out.println("Category: " + category);
         }
+    }
+
+    // Đảm bảo có hàm close để tránh lỗi linter
+    public static void close(java.sql.ResultSet rs, java.sql.PreparedStatement ps, java.sql.Connection conn) {
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (conn != null) conn.close(); } catch (Exception e) {}
     }
 } 

@@ -1,953 +1,693 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-        <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-        <!DOCTYPE html>
-        <html lang="vi">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
 
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Thanh toán thành công - Phòng khám nha khoa</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-            <style>
-                body {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    min-height: 100vh;
-                    padding: 20px 0;
-                }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thành công - Phòng khám nha khoa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --danger-color: #dc3545;
+            --warning-color: #ff9800;
+            --success-color: #28a745;
+            --light-gray: #f8f9fa;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .success-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        .success-header {
+            background-color: var(--success-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .success-content {
+            padding: 2rem;
+        }
+        
+        .info-box {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .appointment-box {
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .receipt-box {
+            background: #f8fff8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 2px dashed var(--success-color);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .info-value {
+            color: #212529;
+            text-align: right;
+        }
+        
+        .amount-highlight {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        
+        .status-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .appointment-badge {
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .btn-action {
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            min-width: 180px;
+        }
+        
+        .next-steps {
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid #b8daff;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #b8daff;
+        }
+        
+        .step-item:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            background: #007bff;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            border: 3px solid var(--success-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            margin: 0 auto;
+        }
+        
+        /* Animation for icon */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Confetti effect */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f0c040;
+            animation: confetti-fall 3s linear infinite;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .success-header {
+                padding: 1.5rem;
+            }
+            
+            .success-content {
+                padding: 1.5rem;
+            }
+            
+            .btn-action {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
 
-                .success-container {
-                    background: white;
-                    border-radius: 20px;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-                    overflow: hidden;
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
+<body>
+    <!-- Confetti effect -->
+    <div class="confetti" id="confetti"></div>
 
-                .success-header {
-                    background: linear-gradient(45deg, #28a745, #20c997);
-                    color: white;
-                        padding: 40px 30px;
-                    text-align: center;
-                        position: relative;
-                }
+    <div class="container">
+        <div class="success-container">
+            <!-- Success Header -->
+            <div class="success-header">
+                <div class="success-icon fade-in">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="mb-2">Thanh toán thành công</h2>
+                <p class="mb-0">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi</p>
+            </div>
 
-                .success-icon {
-                    font-size: 4rem;
-                    margin-bottom: 20px;
-                        animation: bounceIn 1s ease-out;
-                    }
+            <!-- Success Content -->
+            <div class="success-content">
+                <!-- Payment Information -->
+                <div class="info-box">
+                    <h5 class="mb-3">
+                        <i class="fas fa-receipt me-2"></i>
+                        Thông tin thanh toán
+                    </h5>
 
-                    @keyframes bounceIn {
-                        0% {
-                            transform: scale(0);
-                            opacity: 0;
-                        }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Trạng thái:</span>
+                        <span class="info-value">
+                            <span class="status-badge">
+                                <i class="fas fa-check me-1"></i>Đã thanh toán
+                            </span>
+                        </span>
+                    </div>
 
-                        50% {
-                            transform: scale(1.1);
-                            opacity: 1;
-                        }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Mã hóa đơn:</span>
+                        <span class="info-value">
+                            <code>${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}</code>
+                        </span>
+                    </div>
 
-                        100% {
-                            transform: scale(1);
-                            opacity: 1;
-                        }
-                    }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Dịch vụ:</span>
+                        <span class="info-value">${paymentInfo != null ? paymentInfo.serviceName : 'Bọc răng sứ'}</span>
+                    </div>
 
-                    .success-content {
-                        padding: 40px 30px;
-                }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Khách hàng:</span>
+                        <span class="info-value">${paymentInfo != null ? paymentInfo.customerName : 'PhuocTHDev'}</span>
+                    </div>
 
-                    .bill-info,
-                    .appointment-info {
-                    background: #f8f9fa;
-                    border-radius: 15px;
-                    padding: 25px;
-                    margin: 20px 0;
-                    border-left: 5px solid #28a745;
-                }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Số tiền:</span>
+                        <span class="info-value amount-highlight">
+                            ${paymentInfo != null ? paymentInfo.formattedAmount : '2,000 VNĐ'}
+                        </span>
+                    </div>
 
-                    .appointment-info {
-                        border-left-color: #007bff;
-                }
+                    <div class="info-row mb-2">
+                        <span class="info-label">Phương thức:</span>
+                        <span class="info-value">
+                            <i class="fas fa-university me-1"></i>
+                            MB Bank - VietQR
+                        </span>
+                    </div>
 
-                .info-row {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                        padding: 12px 0;
-                        border-bottom: 1px solid #eee;
-                }
+                    <div class="info-row">
+                        <span class="info-label">Thời gian:</span>
+                        <span class="info-value">
+                            <fmt:formatDate value="<%=new java.util.Date()%>" pattern="dd/MM/yyyy HH:mm:ss" />
+                        </span>
+                    </div>
+                </div>
 
-                .info-row:last-child {
-                    border-bottom: none;
-                }
+                <!-- Appointment Information -->
+                <c:if test="${not empty paymentInfo.doctorId}">
+                    <div class="appointment-box">
+                        <h5 class="mb-3">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            Thông tin cuộc hẹn
+                        </h5>
 
-                .info-label {
-                    font-weight: 600;
-                    color: #495057;
-                        flex: 1;
-                }
-
-                .info-value {
-                        flex: 2;
-                        text-align: right;
-                    color: #212529;
-                }
-
-                    .amount-highlight {
-                        font-size: 1.5rem;
-                        font-weight: bold;
-                        color: #28a745;
-                    }
-
-                    .status-badge {
-                        background: #28a745;
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 20px;
-                        font-weight: 600;
-                        display: inline-block;
-                    }
-
-                    .appointment-badge {
-                        background: #007bff;
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 20px;
-                        font-weight: 600;
-                        display: inline-block;
-                    }
-
-                    .action-buttons {
-                        text-align: center;
-                        margin: 30px 0;
-                }
-
-                .btn-action {
-                        margin: 10px;
-                        padding: 12px 30px;
-                    border-radius: 25px;
-                    font-weight: 600;
-                    transition: all 0.3s;
-                }
-
-                .btn-action:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-                }
-
-                    .next-steps {
-                        background: #e7f3ff;
-                        border: 1px solid #b8daff;
-                        border-radius: 10px;
-                        padding: 20px;
-                    margin: 20px 0;
-                }
-
-                    .step-item {
-                        display: flex;
-                        align-items: center;
-                        margin: 10px 0;
-                    }
-
-                    .step-number {
-                        background: #007bff;
-                        color: white;
-                        width: 30px;
-                        height: 30px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                        margin-right: 15px;
-                    }
-
-                    .section-title {
-                        font-weight: bold;
-                        color: #495057;
-                        margin-bottom: 15px;
-                        display: flex;
-                        align-items: center;
-                }
-
-                    .section-title i {
-                        margin-right: 10px;
-                        color: #007bff;
-                    }
-
-                    .floating-elements {
-                        position: absolute;
-                        width: 100%;
-                        height: 100%;
-                        overflow: hidden;
-                        pointer-events: none;
-                    }
-
-                    .floating-icon {
-                        position: absolute;
-                        color: rgba(255, 255, 255, 0.1);
-                        font-size: 2rem;
-                        animation: float 6s ease-in-out infinite;
-                    }
-
-                    .floating-icon:nth-child(1) {
-                        top: 10%;
-                        left: 10%;
-                        animation-delay: 0s;
-                    }
-
-                    .floating-icon:nth-child(2) {
-                        top: 20%;
-                        right: 10%;
-                        animation-delay: 2s;
-                    }
-
-                    .floating-icon:nth-child(3) {
-                        bottom: 20%;
-                        left: 15%;
-                        animation-delay: 4s;
-                    }
-
-                    .floating-icon:nth-child(4) {
-                        bottom: 10%;
-                        right: 20%;
-                        animation-delay: 1s;
-                    }
-
-                    @keyframes float {
-
-                        0%,
-                        100% {
-                            transform: translateY(0px);
-                        }
-
-                        50% {
-                            transform: translateY(-20px);
-                        }
-                    }
-
-                    .celebration {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        pointer-events: none;
-                        z-index: 1000;
-                }
-
-                .confetti {
-                        position: absolute;
-                        width: 10px;
-                        height: 10px;
-                        background: #f0c040;
-                        animation: confetti-fall 3s linear infinite;
-                }
-
-                @keyframes confetti-fall {
-                    0% {
-                        transform: translateY(-100vh) rotate(0deg);
-                        opacity: 1;
-                    }
-
-                    100% {
-                            transform: translateY(100vh) rotate(360deg);
-                        opacity: 0;
-                    }
-                    }
-
-                    .receipt-section {
-                        border: 2px dashed #28a745;
-                        border-radius: 10px;
-                        padding: 20px;
-                        margin: 20px 0;
-                        background: #f8fff8;
-                    }
-
-                    .qr-receipt {
-                        text-align: center;
-                        padding: 15px;
-                    }
-
-                    .qr-small {
-                        width: 150px;
-                        height: 150px;
-                        margin: 10px auto;
-                        border: 3px solid #28a745;
-                        border-radius: 10px;
-                        padding: 10px;
-                        background: white;
-                }
-            </style>
-        </head>
-
-        <body>
-                <!-- Celebration Effects -->
-                <div class="celebration" id="celebration"></div>
-
-            <div class="container">
-                <div class="success-container">
-                    <!-- Success Header -->
-                    <div class="success-header">
-                            <div class="floating-elements">
-                                <i class="fas fa-check floating-icon"></i>
-                                <i class="fas fa-heart floating-icon"></i>
-                                <i class="fas fa-star floating-icon"></i>
-                                <i class="fas fa-crown floating-icon"></i>
-                            </div>
-
-                        <div class="success-icon">
-                            <i class="fas fa-check-circle"></i>
+                        <div class="info-row mb-2">
+                            <span class="info-label">Bác sĩ:</span>
+                            <span class="info-value">Bác sĩ ID: ${paymentInfo.doctorId}</span>
                         </div>
-                            <h1 class="mb-3">🎉 THANH TOÁN THÀNH CÔNG!</h1>
-                            <p class="lead mb-0">Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của chúng tôi</p>
+
+                        <div class="info-row mb-2">
+                            <span class="info-label">Ngày khám:</span>
+                            <span class="info-value"><strong>${paymentInfo.workDate}</strong></span>
                         </div>
 
-                        <!-- Success Content -->
-                        <div class="success-content">
-                        <!-- Payment Information -->
-                            <div class="bill-info">
-                            <h4 class="mb-3">
-                                <i class="fas fa-receipt text-success me-2"></i>
-                                    Thông tin thanh toán
-                            </h4>
+                        <div class="info-row mb-2">
+                            <span class="info-label">Ca khám:</span>
+                            <span class="info-value">Slot ${paymentInfo.slotId}</span>
+                        </div>
 
-                                <div class="info-row">
-                                    <span class="info-label">Trạng thái:</span>
-                                    <span class="info-value">
-                                        <span class="status-badge">
-                                            <i class="fas fa-check me-1"></i>Đã thanh toán
-                                        </span>
-                                    </span>
-                                </div>
-
-                            <div class="info-row">
-                                <span class="info-label">Mã hóa đơn:</span>
-                                    <span class="info-value">
-                                        <code>${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}</code>
-                                    </span>
+                        <c:if test="${not empty paymentInfo.reason}">
+                            <div class="info-row mb-2">
+                                <span class="info-label">Lý do khám:</span>
+                                <span class="info-value">${paymentInfo.reason}</span>
                             </div>
+                        </c:if>
 
-                            <div class="info-row">
-                                <span class="info-label">Mã đơn hàng:</span>
-                                    <span class="info-value">
-                                        <code>${paymentInfo != null ? paymentInfo.orderId : 'ORDER_1749721289553'}</code>
-                                    </span>
+                        <div class="info-row">
+                            <span class="info-label">Trạng thái:</span>
+                            <span class="info-value">
+                                <span class="appointment-badge">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <c:choose>
+                                        <c:when test="${appointmentCreated}">Đã xác nhận</c:when>
+                                        <c:otherwise>Đang xử lý</c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </c:if>
+
+                <!-- Receipt Section -->
+                <div class="receipt-box">
+                    <h5 class="text-center mb-3">
+                        <i class="fas fa-file-invoice me-2"></i>
+                        Biên lai thanh toán
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="small text-muted">
+                                <strong>🏥 PHÒNG KHÁM NHA KHOA</strong><br>
+                                📍 Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM<br>
+                                📞 Hotline: 1900-xxx-xxx<br>
+                                📧 Email: info@dental.clinic<br><br>
+                                
+                                <strong>📋 CHI TIẾT GIAO DỊCH:</strong><br>
+                                • Mã GD: ${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}<br>
+                                • Ngân hàng: MB Bank (970422)<br>
+                                • STK: 5529062004<br>
+                                • Chủ TK: TRAN HONG PHUOC<br>
+                                • Nội dung: Thanh toan ${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}
                             </div>
-
-                            <div class="info-row">
-                                <span class="info-label">Dịch vụ:</span>
-                                    <span class="info-value">${paymentInfo != null ? paymentInfo.serviceName : 'Bọc răng
-                                        sứ'}</span>
-                            </div>
-
-                            <div class="info-row">
-                                <span class="info-label">Khách hàng:</span>
-                                    <span class="info-value">${paymentInfo != null ? paymentInfo.customerName :
-                                        'PhuocTHDev'}</span>
-                                </div>
-
-                                <div class="info-row">
-                                    <span class="info-label">Số tiền:</span>
-                                    <span class="info-value amount-highlight">
-                                        ${paymentInfo != null ? paymentInfo.formattedAmount : '2,000 VNĐ'}
-                                    </span>
-                                </div>
-
-                                <div class="info-row">
-                                    <span class="info-label">Phương thức:</span>
-                                    <span class="info-value">
-                                        <i class="fas fa-university text-primary me-1"></i>
-                                        MB Bank - VietQR
-                                    </span>
-                                </div>
-
-                                <div class="info-row">
-                                    <span class="info-label">Thời gian:</span>
-                                    <span class="info-value">
-                                        <fmt:formatDate value="<%=new java.util.Date()%>"
-                                            pattern="dd/MM/yyyy HH:mm:ss" />
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Appointment Information -->
-                            <c:if test="${not empty paymentInfo.doctorId}">
-                                <div class="appointment-info">
-                                    <h4 class="mb-3">
-                                        <i class="fas fa-calendar-check text-primary me-2"></i>
-                                        Thông tin cuộc hẹn
-                                    </h4>
-
-                                    <div class="info-row">
-                                        <span class="info-label">Bác sĩ:</span>
-                                        <span class="info-value">Bác sĩ ID: ${paymentInfo.doctorId}</span>
-                                    </div>
-
-                            <div class="info-row">
-                                        <span class="info-label">Ngày khám:</span>
-                                        <span class="info-value"><strong>${paymentInfo.workDate}</strong></span>
-                            </div>
-
-                            <div class="info-row">
-                                        <span class="info-label">Ca khám:</span>
-                                        <span class="info-value">Slot ${paymentInfo.slotId}</span>
-                            </div>
-
-                                    <c:if test="${not empty paymentInfo.reason}">
-                            <div class="info-row">
-                                            <span class="info-label">Lý do khám:</span>
-                                            <span class="info-value">${paymentInfo.reason}</span>
-                            </div>
-                                    </c:if>
-
-                            <div class="info-row">
-                                        <span class="info-label">Trạng thái cuộc hẹn:</span>
-                                        <span class="info-value">
-                                            <span class="appointment-badge">
-                                                <i class="fas fa-calendar-check"></i>
-                                                <c:choose>
-                                                    <c:when test="${appointmentCreated}">Đã xác nhận</c:when>
-                                                    <c:otherwise>Đang xử lý</c:otherwise>
-                                                </c:choose>
-                                            </span>
-                                        </span>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <div class="qr-code mb-2">
+                                    <div class="text-center">
+                                        <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-color);"></i>
+                                        <div class="small mt-1" style="color: var(--success-color); font-weight: bold;">THANH TOÁN</div>
+                                        <div class="small" style="color: #6c757d;">THÀNH CÔNG</div>
                                     </div>
                                 </div>
-                            </c:if>
-
-                            <!-- Receipt Section -->
-                            <div class="receipt-section">
-                                <h5 class="text-center mb-3">
-                                    <i class="fas fa-file-invoice text-success me-2"></i>
-                                    Biên lai thanh toán
-                                </h5>
-
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <small class="text-muted">
-                                            <strong>🏥 PHÒNG KHÁM NHA KHOA</strong><br>
-                                            📍 Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM<br>
-                                            📞 Hotline: 1900-xxx-xxx<br>
-                                            📧 Email: info@dental.clinic<br><br>
-
-                                            <strong>📋 CHI TIẾT GIAO DỊCH:</strong><br>
-                                            • Mã GD: ${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}<br>
-                                            • Ngân hàng: MB Bank (970422)<br>
-                                            • STK: 5529062004<br>
-                                            • Chủ TK: TRAN HONG PHUOC<br>
-                                            • Nội dung: Thanh toan ${paymentInfo != null ? paymentInfo.billId :
-                                            'BILL_A5F6E8C5'}
-                                        </small>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="qr-receipt">
-                                            <div class="qr-small">
-                                                <!-- QR Code thật cho biên lai -->
-                                                <div style="background: white; padding: 10px; border-radius: 8px;">
-                                                    <div
-                                                        style="width: 120px; height: 120px; margin: 0 auto; border: 2px solid #28a745; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f8fff8;">
-                                                        <div style="text-align: center;">
-                                                            <i class="fas fa-check-circle"
-                                                                style="font-size: 2rem; color: #28a745; margin-bottom: 5px;"></i>
-                                                            <div
-                                                                style="font-size: 0.8rem; color: #28a745; font-weight: bold;">
-                                                                THANH TOÁN</div>
-                                                            <div style="font-size: 0.7rem; color: #6c757d;">THÀNH CÔNG
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <small class="text-muted d-block mt-2">Biên lai điện tử</small>
-                                            <small class="text-success">✅ Đã xác thực</small>
-                                        </div>
-                                    </div>
+                                <div class="small text-muted">Biên lai điện tử</div>
+                                <div class="small text-success">✅ Đã xác thực</div>
                             </div>
-                        </div>
-
-                        <!-- Next Steps -->
-                        <div class="next-steps">
-                                <h5 class="text-primary mb-3">
-                                    <i class="fas fa-list-check me-2"></i>
-                                Các bước tiếp theo
-                            </h5>
-
-                                <c:choose>
-                                    <c:when test="${not empty paymentInfo.doctorId}">
-                                        <!-- Có appointment -->
-                                        <div class="step-item">
-                                            <div class="step-number">1</div>
-                                            <div>
-                                                <strong>Bạn sẽ nhận được SMS/Email xác nhận cuộc hẹn trong vài phút
-                                                    tới</strong>
-                                            </div>
-                                        </div>
-                                        <div class="step-item">
-                                            <div class="step-number">2</div>
-                                            <div>
-                                                <strong>Vui lòng có mặt tại phòng khám trước 15 phút</strong>
-                                            </div>
-                                        </div>
-                                        <div class="step-item">
-                                            <div class="step-number">3</div>
-                                            <div>
-                                                <strong>Mang theo CMND/CCCD và hóa đơn thanh toán này</strong>
-                                            </div>
-                                        </div>
-                                        <div class="step-item">
-                                            <div class="step-number">4</div>
-                                            <div>
-                                                <strong>Nếu cần thay đổi lịch hẹn, vui lòng liên hệ hotline:
-                                                    <strong>1900-xxx-xxx</strong></strong>
-                                            </div>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <!-- Chỉ có dịch vụ -->
-                                        <div class="step-item">
-                                            <div class="step-number">1</div>
-                                            <div>
-                                                <strong>Bạn có thể sử dụng dịch vụ ngay tại phòng khám</strong>
-                                            </div>
-                                        </div>
-                                        <div class="step-item">
-                                            <div class="step-number">2</div>
-                                            <div>
-                                                <strong>Xuất trình hóa đơn thanh toán này khi sử dụng dịch vụ</strong>
-                                            </div>
-                                        </div>
-                                        <div class="step-item">
-                                            <div class="step-number">3</div>
-                                            <div>
-                                                <strong>Liên hệ hotline: <strong>1900-xxx-xxx</strong> nếu cần hỗ
-                                                    trợ</strong>
-                                </div>
-                                </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="action-buttons">
-                            <button type="button" class="btn btn-warning btn-action" onclick="printReceipt()">
-                                <i class="fas fa-print me-2"></i>In hóa đơn
-                            </button>
-                            <a href="${pageContext.request.contextPath}/BookingPageServlet"
-                                class="btn btn-success btn-action">
-                                <i class="fas fa-plus me-2"></i>Đặt lịch khác
-                            </a>
-                            <a href="${pageContext.request.contextPath}/patient" class="btn btn-primary btn-action">
-                                <i class="fas fa-calendar me-2"></i>Xem lịch hẹn
-                            </a>
-                            <a href="${pageContext.request.contextPath}/index.jsp"
-                                class="btn btn-outline-secondary btn-action">
-                                <i class="fas fa-home me-2"></i>Về trang chủ
-                            </a>
-                        </div>
-
-                        <!-- Support Information -->
-                        <div class="alert alert-info">
-                            <h6><i class="fas fa-headset me-2"></i>Cần hỗ trợ?</h6>
-                            <p class="mb-0">
-                                Liên hệ hotline: <strong>1900-xxx-xxx</strong> (8:00 - 17:00) <br>
-                                Email: <strong>support@dental.clinic</strong> <br>
-                                Hoặc chat trực tiếp với chúng tôi qua website
-                            </p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-            <script>
-                    // Confetti celebration effect
-                function createConfetti() {
-                        const celebration = document.getElementById('celebration');
-                        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+                <!-- Next Steps -->
+                <div class="next-steps">
+                    <h5 class="mb-3">
+                        <i class="fas fa-forward me-2"></i>
+                        Các bước tiếp theo
+                    </h5>
 
-                    for (let i = 0; i < 50; i++) {
-                        const confetti = document.createElement('div');
-                            confetti.className = 'confetti';
-                            confetti.style.left = Math.random() * 100 + '%';
-                            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                            confetti.style.animationDelay = Math.random() * 2 + 's';
-                            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                            celebration.appendChild(confetti);
-                        }
-
-                        // Remove confetti after animation
-                        setTimeout(() => {
-                            celebration.innerHTML = '';
-                        }, 5000);
-                }
-
-                    // Auto print receipt function
-                    function printReceipt() {
-                        const billId = '${paymentInfo != null ? paymentInfo.billId : "BILL_A5F6E8C5"}';
-                        const orderId = '${paymentInfo != null ? paymentInfo.orderId : "ORDER_1749721289553"}';
-                        const serviceName = '${paymentInfo != null ? paymentInfo.serviceName : "Bọc răng sứ"}';
-                        const customerName = '${paymentInfo != null ? paymentInfo.customerName : "PhuocTHDev"}';
-                        const amount = '${paymentInfo != null ? paymentInfo.formattedAmount : "2,000 VNĐ"}';
-                        const currentDate = new Date().toLocaleString('vi-VN');
-
-                        const printWindow = window.open('', '_blank');
-                        printWindow.document.write(`
-                            <html>
-                                <head>
-                                    <title>Hóa đơn thanh toán - ${billId}</title>
-                                    <meta charset="UTF-8">
-                                    <style>
-                                        * { box-sizing: border-box; margin: 0; padding: 0; }
-                                        body { 
-                                            font-family: 'Arial', sans-serif; 
-                                            line-height: 1.6; 
-                                            color: #333;
-                                            background: white;
-                                            padding: 20px;
-                                        }
-                                        .invoice-container {
-                                            max-width: 800px;
-                                            margin: 0 auto;
-                                            border: 2px solid #28a745;
-                                            border-radius: 10px;
-                                            overflow: hidden;
-                                            background: white;
-                                        }
-                                        .invoice-header {
-                                            background: linear-gradient(45deg, #28a745, #20c997);
-                                            color: white;
-                                            padding: 30px;
-                                            text-align: center;
-                                        }
-                                        .invoice-header h1 {
-                                            font-size: 2rem;
-                                            margin-bottom: 10px;
-                                        }
-                                        .invoice-header .subtitle {
-                                            font-size: 1.1rem;
-                                            opacity: 0.9;
-                                        }
-                                        .clinic-info {
-                                            background: #f8f9fa;
-                                            padding: 20px;
-                                            border-bottom: 2px dashed #28a745;
-                                        }
-                                        .clinic-info h3 {
-                                            color: #28a745;
-                                            margin-bottom: 10px;
-                                            font-size: 1.3rem;
-                                        }
-                                        .clinic-details {
-                                            display: grid;
-                                            grid-template-columns: 1fr 1fr;
-                                            gap: 20px;
-                                            margin-top: 15px;
-                                        }
-                                        .invoice-body {
-                                            padding: 30px;
-                                        }
-                                        .info-section {
-                                            margin-bottom: 25px;
-                                        }
-                                        .info-section h4 {
-                                            color: #28a745;
-                                            border-bottom: 2px solid #28a745;
-                                            padding-bottom: 8px;
-                                            margin-bottom: 15px;
-                                            font-size: 1.1rem;
-                                        }
-                                        .info-table {
-                                            width: 100%;
-                                            border-collapse: collapse;
-                                            margin-bottom: 20px;
-                                        }
-                                        .info-table td {
-                                            padding: 8px 12px;
-                                            border-bottom: 1px solid #eee;
-                                        }
-                                        .info-table .label {
-                                            font-weight: bold;
-                                            color: #495057;
-                                            width: 40%;
-                                        }
-                                        .info-table .value {
-                                            color: #212529;
-                                        }
-                                        .amount-section {
-                                            background: #e8f5e8;
-                                            padding: 20px;
-                                            border-radius: 8px;
-                                            text-align: center;
-                                            margin: 20px 0;
-                                            border: 2px dashed #28a745;
-                                        }
-                                        .amount-section .amount {
-                                            font-size: 2rem;
-                                            font-weight: bold;
-                                            color: #28a745;
-                                            margin-bottom: 5px;
-                                        }
-                                        .amount-section .amount-text {
-                                            font-size: 1rem;
-                                            color: #6c757d;
-                                        }
-                                        .status-section {
-                                            text-align: center;
-                                            padding: 20px;
-                                            background: #d4edda;
-                                            border-radius: 8px;
-                                            margin: 20px 0;
-                                        }
-                                        .status-badge {
-                                            background: #28a745;
-                                            color: white;
-                                            padding: 10px 20px;
-                                            border-radius: 25px;
-                                            font-weight: bold;
-                                            display: inline-block;
-                                            font-size: 1.1rem;
-                                        }
-                                        .footer-section {
-                                            background: #f8f9fa;
-                                            padding: 20px;
-                                            text-align: center;
-                                            border-top: 2px dashed #28a745;
-                                            margin-top: 30px;
-                                        }
-                                        .footer-section small {
-                                            color: #6c757d;
-                                            line-height: 1.8;
-                                        }
-                                        .qr-section {
-                                            text-align: center;
-                                            margin: 20px 0;
-                                        }
-                                        .qr-box {
-                                            display: inline-block;
-                                            width: 100px;
-                                            height: 100px;
-                                            border: 3px solid #28a745;
-                                            border-radius: 8px;
-                                            background: #f8fff8;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            margin: 10px auto;
-                                        }
-                                        .print-date {
-                                            text-align: right;
-                                            margin-top: 20px;
-                                            padding-top: 10px;
-                                            border-top: 1px solid #eee;
-                                            font-size: 0.9rem;
-                                            color: #6c757d;
-                                        }
-                                        @media print {
-                                            body { padding: 0; }
-                                            .invoice-container { border: none; box-shadow: none; }
-                                        }
-                                    </style>
-                                </head>
-                                <body>
-                                    <div class="invoice-container">
-                                        <!-- Header -->
-                                        <div class="invoice-header">
-                                            <h1>🏥 HÓA ĐƠN THANH TOÁN</h1>
-                                            <div class="subtitle">Phòng khám nha khoa chuyên nghiệp</div>
-                                        </div>
-                                        
-                                        <!-- Clinic Info -->
-                                        <div class="clinic-info">
-                                            <h3>🏥 PHÒNG KHÁM NHA KHOA</h3>
-                                            <div class="clinic-details">
-                                                <div>
-                                                    <strong>📍 Địa chỉ:</strong> 123 Đường ABC, Quận XYZ, TP.HCM<br>
-                                                    <strong>📞 Hotline:</strong> 1900-xxx-xxx<br>
-                                                    <strong>📧 Email:</strong> info@dental.clinic
-                                                </div>
-                                                <div>
-                                                    <strong>🆔 Mã số thuế:</strong> 0123456789<br>
-                                                    <strong>⏰ Giờ làm việc:</strong> 8:00 - 17:00<br>
-                                                    <strong>🌐 Website:</strong> www.dental.clinic
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Invoice Body -->
-                                        <div class="invoice-body">
-                                            <!-- Status -->
-                                            <div class="status-section">
-                                                <div class="status-badge">
-                                                    ✅ THANH TOÁN THÀNH CÔNG
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Transaction Info -->
-                                            <div class="info-section">
-                                                <h4>📋 Thông tin giao dịch</h4>
-                                                <table class="info-table">
-                                                    <tr>
-                                                        <td class="label">Mã hóa đơn:</td>
-                                                        <td class="value"><strong>${billId}</strong></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Mã đơn hàng:</td>
-                                                        <td class="value">${orderId}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Ngày thanh toán:</td>
-                                                        <td class="value">${currentDate}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Phương thức:</td>
-                                                        <td class="value">🏦 MB Bank - VietQR</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            
-                                            <!-- Customer Info -->
-                                            <div class="info-section">
-                                                <h4>👤 Thông tin khách hàng</h4>
-                                                <table class="info-table">
-                                                    <tr>
-                                                        <td class="label">Họ và tên:</td>
-                                                        <td class="value"><strong>${customerName}</strong></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Dịch vụ:</td>
-                                                        <td class="value">${serviceName}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                            
-                                            <!-- Amount Section -->
-                                            <div class="amount-section">
-                                                <div class="amount">${amount}</div>
-                                                <div class="amount-text">Tổng số tiền đã thanh toán</div>
-                                            </div>
-                                            
-                                            <!-- Banking Details -->
-                                            <div class="info-section">
-                                                <h4>🏦 Chi tiết chuyển khoản</h4>
-                                                <table class="info-table">
-                                                    <tr>
-                                                        <td class="label">Ngân hàng:</td>
-                                                        <td class="value">MB Bank (970422)</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Số tài khoản:</td>
-                                                        <td class="value"><strong>5529062004</strong></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Chủ tài khoản:</td>
-                                                        <td class="value">TRAN HONG PHUOC</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="label">Nội dung CK:</td>
-                                                        <td class="value">Thanh toan ${billId}</td>
-                                                    </tr>
-                                                </table>
+                    <c:choose>
+                        <c:when test="${not empty paymentInfo.doctorId}">
+                            <!-- Có appointment -->
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div>Bạn sẽ nhận được SMS/Email xác nhận cuộc hẹn</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div>Vui lòng có mặt tại phòng khám trước 15 phút</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div>Mang theo CMND/CCCD và hóa đơn thanh toán</div>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- Chỉ có dịch vụ -->
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div>Bạn có thể sử dụng dịch vụ ngay tại phòng khám</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div>Xuất trình hóa đơn thanh toán khi sử dụng dịch vụ</div>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>HÓA ĐƠN THANH TOÁN
                 </div>
-                                            
-                                            <!-- QR Section -->
-                                            <div class="qr-section">
-                                                <div class="qr-box">
-                                                    <span style="color: #28a745; font-size: 2rem;">✅</span>
-                                                </div>
-                                                <div><small>Biên lai điện tử đã xác thực</small></div>
-                                            </div>
-                                            
-                                            <!-- Print Date -->
-                                            <div class="print-date">
-                                                🖨️ In ngày: ${currentDate}
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Footer -->
-                                        <div class="footer-section">
-                                            <small>
-                                                <strong>🔒 Cam kết bảo mật:</strong> Thông tin của bạn được bảo vệ tuyệt đối<br>
-                                                <strong>📞 Hỗ trợ 24/7:</strong> Liên hệ 1900-xxx-xxx nếu cần hỗ trợ<br>
-                                                <strong>💡 Lưu ý:</strong> Vui lòng mang theo hóa đơn này khi đến khám<br><br>
-                                                <em>Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi! 🙏</em>
-                                            </small>
-                                        </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-warning btn-action" onclick="printReceipt()">
+                        <i class="fas fa-print me-2"></i>In hóa đơn 
+                    </button>
+                    <a href="${pageContext.request.contextPath}/BookingPageServlet" class="btn btn-success btn-action">
+                        <i class="fas fa-plus me-2"></i>Đặt lịch khác
+                    </a>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="btn btn-outline-secondary btn-action">
+                        <i class="fas fa-home me-2"></i>Về trang chủ
+                    </a>
+                </div>
+
+                <!-- Help Section -->
+                <div class="alert alert-light">
+                    <h6 class="mb-3"><i class="fas fa-headset me-2"></i>Cần hỗ trợ?</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone-alt me-2 text-muted"></i>
+                                <div>
+                                    <div class="small">Hotline</div>
+                                    <strong>1900-xxx-xxx</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope me-2 text-muted"></i>
+                                <div>
+                                    <div class="small">Email</div>
+                                    <strong>support@dental.clinic</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-2 text-muted"></i>
+                                <div>
+                                    <div class="small">Thời gian</div>
+                                    <strong>8:00 - 17:00 (T2-T7)</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-zalo me-2 text-muted"></i>
+                                <div>
+                                    <div class="small">Zalo</div>
+                                    <strong>0900-xxx-xxx</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="text-center small text-muted mt-3">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Thông tin của bạn được bảo mật an toàn. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Confetti celebration effect
+        function createConfetti() {
+            const confetti = document.getElementById('confetti');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 30; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.appendChild(piece);
+            }
+
+            // Remove confetti after animation
+            setTimeout(() => {
+                confetti.innerHTML = '';
+            }, 5000);
+        }
+
+        // Print receipt function
+        function printReceipt() {
+            const billId = '${paymentInfo != null ? paymentInfo.billId : "BILL_A5F6E8C5"}';
+            const orderId = '${paymentInfo != null ? paymentInfo.orderId : "ORDER_1749721289553"}';
+            const serviceName = '${paymentInfo != null ? paymentInfo.serviceName : "Bọc răng sứ"}';
+            const customerName = '${paymentInfo != null ? paymentInfo.customerName : "PhuocTHDev"}';
+            const amount = '${paymentInfo != null ? paymentInfo.formattedAmount : "2,000 VNĐ"}';
+            const currentDate = new Date().toLocaleString('vi-VN');
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Hóa đơn thanh toán - ${billId}</title>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            .invoice-container { max-width: 600px; margin: 0 auto; }
+                            .invoice-header { text-align: center; margin-bottom: 20px; }
+                            .info-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                            .info-table td { padding: 8px; border-bottom: 1px solid #eee; }
+                            .amount-highlight { font-size: 1.5rem; color: #28a745; font-weight: bold; }
+                            .status-badge { background: #28a745; color: white; padding: 5px 10px; border-radius: 20px; }
+                            .receipt-details { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; }
+                            .qr-code { width: 100px; height: 100px; border: 2px solid #28a745; border-radius: 8px; 
+                                      display: flex; align-items: center; justify-content: center; margin: 10px auto; }
+                            @media print { body { padding: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="invoice-container">
+                            <div class="invoice-header">
+                                <h2>HÓA ĐƠN THANH TOÁN</h2>
+                                <p>Phòng khám nha khoa chuyên nghiệp</p>
+                            </div>
+                            
+                            <table class="info-table">
+                                <tr>
+                                    <td>Mã hóa đơn:</td>
+                                    <td><strong>${billId}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Khách hàng:</td>
+                                    <td>${customerName}</td>
+                                </tr>
+                                <tr>
+                                    <td>Dịch vụ:</td>
+                                    <td>${serviceName}</td>
+                                </tr>
+                                <tr>
+                                    <td>Số tiền:</td>
+                                    <td class="amount-highlight">${amount}</td>
+                                </tr>
+                                <tr>
+                                    <td>Ngày thanh toán:</td>
+                                    <td>${currentDate}</td>
+                                </tr>
+                                <tr>
+                                    <td>Trạng thái:</td>
+                                    <td><span class="status-badge">Đã thanh toán</span></td>
+                                </tr>
+                            </table>
+                            
+                            <div class="receipt-details">
+                                <h5>Biên lai thanh toán</h5>
+                                <div class="small">
+                                    <strong>🏥 PHÒNG KHÁM NHA KHOA</strong><br>
+                                    📍 Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM<br>
+                                    📞 Hotline: 1900-xxx-xxx<br><br>
+                                    
+                                    <strong>📋 CHI TIẾT GIAO DỊCH:</strong><br>
+                                    • Mã GD: ${billId}<br>
+                                    • Ngân hàng: MB Bank (970422)<br>
+                                    • STK: 5529062004<br>
+                                    • Chủ TK: TRAN HONG PHUOC<br>
+                                    • Nội dung: Thanh toan ${billId}
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <div class="qr-code">
+                                        <i class="fas fa-check-circle" style="font-size: 1.5rem; color: #28a745;"></i>
                                     </div>
-                                </body>
-                            </html>
-                        `);
+                                    <div class="small">Biên lai điện tử đã xác thực</div>
+                                </div>
+                            </div>
+                            
+                            <p style="text-align: center; margin-top: 30px;">
+                                Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!
+                            </p>
+                        </div>
+                    </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                setTimeout(() => printWindow.close(), 1000);
+            }, 500);
+        }
 
-                        printWindow.document.close();
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show confetti effect
+            createConfetti();
+            
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success position-fixed fade-in';
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);';
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <div>
+                        <strong>Thành công!</strong>
+                        <div class="small">Thanh toán của bạn đã được xử lý.</div>
+                    </div>
+                    <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+            `;
+            document.body.appendChild(notification);
 
-                        // Wait for content to load then print
-                        setTimeout(() => {
-                            printWindow.focus();
-                            printWindow.print();
-
-                            // Optional: Close window after printing
-                    setTimeout(() => {
-                                printWindow.close();
-                            }, 1000);
-                        }, 500);
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
                 }
+            }, 5000);
+            
+            // Auto redirect after 60 seconds
+            function startRedirectCountdown() {
+                let timeLeft = 60;
+                const countdownElement = document.createElement('div');
+                countdownElement.className = 'text-center mt-3 small text-muted';
+                countdownElement.innerHTML = `
+                    <i class="fas fa-clock me-1"></i>
+                    Tự động chuyển về trang chủ sau <span id="countdown">${timeLeft}</span> giây
+                    <button class="btn btn-sm btn-link p-0 ms-2" onclick="clearAutoRedirect()">Hủy</button>
+                `;
 
-                    // Success page interactions
-                document.addEventListener('DOMContentLoaded', function () {
-                        // Start confetti celebration
-                    createConfetti();
+                document.querySelector('.success-content').appendChild(countdownElement);
 
-                        // Success sound (if browser allows)
-                        try {
-                            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsdBT2Y3u/GdyMFl5vv');
-                            audio.volume = 0.3;
-                            audio.play().catch(() => { }); // Ignore if autoplay blocked
-                        } catch (e) { }
-
-                        // Add print receipt shortcut
-                        document.addEventListener('keydown', function (e) {
-                            if (e.ctrlKey && e.key === 'p') {
-                                e.preventDefault();
-                                printReceipt();
-                            }
-                        });
-
-                        // Auto redirect after 2 minutes (optional)
-                    setTimeout(() => {
-                            if (confirm('Thanh toán thành công! Bạn có muốn quay về trang chủ không?')) {
-                                window.location.href = '${pageContext.request.contextPath}/index.jsp';
-                            }
-                        }, 5000); // 5 seconds
-
-                        // Show countdown timer
-                        let countdown = 5;
-                        const countdownEl = document.createElement('div');
-                        countdownEl.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #28a745; color: white; padding: 10px 15px; border-radius: 5px; z-index: 9999; font-weight: bold;';
-                        countdownEl.innerHTML = `Tự động chuyển về trang chủ sau ${countdown}s`;
-                        document.body.appendChild(countdownEl);
-
-                        const countdownInterval = setInterval(() => {
-                            countdown--;
-                            if (countdown > 0) {
-                                countdownEl.innerHTML = `Tự động chuyển về trang chủ sau ${countdown}s`;
-                            } else {
-                                clearInterval(countdownInterval);
-                                countdownEl.remove();
-                            }
-                        }, 1000);
-                });
-
-                    // Add smooth scroll effect for better UX
-                    function smoothScrollTo(element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
+                const interval = setInterval(() => {
+                    timeLeft--;
+                    const countdownSpan = document.getElementById('countdown');
+                    if (countdownSpan) {
+                        countdownSpan.textContent = timeLeft;
                     }
-            </script>
-        </body>
 
-        </html>
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        window.location.href = '${pageContext.request.contextPath}/home.jsp';
+                    }
+                }, 1000);
+
+                window.autoRedirectInterval = interval;
+            }
+
+            setTimeout(startRedirectCountdown, 3000);
+        });
+
+        function clearAutoRedirect() {
+            if (window.autoRedirectInterval) {
+                clearInterval(window.autoRedirectInterval);
+                document.querySelector('.success-content').lastElementChild.remove();
+            }
+        }
+    </script>
+</body>
+
+</html>

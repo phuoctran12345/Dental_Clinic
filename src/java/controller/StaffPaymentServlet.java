@@ -357,14 +357,139 @@ public class StaffPaymentServlet extends HttpServlet {
 
     private void handleCreateInvoice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: Implement create invoice page
-        request.getRequestDispatcher("/jsp/staff/staff_thanhtoan.jsp").forward(request, response);
+        try {
+            // Get parameters for new invoice
+            String customerName = request.getParameter("customerName");
+            String customerPhone = request.getParameter("customerPhone");
+            String serviceIds = request.getParameter("serviceIds"); // Comma-separated service IDs
+            String paymentMethod = request.getParameter("paymentMethod");
+            String notes = request.getParameter("notes");
+            
+            if (customerName == null || customerPhone == null || serviceIds == null) {
+                request.setAttribute("errorMessage", "Thiếu thông tin bắt buộc để tạo hóa đơn!");
+                handlePaymentManagement(request, response);
+                return;
+            }
+            
+            // Calculate total amount from selected services
+            ServiceDAO serviceDAO = new ServiceDAO();
+            double totalAmount = 0.0;
+            String[] serviceIdArray = serviceIds.split(",");
+            StringBuilder serviceNames = new StringBuilder();
+            
+            for (String serviceId : serviceIdArray) {
+                try {
+                    Service service = serviceDAO.getServiceById(Integer.parseInt(serviceId.trim()));
+                    if (service != null) {
+                        totalAmount += service.getPrice();
+                        if (serviceNames.length() > 0) {
+                            serviceNames.append(", ");
+                        }
+                        serviceNames.append(service.getServiceName());
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid service ID: " + serviceId);
+                }
+            }
+            
+            // Create new bill
+            BillDAO billDAO = new BillDAO();
+            String billId = "BILL" + System.currentTimeMillis(); // Generate unique bill ID
+            
+            Bill newBill = createBillObject(billId, customerName, customerPhone, 
+                    totalAmount, "PENDING", paymentMethod != null ? paymentMethod : "CASH", 
+                    notes, serviceIdArray.length > 0 ? serviceIdArray[0] : "1");
+            
+            Bill createdBill = billDAO.createBill(newBill);
+            boolean success = (createdBill != null);
+            
+            if (success) {
+                request.setAttribute("successMessage", "Tạo hóa đơn thành công! Mã hóa đơn: " + billId);
+                System.out.println("✅ Created new invoice: " + billId + " for " + customerName);
+            } else {
+                request.setAttribute("errorMessage", "Có lỗi khi tạo hóa đơn!");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Lỗi tạo hóa đơn: " + e.getMessage());
+        }
+        
+        // Return to payment management page
+        handlePaymentManagement(request, response);
     }
 
     private void handleViewInvoice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: Implement view invoice details
-        request.getRequestDispatcher("/jsp/staff/staff_thanhtoan.jsp").forward(request, response);
+        try {
+            String billId = request.getParameter("billId");
+            
+            if (billId == null || billId.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Không tìm thấy mã hóa đơn!");
+                handlePaymentManagement(request, response);
+                return;
+            }
+            
+            // Get bill details
+            BillDAO billDAO = new BillDAO();
+            Bill bill = billDAO.getBillById(billId);
+            
+            if (bill == null) {
+                request.setAttribute("errorMessage", "Không tìm thấy hóa đơn với mã: " + billId);
+                handlePaymentManagement(request, response);
+                return;
+            }
+            
+            // Get installment details if exists
+            PaymentInstallmentDAO installmentDAO = new PaymentInstallmentDAO();
+            List<PaymentInstallment> installments = installmentDAO.getInstallmentsByBillId(billId);
+            
+            // Get service details
+            ServiceDAO serviceDAO = new ServiceDAO();
+            Service service = null;
+            try {
+                if (bill.getServiceId() != 0) {
+                    service = serviceDAO.getServiceById(bill.getServiceId());
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading service details: " + e.getMessage());
+            }
+            
+            // Calculate payment summary
+            double totalPaid = 0.0;
+            double remainingAmount = bill.getAmount() != null ? bill.getAmount().doubleValue() : 0.0;
+            
+            if (installments != null && !installments.isEmpty()) {
+                for (PaymentInstallment installment : installments) {
+                    if ("PAID".equals(installment.getStatus())) {
+                        totalPaid += installment.getAmountPaid();
+                    }
+                }
+                remainingAmount -= totalPaid;
+            } else if ("PAID".equals(bill.getPaymentStatus()) || "success".equals(bill.getPaymentStatus())) {
+                totalPaid = remainingAmount;
+                remainingAmount = 0.0;
+            }
+            
+            // Set attributes for JSP
+            request.setAttribute("bill", bill);
+            request.setAttribute("service", service);
+            request.setAttribute("installments", installments);
+            request.setAttribute("totalPaid", totalPaid);
+            request.setAttribute("remainingAmount", remainingAmount);
+            request.setAttribute("viewMode", "invoice_detail");
+            
+            System.out.println("📋 Viewing invoice: " + billId + " - Total: " + bill.getAmount() + 
+                    " VNĐ, Paid: " + totalPaid + " VNĐ, Remaining: " + remainingAmount + " VNĐ");
+            
+            // Forward to invoice detail page or back to payment management with detail view
+            request.getRequestDispatcher("/jsp/staff/staff_thanhtoan.jsp").forward(request, response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Lỗi khi xem chi tiết hóa đơn: " + e.getMessage());
+            handlePaymentManagement(request, response);
+        }
     }
 
     private void handleCreateNewInvoice(HttpServletRequest request, HttpServletResponse response)

@@ -20,9 +20,9 @@ import org.json.JSONObject;
 Tóm lại: Nếu email Google chưa có trong database, hãy tự động tạo tài khoản mới rồi đăng nhập luôn. Nếu đã có thì đăng nhập như bình thường.
 */
 public class GoogleCallbackServlet extends HttpServlet {
+    private static final String CLIENT_ID = "abc";
+    private static final String CLIENT_SECRET = "abc";
 
-    private static final String CLIENT_ID = "YOUR_CLIENT_ID";
-    private static final String CLIENT_SECRET = "YOUR_CLIENT_SECRET";
     private String REDIRECT_URI;
 
     @Override

@@ -7,10 +7,17 @@
                         <%@page import="model.Medicine" %>
                             <%@page import="model.User" %>
 
-                                <% // Kiểm tra đăng nhập User user=(User) session.getAttribute("user"); if (user==null)
-                                    { response.sendRedirect("../../login.jsp"); return; } // Biến hiển thị String
-                                    error=null; String success=null; String billDetails=null; Long totalAmount=null;
-                                    String customerName=null; List<Medicine> medicines = new ArrayList<>();
+                                <% // Khai báo biến toàn cục cho JSP 
+                                    String error=null; String success=null; String
+                                    billDetails=null; Long totalAmount=null; String customerName=null; BigDecimal
+                                    total=null; User user=(User) session.getAttribute("user"); BillDAO billDAO=null;
+                                    List<Medicine> medicines = new ArrayList<>();
+
+                                        // Kiểm tra đăng nhập
+                                        if (user == null) {
+                                        response.sendRedirect("../../login.jsp");
+                                        return;
+                                        }
 
                                         // Load danh sách thuốc
                                         try {
@@ -75,259 +82,373 @@
                                                         content="width=device-width, initial-scale=1.0">
                                                     <title>Bán Thuốc - Nha Khoa</title>
                                                     <style>
-                                                        body {
-                                                            font-family: Arial, sans-serif;
-                                                            margin: 20px;
-                                                            background-color: #f5f5f5;
+                                                        /* Tailwind-like utility classes */
+                                                        .bg-white {
+                                                            background-color: #fff;
                                                         }
 
-                                                        .container {
-                                                            max-width: 1000px;
-                                                            margin: 0 auto;
-                                                            background: white;
-                                                            padding: 20px;
-                                                            border-radius: 8px;
-                                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                                                        .bg-blue-50 {
+                                                            background-color: #eff6ff;
                                                         }
 
-                                                        .header {
-                                                            background: #2563eb;
-                                                            color: white;
-                                                            padding: 15px;
-                                                            margin: -20px -20px 20px -20px;
-                                                            border-radius: 8px 8px 0 0;
+                                                        .text-blue-700 {
+                                                            color: #1d4ed8;
                                                         }
 
-                                                        .form-group {
-                                                            margin-bottom: 15px;
+                                                        .text-blue-900 {
+                                                            color: #1e3a8a;
                                                         }
 
-                                                        label {
-                                                            display: block;
-                                                            margin-bottom: 5px;
+                                                        .border-blue-500 {
+                                                            border-color: #3b82f6;
+                                                        }
+
+                                                        .border {
+                                                            border-width: 1px;
+                                                            border-style: solid;
+                                                        }
+
+                                                        .rounded {
+                                                            border-radius: 0.5rem;
+                                                        }
+
+                                                        .shadow {
+                                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                                                        }
+
+                                                        .p-4 {
+                                                            padding: 1rem;
+                                                        }
+
+                                                        .p-2 {
+                                                            padding: 0.5rem;
+                                                        }
+
+                                                        .mb-4 {
+                                                            margin-bottom: 1rem;
+                                                        }
+
+                                                        .mb-2 {
+                                                            margin-bottom: 0.5rem;
+                                                        }
+
+                                                        .mt-4 {
+                                                            margin-top: 1rem;
+                                                        }
+
+                                                        .w-full {
+                                                            width: 100%;
+                                                        }
+
+                                                        .max-w-md {
+                                                            max-width: 28rem;
+                                                        }
+
+                                                        .mx-auto {
+                                                            margin-left: auto;
+                                                            margin-right: auto;
+                                                        }
+
+                                                        .flex {
+                                                            display: flex;
+                                                        }
+
+                                                        .gap-2 {
+                                                            gap: 0.5rem;
+                                                        }
+
+                                                        .items-center {
+                                                            align-items: center;
+                                                        }
+
+                                                        .justify-between {
+                                                            justify-content: space-between;
+                                                        }
+
+                                                        .font-bold {
                                                             font-weight: bold;
                                                         }
 
-                                                        input,
-                                                        select {
-                                                            width: 100%;
-                                                            max-width: 300px;
-                                                            padding: 10px;
-                                                            border: 1px solid #ddd;
-                                                            border-radius: 4px;
-                                                            font-size: 14px;
+                                                        .text-center {
+                                                            text-align: center;
                                                         }
 
-                                                        button {
-                                                            background: #16a34a;
-                                                            color: white;
-                                                            padding: 12px 24px;
-                                                            border: none;
-                                                            border-radius: 4px;
+                                                        .text-sm {
+                                                            font-size: 0.875rem;
+                                                        }
+
+                                                        .text-lg {
+                                                            font-size: 1.125rem;
+                                                        }
+
+                                                        .text-xl {
+                                                            font-size: 1.25rem;
+                                                        }
+
+                                                        .text-green-700 {
+                                                            color: #15803d;
+                                                        }
+
+                                                        .bg-green-50 {
+                                                            background-color: #f0fdf4;
+                                                        }
+
+                                                        .border-green-500 {
+                                                            border-color: #22c55e;
+                                                        }
+
+                                                        .hover\:bg-blue-600:hover {
+                                                            background-color: #2563eb;
+                                                            color: #fff;
+                                                        }
+
+                                                        .hover\:bg-blue-700:hover {
+                                                            background-color: #1d4ed8;
+                                                            color: #fff;
+                                                        }
+
+                                                        .transition {
+                                                            transition: all 0.2s;
+                                                        }
+
+                                                        .cursor-pointer {
                                                             cursor: pointer;
-                                                            font-size: 16px;
                                                         }
 
-                                                        button:hover {
-                                                            background: #15803d;
+                                                        .outline-none {
+                                                            outline: none;
                                                         }
 
-                                                        .error {
-                                                            background: #fef2f2;
-                                                            color: #dc2626;
-                                                            padding: 10px;
-                                                            border-radius: 4px;
-                                                            margin-bottom: 15px;
-                                                            border: 1px solid #fecaca;
+                                                        .focus\:ring-2:focus {
+                                                            box-shadow: 0 0 0 2px #3b82f6;
                                                         }
 
-                                                        .success {
-                                                            background: #f0fdf4;
-                                                            color: #16a34a;
-                                                            padding: 10px;
-                                                            border-radius: 4px;
-                                                            margin-bottom: 15px;
-                                                            border: 1px solid #bbf7d0;
+                                                        .hidden {
+                                                            display: none;
                                                         }
 
-                                                        .bill {
-                                                            background: #f8fafc;
-                                                            border: 1px solid #e2e8f0;
-                                                            padding: 20px;
-                                                            border-radius: 8px;
-                                                            margin-top: 20px;
-                                                            font-family: monospace;
-                                                            white-space: pre-line;
+                                                        .block {
+                                                            display: block;
                                                         }
 
-                                                        .medicine-list {
-                                                            display: grid;
-                                                            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                                                            gap: 15px;
-                                                            margin-top: 20px;
+                                                        .mt-2 {
+                                                            margin-top: 0.5rem;
                                                         }
 
-                                                        .medicine-card {
-                                                            border: 1px solid #ddd;
-                                                            padding: 15px;
-                                                            border-radius: 8px;
-                                                            background: #f9f9f9;
+                                                        .mt-8 {
+                                                            margin-top: 2rem;
                                                         }
 
-                                                        .form-row {
-                                                            display: flex;
-                                                            gap: 15px;
-                                                            align-items: end;
+                                                        .py-2 {
+                                                            padding-top: 0.5rem;
+                                                            padding-bottom: 0.5rem;
+                                                        }
+
+                                                        .px-4 {
+                                                            padding-left: 1rem;
+                                                            padding-right: 1rem;
+                                                        }
+
+                                                        .ring-1 {
+                                                            box-shadow: 0 0 0 1px #3b82f6;
+                                                        }
+
+                                                        /* ... add more as needed ... */
+                                                        /* In hóa đơn */
+                                                        @media print {
+                                                            body * {
+                                                                visibility: hidden;
+                                                            }
+
+                                                            #billSection.show,
+                                                            #billSection.show * {
+                                                                visibility: visible;
+                                                            }
+
+                                                            #billSection.show {
+                                                                position: absolute;
+                                                                left: 0;
+                                                                top: 0;
+                                                                width: 148mm;
+                                                                height: 210mm;
+                                                                margin: 0;
+                                                                padding: 15mm;
+                                                                background: #fff;
+                                                            }
+
+                                                            .no-print {
+                                                                display: none !important;
+                                                            }
                                                         }
                                                     </style>
                                                 </head>
 
-                                                <body>
-                                                    <div class="container">
-                                                        <div class="header">
-                                                            <h1>💊 Bán Thuốc - Nha Khoa Hạnh Phúc</h1>
-                                                            <p>Nhân viên: <%= user.getUsername() %> | Ngày: <%= new
-                                                                        java.util.Date() %>
-                                                            </p>
+                                                <body class="bg-blue-50">
+                                                    <div class="container bg-white rounded shadow p-4 mx-auto mt-8">
+                                                        <!-- Alert thành công -->
+                                                        <div id="alertSuccess"
+                                                            class="bg-green-50 border border-green-500 text-green-700 rounded p-4 mb-4 text-center hidden">
+                                                            💊 Bán thuốc thành công!
                                                         </div>
-
-                                                        <!-- Hiển thị lỗi -->
-                                                        <% if (error !=null) { %>
-                                                            <div class="error">❌ <%= error %>
+                                                        <!-- Form bán thuốc -->
+                                                        <form method="POST" id="sellForm" class="max-w-md mx-auto"
+                                                            onsubmit="showBill(event)">
+                                                            <div class="mb-4">
+                                                                <label class="block mb-2 font-bold text-blue-900">Tên
+                                                                    khách hàng (tùy chọn):</label>
+                                                                <input type="text" name="customer_name"
+                                                                    class="w-full border border-blue-500 rounded p-2 outline-none focus:ring-2"
+                                                                    placeholder="Để trống = 'Khách mua thuốc'">
                                                             </div>
-                                                            <% } %>
-
-                                                                <!-- Hiển thị thành công -->
-                                                                <% if (success !=null) { %>
-                                                                    <div class="success">✅ <%= success %>
-                                                                    </div>
-                                                                    <% } %>
-
-                                                                        <!-- Form bán thuốc -->
-                                                                        <form method="POST">
-                                                                            <div class="form-group">
-                                                                                <label>Tên khách hàng (tùy
-                                                                                    chọn):</label>
-                                                                                <input type="text" name="customer_name"
-                                                                                    placeholder="Để trống = 'Khách mua thuốc'">
-                                                                            </div>
-
-                                                                            <div class="form-row">
-                                                                                <div class="form-group">
-                                                                                    <label>Chọn thuốc:</label>
-                                                                                    <select name="medicine_id" required>
-                                                                                        <option value="">-- Chọn
-                                                                                            thuốc
-                                                                                            --</option>
-                                                                                        <% for (Medicine medicine :
-                                                                                            medicines) { %>
-                                                                                            <option
-                                                                                                value="<%= medicine.getMedicineId() %>">
-                                                                                                <%= medicine.getName()
-                                                                                                    %> -
-                                                                                                    Còn: <%=
-                                                                                                        medicine.getQuantityInStock()
-                                                                                                        %>
-                                                                                                        <%= medicine.getUnit()
-                                                                                                            !=null ?
-                                                                                                            medicine.getUnit()
-                                                                                                            : "viên" %>
-                                                                                                            - 10,000 VND
-                                                                                            </option>
-                                                                                            <% } %>
-                                                                                    </select>
-                                                                                </div>
-
-                                                                                <div class="form-group">
-                                                                                    <label>Số lượng:</label>
-                                                                                    <input type="number" name="quantity"
-                                                                                        min="1" required
-                                                                                        placeholder="Nhập số lượng">
-                                                                                </div>
-
-                                                                                <div class="form-group">
-                                                                                    <label>Giá bán (VND):</label>
-                                                                                    <input type="number" name="price"
-                                                                                        min="1" required
-                                                                                        placeholder="Nhập giá bán">
-                                                                                </div>
-
-                                                                                <div class="form-group">
-                                                                                    <button type="submit">Tạo & In Hóa
-                                                                                        Đơn</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </form>
-
-                                                                        <!-- Danh sách thuốc -->
-                                                                        <h3>📋 Danh sách thuốc có sẵn:</h3>
-                                                                        <div class="medicine-list">
-                                                                            <% for (Medicine medicine : medicines) { %>
-                                                                                <div class="medicine-card">
-                                                                                    <h4>
-                                                                                        <%= medicine.getName() %>
-                                                                                    </h4>
-                                                                                    <p><strong>Đơn vị:</strong>
+                                                            <div class="flex gap-2 mb-4 items-center">
+                                                                <div class="w-full">
+                                                                    <label
+                                                                        class="block mb-2 font-bold text-blue-900">Chọn
+                                                                        thuốc:</label>
+                                                                    <select name="medicine_id" required
+                                                                        class="w-full border border-blue-500 rounded p-2 outline-none focus:ring-2">
+                                                                        <option value="">-- Chọn thuốc --</option>
+                                                                        <% for (Medicine medicine : medicines) { %>
+                                                                            <option
+                                                                                value="<%= medicine.getMedicineId() %>">
+                                                                                <%= medicine.getName() %> -
+                                                                                    Còn: <%=
+                                                                                        medicine.getQuantityInStock() %>
                                                                                         <%= medicine.getUnit() !=null ?
                                                                                             medicine.getUnit() : "viên"
                                                                                             %>
-                                                                                    </p>
-                                                                                    <p><strong>Tồn kho:</strong>
-                                                                                        <%= medicine.getQuantityInStock()
-                                                                                            %>
-                                                                                    </p>
-                                                                                    <p><strong>Giá mặc định:</strong>
-                                                                                        10,000 VND</p>
-                                                                                    <% if (medicine.getDescription()
-                                                                                        !=null &&
-                                                                                        !medicine.getDescription().trim().isEmpty())
-                                                                                        { %>
-                                                                                        <p><em>
-                                                                                                <%= medicine.getDescription()
-                                                                                                    %>
-                                                                                            </em></p>
-                                                                                        <% } %>
-                                                                                </div>
-                                                                                <% } %>
-                                                                        </div>
-
-                                                                        <!-- Hiển thị hóa đơn -->
-                                                                        <% if (billDetails !=null) { %>
-                                                                            <div class="bill">
-                                                                                <h3>🧾 Hóa đơn đã tạo:</h3>
-                                                                                <%= billDetails %>
-
-                                                                                    <hr>
-                                                                                    <p><strong>Khách hàng:</strong>
-                                                                                        <%= customerName %>
-                                                                                    </p>
-                                                                                    <p><strong>Tổng tiền:</strong>
-                                                                                        <%= totalAmount %> VND
-                                                                                    </p>
-                                                                                    <p><strong>Trạng thái:</strong>
-                                                                                        ✅ Đã
-                                                                                        thanh toán</p>
-                                                                            </div>
-
-                                                                            <div
-                                                                                style="margin-top: 15px; text-align: center;">
-                                                                                <button onclick="window.print()">🖨️
-                                                                                    In
-                                                                                    hóa đơn</button>
-                                                                                <button
-                                                                                    onclick="window.location.reload()">🔄
-                                                                                    Bán hàng mới</button>
-                                                                            </div>
+                                                                                            - 10,000 VND
+                                                                            </option>
                                                                             <% } %>
-
-                                                                                <div
-                                                                                    style="margin-top: 30px; text-align: center;">
-                                                                                    <a href="staff_tongquan.jsp"
-                                                                                        style="color: #2563eb; text-decoration: none;">←
-                                                                                        Quay lại trang chủ</a>
-                                                                                </div>
+                                                                    </select>
+                                                                </div>
+                                                                <div>
+                                                                    <label class="block mb-2 font-bold text-blue-900">Số
+                                                                        lượng:</label>
+                                                                    <input type="number" name="quantity" min="1"
+                                                                        required
+                                                                        class="w-full border border-blue-500 rounded p-2 outline-none focus:ring-2"
+                                                                        placeholder="Nhập số lượng">
+                                                                </div>
+                                                                <div>
+                                                                    <label
+                                                                        class="block mb-2 font-bold text-blue-900">Giá
+                                                                        bán (VND):</label>
+                                                                    <input type="number" name="price" min="1" required
+                                                                        class="w-full border border-blue-500 rounded p-2 outline-none focus:ring-2"
+                                                                        placeholder="Nhập giá bán">
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" name="medicine_name" value="">
+                                                            <div class="text-center mt-4">
+                                                                <button type="submit"
+                                                                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">Tạo
+                                                                    & In Hóa Đơn</button>
+                                                            </div>
+                                                        </form>
+                                                        <!-- Danh sách thuốc -->
+                                                        <h3 class="text-blue-700 font-bold text-lg mt-8 mb-2">📋 Danh
+                                                            sách thuốc có sẵn:</h3>
+                                                        <div class="grid gap-2"
+                                                            style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                                                            <% for (Medicine medicine : medicines) { %>
+                                                                <div
+                                                                    class="border border-blue-500 rounded p-2 bg-blue-50">
+                                                                    <h4 class="font-bold text-blue-900">
+                                                                        <%= medicine.getName() %>
+                                                                    </h4>
+                                                                    <p class="text-sm">Đơn vị: <%= medicine.getUnit()
+                                                                            !=null ? medicine.getUnit() : "viên" %>
+                                                                    </p>
+                                                                    <p class="text-sm">Tồn kho: <%=
+                                                                            medicine.getQuantityInStock() %>
+                                                                    </p>
+                                                                    <p class="text-sm">Giá mặc định: 10,000 VND</p>
+                                                                    <% if (medicine.getDescription() !=null &&
+                                                                        !medicine.getDescription().trim().isEmpty()) {
+                                                                        %>
+                                                                        <p class="text-sm italic text-blue-700">
+                                                                            <%= medicine.getDescription() %>
+                                                                        </p>
+                                                                        <% } %>
+                                                                </div>
+                                                                <% } %>
+                                                        </div>
+                                                        <!-- Hóa đơn (ẩn mặc định) -->
+                                                        <div class="bill bg-white rounded shadow p-4 mx-auto mt-8"
+                                                            id="billSection">
+                                                            <div class="bill-header text-center">
+                                                                <h2 class="bill-title text-blue-700">NHA KHOA HẠNH PHÚC
+                                                                </h2>
+                                                                <p class="text-sm">Địa chỉ: 123 Đường ABC, Quận XYZ,
+                                                                    TP.HCM</p>
+                                                                <p class="text-sm">Điện thoại: (028) 1234 5678</p>
+                                                                <h3 class="text-blue-900 font-bold">HÓA ĐƠN BÁN THUỐC
+                                                                </h3>
+                                                            </div>
+                                                            <div class="bill-info">
+                                                                <p><strong>Mã HĐ:</strong> HD<%=
+                                                                        System.currentTimeMillis() %>
+                                                                </p>
+                                                                <p><strong>Ngày:</strong>
+                                                                    <%= new java.text.SimpleDateFormat("dd/MM/yyyyHH:mm").format(new java.util.Date()) %>
+                                                                </p>
+                                                                <p><strong>Khách hàng:</strong>
+                                                                    <%= customerName !=null ? customerName : "Khách lẻ"
+                                                                        %>
+                                                                </p>
+                                                                <p><strong>Nhân viên:</strong>
+                                                                    <%= user.getUsername() %>
+                                                                </p>
+                                                            </div>
+                                                            <table
+                                                                class="bill-table w-full border border-blue-500 rounded mb-4">
+                                                                <tr class="bg-blue-50">
+                                                                    <th>Thuốc</th>
+                                                                    <th>SL</th>
+                                                                    <th>Đơn giá</th>
+                                                                    <th>Thành tiền</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= request.getParameter("medicine_name") %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= request.getParameter("quantity") %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= String.format("%,d",
+                                                                            Integer.parseInt(request.getParameter("price")))
+                                                                            %> VNĐ
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= String.format("%,d", totalAmount !=null ?
+                                                                            totalAmount : 0) %> VNĐ
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <div class="bill-footer text-center mt-4">
+                                                                <p class="font-bold text-blue-900">Tổng tiền: <%=
+                                                                        String.format("%,d", totalAmount !=null ?
+                                                                        totalAmount : 0) %> VNĐ</p>
+                                                                <p class="text-sm text-blue-700">Cảm ơn quý khách!</p>
+                                                            </div>
+                                                            <div class="print-buttons no-print mt-4">
+                                                                <button type="button"
+                                                                    class="print-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+                                                                    onclick="window.print()">🖨️ In hóa đơn</button>
+                                                                <button type="button"
+                                                                    class="print-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+                                                                    onclick="window.location.reload()">🔄 Bán hàng
+                                                                    mới</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
-
+                                                    <div style="margin-top: 30px; text-align: center;">
+                                                        <a href="staff_tongquan.jsp"
+                                                            style="color: #2563eb; text-decoration: none;">←
+                                                            Quay lại trang chủ</a>
+                                                    </div>
                                                     <% if (success !=null) { %>
                                                         <script>
                                                             setTimeout(function () {
@@ -337,6 +458,28 @@
                                                             }, 3000);
                                                         </script>
                                                         <% } %>
+
+                                                            <!-- Thêm script để lấy tên thuốc -->
+                                                            <script>
+                                                                // Hiện hóa đơn khi submit form, chỉ hiện alert 1 lần
+                                                                function showBill(event) {
+                                                                    event.preventDefault();
+                                                                    document.getElementById('billSection').classList.add('show');
+                                                                    document.getElementById('alertSuccess').classList.remove('hidden');
+                                                                    setTimeout(function () {
+                                                                        document.getElementById('alertSuccess').classList.add('hidden');
+                                                                    }, 2000);
+                                                                    document.getElementById('billSection').scrollIntoView({ behavior: 'smooth' });
+                                                                }
+                                                                // Cập nhật tên thuốc khi chọn
+                                                                document.querySelector('select[name="medicine_id"]').addEventListener('change', function () {
+                                                                    var selectedOption = this.options[this.selectedIndex];
+                                                                    var medicineName = selectedOption.text.split('-')[0].trim();
+                                                                    document.querySelector('input[name="medicine_name"]').value = medicineName;
+                                                                });
+                                                            </script>
                                                 </body>
 
-                                                </html>
+                                                </html
+                                                
+                                                >

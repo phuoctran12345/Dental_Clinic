@@ -24,11 +24,13 @@ CREATE TABLE [dbo].[Appointment] (
     [doctor_name]             NVARCHAR (50)  NULL,
     [previous_appointment_id] INT            NULL, --  khác 0 ->  tái khám ||  0 -> k  tái khám  || mỗi lần tái khám là tăng lên 1 
     [booked_by_user_id]       INT            NULL, -- Book lịch khám bởi  người thân (user_id )
+    [relative_id]             INT            NULL,
     PRIMARY KEY CLUSTERED ([appointment_id] ASC),
     FOREIGN KEY ([doctor_id]) REFERENCES [dbo].[Doctors] ([doctor_id]),
     FOREIGN KEY ([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
     FOREIGN KEY ([previous_appointment_id]) REFERENCES [dbo].[Appointment] ([appointment_id]),
-    FOREIGN KEY ([slot_id]) REFERENCES [dbo].[TimeSlot] ([slot_id])
+    FOREIGN KEY ([slot_id]) REFERENCES [dbo].[TimeSlot] ([slot_id]),
+    FOREIGN KEY ([relative_id]) REFERENCES [dbo].[Relatives]([relative_id])
 );
 CREATE TABLE [dbo].[Bills] (
     [bill_id]                  NVARCHAR (50)   NOT NULL,
@@ -582,3 +584,36 @@ values ( /* password_hash */ N'12345' ,/* email */ N'manager@gmail.com' ,/* role
 -- Thêm dữ liệu mẫu cho bảng Staff
 INSERT INTO Staff ([user_id], [full_name], [phone], [address], [date_of_birth], [gender], [position], [employment_type], [created_at], [updated_at], [status], [hire_date], [salary], [manager_id], [department], [work_schedule], [notes])
 VALUES (2013, N'Nguyễn Văn A', '0901234567', N'123 Đường A, Q1', '1990-01-01', N'male', N'Lễ tân', N'fulltime', GETDATE(), NULL, N'active', '2020-01-01', 8000000, NULL, N'Quản trị', N'full_day', N'Nhân viên gắn bó');
+
+-- Thêm bảng lưu ảnh khuôn mặt và face encoding từ Google Vision API
+CREATE TABLE [dbo].[UserFaceImages] (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    face_image NVARCHAR(MAX) NOT NULL, -- Base64 của ảnh khuôn mặt
+    face_encoding NVARCHAR(MAX) NOT NULL, -- Vector đặc trưng khuôn mặt từ Google Vision
+    confidence_score FLOAT DEFAULT(0), -- Điểm tin cậy khi đăng ký
+    registered_at DATETIME DEFAULT (getdate()),
+    is_active BIT DEFAULT(1), -- Cho phép vô hiệu hóa ảnh cũ
+    FOREIGN KEY (user_id) REFERENCES [dbo].[users](user_id)
+);
+
+-- Index để tìm kiếm nhanh
+CREATE NONCLUSTERED INDEX [IX_UserFaceImages_UserId]
+    ON [dbo].[UserFaceImages]([user_id] ASC);
+
+CREATE NONCLUSTERED INDEX [IX_UserFaceImages_Active]
+    ON [dbo].[UserFaceImages]([is_active] ASC);
+
+-- Bảng lưu thông tin người thân
+CREATE TABLE [dbo].[Relatives] (
+    [relative_id]    INT            IDENTITY (1, 1) NOT NULL,
+    [user_id]        INT            NOT NULL, -- user_id của người đặt (PATIENT)
+    [full_name]      NVARCHAR (255) NOT NULL,
+    [phone]          NVARCHAR (20)  NULL,
+    [date_of_birth]  DATE           NULL,
+    [gender]         NVARCHAR (10)  NULL,
+    [relationship]   NVARCHAR (50)  NULL, -- Quan hệ: Cha, Mẹ, Con, Vợ/Chồng, ...
+    [created_at]     DATETIME       DEFAULT (getdate()) NULL,
+    PRIMARY KEY CLUSTERED ([relative_id] ASC),
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[users] ([user_id])
+);

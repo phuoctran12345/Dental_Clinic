@@ -187,9 +187,9 @@
 
                             <div style="margin-top: 20px">
                                 <a class="google-btn w-100 text-decoration-none"
-                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/TestFull/login-google&response_type=code&client_id=20308864160-adugjk9b6q5m259igej77ho5lr1lffrq.apps.googleusercontent.com&approval_prompt=force">
+                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/TestFull/LoginGG/LoginGoogleHandler&response_type=code&client_id=560611814939-bfr1rtiahhq41h0d6fd3lcg876lc3ve.apps.googleusercontent.com&approval_prompt=force">
                                     <img src="https://www.google.com/favicon.ico" alt="Google">
-                                    Login With Google
+                                    Sign in with Google
                                 </a>
                             </div>
 

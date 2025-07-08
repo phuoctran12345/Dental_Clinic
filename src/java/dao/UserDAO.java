@@ -313,13 +313,24 @@ public class UserDAO {
      * Static wrapper for getUserByEmail - Servlet compatibility
      */
     public static User getUserByEmail(String email) {
-        try {
-            UserDAO dao = new UserDAO();
-            return dao.getUserByEmailInternal(email);
-        } catch (SQLException e) {
+        User user = null;
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = "SELECT * FROM users WHERE email = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setEmail(rs.getString("email"));
+                user.setRole(rs.getString("role"));
+                user.setAvatar(rs.getString("avatar"));
+                // ... set các trường khác nếu cần
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        return null;
-    }
+        }
+        return user;
     }
     
     /**
@@ -389,6 +400,7 @@ public class UserDAO {
                 if (rs.next()) {
                     Patients patient = new Patients();
                     // Fix: Sử dụng user_id cho setId
+                    patient.setPatientId(rs.getInt("patient_id"));
                     patient.setId(rs.getInt("user_id"));
                     patient.setFullName(rs.getString("full_name"));
                     patient.setPhone(rs.getString("phone"));
@@ -618,5 +630,72 @@ public class UserDAO {
         }
         
         System.out.println("\n🏁 [TEST] Test completed!");
+    }
+
+    // Thêm user mới từ Google (password_hash NULL)
+    public static int addUserGoogle(String email, String name) {
+        int userId = -1;
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = "INSERT INTO users (email, password_hash, role, avatar) VALUES (?, NULL, ?, NULL)";
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, email);
+            ps.setString(2, "PATIENT");
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                userId = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+    
+    public static boolean updateEmail(int userId, String email) {
+        String sql = "UPDATE Users SET email = ? WHERE user_id = ?";
+        try (Connection conn = DBContext.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setInt(2, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Cập nhật email và mật khẩu cho user (static, dùng cho servlet)
+     */
+    public static boolean updateUserAccount(int userId, String email, String password) {
+        if (email == null || email.trim().isEmpty()) return false;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBContext.getConnection();
+            if (password == null || password.trim().isEmpty()) {
+                // Chỉ update email
+                String sql = "UPDATE Users SET email = ? WHERE user_id = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, email);
+                ps.setInt(2, userId);
+            } else {
+                // Update cả email và password
+                String sql = "UPDATE Users SET email = ?, password_hash = ? WHERE user_id = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, email);
+                ps.setString(2, password); // Lưu password gốc, không hash
+                ps.setInt(3, userId);
+            }
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (conn != null) conn.close(); } catch (Exception ignored) {}
+        }
     }
 } 
