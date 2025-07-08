@@ -35,6 +35,10 @@
 - 🔎 **Kiểm tra trùng số điện thoại/ngày sinh** để tránh tạo nhiều bản ghi cho cùng một người.
 - 📜 **Có thể bổ sung chức năng xem lại lịch sử đặt lịch cho người thân.**
 
+## Báo cáo chức năng cập nhật hồ sơ Staff/User
+
+- Xem chi tiết các file, class, hàm liên quan đến chức năng cập nhật hồ sơ (profile) staff/user tại file: **PHUOC_MergeUserProfileCTung-StaffProfile_Report.md** trên nhánh `PHUOC/MergeUserProfileCTung-StaffProfile`.
+
 ---
 > **Tóm lại:**
 > - 🖥️ Giao diện: `user_datlich.jsp` (**1 file cho cả bản thân và người thân, dùng tab để chuyển**).
