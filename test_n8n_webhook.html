@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test N8N Webhook</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>🧪 Test N8N Webhook</h2>
+
+        <button onclick="testWebhook()">📤 Gửi Test Email</button>
+
+        <div id="result" class="result" style="display:none;"></div>
+
+        <h3>📋 Sample Data sẽ gửi:</h3>
+        <pre id="sampleData"></pre>
+    </div>
+
+    <script>
+        // Sample data sẽ gửi
+        const sampleData = {
+            "type": "payment_success",
+            "to": "phuocthde180577@fpt.edu.vn",
+            "userName": "Nguyễn Văn Test",
+            "userPhone": "0936929382",
+            "doctorEmail": "doctor@test.com",
+            "doctorName": "BS. Test Doctor",
+            "appointmentDate": "2025-07-10",
+            "appointmentTime": "14:00 - 14:30",
+            "serviceName": "Khám tổng quát",
+            "billId": "BILL_TEST123",
+            "orderId": "ORDER_TEST123",
+            "billAmount": 500000,
+            "formattedAmount": "500.000 ₫",
+            "clinicName": "Phòng khám Test",
+            "clinicAddress": "123 Test Street",
+            "clinicPhone": "028-1234-5678",
+            "timestamp": new Date().toISOString()
+        };
+
+        // Hiển thị sample data
+        document.getElementById('sampleData').textContent = JSON.stringify(sampleData, null, 2);
+
+        async function testWebhook() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Đang gửi test...';
+
+            try {
+                const response = await fetch('https://kinggg123.app.n8n.cloud/webhook/send-appointment-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sampleData)
+                });
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <strong style="color: green;">✅ THÀNH CÔNG!</strong><br>
+                        Response: ${response.status}<br>
+                        📧 Email test đã được gửi tới: ${sampleData.to}<br>
+                        🕐 Thời gian: ${new Date().toLocaleTimeString()}
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong style="color: red;">❌ LỖI!</strong><br>
+                        Status: ${response.status}<br>
+                        Error: ${await response.text()}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <strong style="color: red;">❌ NETWORK ERROR!</strong><br>
+                    ${error.message}
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>

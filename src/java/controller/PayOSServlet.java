@@ -346,7 +346,7 @@ public class PayOSServlet extends HttpServlet {
 
                         //=================================================================================================================================================
                         // N8N API -gửi thông báo cho người thân
-                        // Gửi thông báo qua n8n
+                        // 📧 GỬI THÔNG BÁO THANH TOÁN THÀNH CÔNG QUA N8N
                         try {
                             // Lấy thông tin bác sĩ
                             String doctorEmail = DoctorDAO.getDoctorEmailByDoctorId(activeReservation.getDoctorId());
@@ -356,25 +356,48 @@ public class PayOSServlet extends HttpServlet {
                             TimeSlot timeSlot = new TimeSlotDAO().getTimeSlotById(activeReservation.getSlotId());
                             String appointmentTime = timeSlot.getStartTime() + " - " + timeSlot.getEndTime();
 
-                            // Lấy email user
+                            // Lấy thông tin user đầy đủ
                             User user = (User) session.getAttribute("user");
                             String userEmail = user.getEmail();
+                            
+                            // Lấy thông tin patient để có tên và phone
+                            PatientDAO patientDAO = new PatientDAO();
+                            Patients patient = patientDAO.getPatientByUserId(user.getId());
+                            String userName = patient != null ? patient.getFullName() : user.getUsername();
+                            String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
 
                             // Lấy tên dịch vụ
                             Service service = (Service) session.getAttribute("serviceInfo");
                             String serviceName = service != null ? service.getServiceName() : "Khám bệnh";
 
-                            // Gửi thông báo
-                            N8nWebhookService.sendAppointmentToN8n(
+                            // Lấy thông tin bill (sử dụng bill đã có sẵn)
+                            double billAmount = currentBill != null ? currentBill.getAmount().doubleValue() : 0.0;
+                            String billId = currentBill != null ? currentBill.getBillId() : "N/A";
+                            String orderId = currentBill != null ? currentBill.getOrderId() : "N/A";
+
+                            // 🎯 GỬI EMAIL THANH TOÁN THÀNH CÔNG với đầy đủ thông tin
+                            N8nWebhookService.sendPaymentSuccessToN8n(
                                 userEmail,
+                                userName,
+                                userPhone,
                                 doctorEmail,
+                                doctorName,
                                 activeReservation.getWorkDate().toString(),
                                 appointmentTime,
-                                doctorName,
-                                serviceName
+                                serviceName,
+                                billId,
+                                orderId,
+                                billAmount,
+                                "Phòng khám Nha khoa DentalClinic",
+                                "FPT University Đà Nẵng",
+                                "028-3838-9999"
                             );
 
-                            System.out.println("📧 ĐÃ GỬI THÔNG BÁO EMAIL QUA N8N");
+                            System.out.println("📧 ĐÃ GỬI EMAIL THANH TOÁN THÀNH CÔNG QUA N8N");
+                            System.out.println("👤 Khách hàng: " + userName + " (" + userEmail + ")");
+                            System.out.println("💰 Số tiền: " + String.format("%,.0f", billAmount) + " VNĐ");
+                            System.out.println("📄 Hóa đơn: " + billId);
+                            
                         } catch (Exception e) {
                             System.err.println("❌ LỖI GỬI THÔNG BÁO N8N: " + e.getMessage());
                             e.printStackTrace();
@@ -711,19 +734,39 @@ public class PayOSServlet extends HttpServlet {
                         System.out.println("   Time: " + appointmentTime);
                         System.out.println("   Doctor: " + doctorName);
                         
-                        // Gửi email qua N8n
-                        N8nWebhookService.sendAppointmentToN8n(
+                        // 📧 GỬI EMAIL THANH TOÁN THẬT QUA N8N (AUTO-DETECTION)
+                        UserDAO autoUserDAO = new UserDAO();
+                        User autoUser = autoUserDAO.getUserById(bill.getUserId());
+                        
+                        // Lấy thông tin patient đầy đủ
+                        PatientDAO patientDAO = new PatientDAO();
+                        Patients patient = patientDAO.getPatientByUserId(bill.getUserId());
+                        String userName = patient != null ? patient.getFullName() : autoUser.getUsername();
+                        String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
+                        
+                        // Gửi email thanh toán thành công với đầy đủ thông tin
+                        N8nWebhookService.sendPaymentSuccessToN8n(
                             userEmail,
+                            userName,
+                            userPhone,
                             doctorEmail,
+                            doctorName,
                             appointmentDate,
                             appointmentTime,
-                            doctorName,
-                            serviceName
+                            serviceName,
+                            bill.getBillId(),
+                            bill.getOrderId(),
+                            amount,
+                            "Phòng khám Nha khoa DentalClinic",
+                            "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
+                            "028-3838-9999"
                         );
                         
-                        System.out.println("📧 ĐÃ GỬI EMAIL THÔNG BÁO THANH TOÁN THẬT QUA N8N");
-                        System.out.println("📩 Gửi tới: " + userEmail);
+                        System.out.println("📧 ĐÃ GỬI EMAIL THANH TOÁN THẬT QUA N8N (AUTO-DETECTED)");
+                        System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
                         System.out.println("👨‍⚕️ Bác sĩ: " + doctorName);
+                        System.out.println("💰 Số tiền: " + String.format("%,.0f", (double)amount) + " VNĐ");
+                        System.out.println("📄 Hóa đơn: " + bill.getBillId());
                         
                     } catch (Exception emailError) {
                         System.err.println("❌ LỖI GỬI EMAIL THANH TOÁN THẬT: " + emailError.getMessage());
@@ -1205,20 +1248,36 @@ public class PayOSServlet extends HttpServlet {
                     System.out.println("   Time: " + appointmentTime);
                     System.out.println("   Doctor: " + doctorName);
                     
-                    // Gửi email qua N8n
-                    N8nWebhookService.sendAppointmentToN8n(
+                    // 📧 GỬI EMAIL TEST THANH TOÁN QUA N8N với đầy đủ thông tin
+                    PatientDAO patientDAO = new PatientDAO();
+                    Patients patient = patientDAO.getPatientByUserId(bill.getUserId());
+                    String userName = patient != null ? patient.getFullName() : user.getUsername();
+                    String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
+                    
+                    // Gửi email thanh toán test với thông tin đầy đủ
+                    N8nWebhookService.sendPaymentSuccessToN8n(
                         userEmail,
+                        userName,
+                        userPhone,
                         doctorEmail,
+                        doctorName,
                         appointmentDate,
                         appointmentTime,
-                        doctorName,
-                        serviceName
+                        serviceName,
+                        bill.getBillId(),
+                        bill.getOrderId(),
+                        bill.getAmount().doubleValue(),
+                        "Phòng khám Nha khoa DentalClinic",
+                        "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
+                        "028-3838-9999"
                     );
                     
-                    System.out.println("📧 ĐÃ GỬI EMAIL TEST THÔNG QUA N8N");
-                    System.out.println("📩 Gửi tới: " + userEmail);
+                    System.out.println("📧 ĐÃ GỬI EMAIL TEST THANH TOÁN QUA N8N");
+                    System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
                     System.out.println("👨‍⚕️ Bác sĩ: " + doctorName);
                     System.out.println("🏥 Dịch vụ: " + serviceName);
+                    System.out.println("💰 Số tiền: " + String.format("%,.0f", bill.getAmount().doubleValue()) + " VNĐ");
+                    System.out.println("📄 Hóa đơn: " + bill.getBillId());
                     
                 } catch (Exception emailError) {
                     System.err.println("❌ LỖI GỬI EMAIL TEST: " + emailError.getMessage());

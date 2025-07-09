@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Thanh toán thành công - Xác nhận lịch khám</title>
+</head>
+
+<body style="font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
+
+    <div
+        style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden;">
+
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #00796b 0%, #004d40 100%); padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">🦷 PHÒNG KHÁM NHA KHOA HẠNH PHÚC
+            </h1>
+        </div>
+
+        <!-- Content -->
+        <div style="padding: 40px 30px;">
+
+            <!-- Success Message -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div
+                    style="background-color: #e8f5e9; border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 40px;">✅</span>
+                </div>
+                <h2 style="color: #00796b; font-size: 24px; margin: 0 0 10px 0;">🎉 Thanh Toán Thành Công!</h2>
+                <p style="color: #666; font-size: 16px; margin: 0;">Chúng tôi đã xác nhận lịch hẹn và thanh toán của bạn
+                </p>
+            </div>
+
+            <!-- Payment Summary -->
+            <div
+                style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: center; color: white;">
+                <h3 style="margin: 0 0 15px 0; font-size: 20px;">💰 THÔNG TIN THANH TOÁN</h3>
+                <p style="margin: 8px 0; font-size: 18px;"><strong>Số tiền:</strong> {{$json.formattedAmount}}</p>
+                <p style="margin: 8px 0; font-size: 14px;"><strong>Mã hóa đơn:</strong> {{$json.billId}}</p>
+                <p style="margin: 8px 0; font-size: 14px;"><strong>Mã đơn hàng:</strong> {{$json.orderId}}</p>
+            </div>
+
+            <!-- Appointment Details -->
+            <div
+                style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; margin-bottom: 30px; border-left: 5px solid #00796b;">
+                <h3 style="color: #00796b; margin: 0 0 20px 0; font-size: 18px;">📅 THÔNG TIN CUỘC HẸN</h3>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td
+                            style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333; width: 30%;">
+                            👤 Khách hàng:</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #555;">{{$json.userName}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">📞
+                            Số điện thoại:</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #555;">{{$json.userPhone}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">📅
+                            Ngày khám:</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #555;">
+                            {{$json.appointmentDate}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">⏰
+                            Giờ khám:</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #555;">
+                            {{$json.appointmentTime}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-weight: 600; color: #333;">
+                            👨‍⚕️ Bác sĩ:</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; color: #555;">{{$json.doctorName}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 0; font-weight: 600; color: #333;">🔧 Dịch vụ:</td>
+                        <td style="padding: 12px 0; color: #555;">{{$json.serviceName}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Important Notes -->
+            <div
+                style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                <h4 style="color: #1565c0; margin: 0 0 15px 0; font-size: 16px;">⚠️ Lưu ý quan trọng:</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #333;">
+                    <li style="margin-bottom: 8px;">Vui lòng đến trước giờ hẹn <strong>15 phút</strong></li>
+                    <li style="margin-bottom: 8px;">Mang theo <strong>giấy tờ tùy thân</strong></li>
+                    <li style="margin-bottom: 8px;">Thông báo trước nếu cần <strong>thay đổi lịch hẹn</strong></li>
+                    <li>Số điện thoại liên hệ: <strong>{{$json.clinicPhone}}</strong></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div
+                style="background-color: #00796b; color: #ffffff; border-radius: 12px; padding: 25px; text-align: center;">
+                <h4 style="margin: 0 0 15px 0; font-size: 18px;">📞 THÔNG TIN LIÊN HỆ</h4>
+                <p style="margin: 8px 0; font-size: 16px;">🏨 <strong>{{$json.clinicName}}</strong></p>
+                <p style="margin: 8px 0; font-size: 16px;">☎️ <strong>Hotline:</strong> {{$json.clinicPhone}}</p>
+                <p style="margin: 8px 0; font-size: 16px;">📧 <strong>Email:</strong> {{$json.doctorEmail}}</p>
+                <p style="margin: 8px 0; font-size: 16px;">📍 <strong>Địa chỉ:</strong> {{$json.clinicAddress}}</p>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 14px;">
+            <p style="margin: 0;">© 2025 {{$json.clinicName}}. All rights reserved.</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px;">Thời gian: {{$json.timestamp}}</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

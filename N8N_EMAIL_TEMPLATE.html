@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận thanh toán - Phòng khám Nha khoa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .content {
+            background: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .payment-info {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .appointment-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .info-row {
+            margin: 10px 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 THÔNG TIN THANH TOÁN</h1>
+        </div>
+
+        <div class="content">
+            <h2>Xin chào {{ $json.userName }},</h2>
+            <p>Cảm ơn bạn đã thanh toán thành công!</p>
+
+            <div class="payment-info">
+                <h3>💰 THÔNG TIN THANH TOÁN</h3>
+                <div class="info-row"><span class="label">Số tiền:</span> {{ $json.formattedAmount }}</div>
+                <div class="info-row"><span class="label">Mã hóa đơn:</span> {{ $json.billId }}</div>
+                <div class="info-row"><span class="label">Mã đơn hàng:</span> {{ $json.orderId }}</div>
+            </div>
+
+            <div class="appointment-info">
+                <h3>🏥 THÔNG TIN CUỘC HẸN</h3>
+                <div class="info-row">👤 <span class="label">Khách hàng:</span> {{ $json.userName }}</div>
+                <div class="info-row">📞 <span class="label">Số điện thoại:</span> {{ $json.userPhone }}</div>
+                <div class="info-row">📅 <span class="label">Ngày khám:</span> {{ $json.appointmentDate }}</div>
+                <div class="info-row">⏰ <span class="label">Giờ khám:</span> {{ $json.appointmentTime }}</div>
+                <div class="info-row">👨‍⚕️ <span class="label">Bác sĩ:</span> {{ $json.doctorName }}</div>
+                <div class="info-row">🏥 <span class="label">Dịch vụ:</span> {{ $json.serviceName }}</div>
+            </div>
+
+            <h3>📍 THÔNG TIN PHÒNG KHÁM</h3>
+            <div class="info-row">🏥 <span class="label">Tên phòng khám:</span> {{ $json.clinicName }}</div>
+            <div class="info-row">📍 <span class="label">Địa chỉ:</span> {{ $json.clinicAddress }}</div>
+            <div class="info-row">📞 <span class="label">Điện thoại:</span> {{ $json.clinicPhone }}</div>
+
+            <p style="margin-top: 30px;"><strong>Vui lòng đến đúng giờ hẹn. Xin cảm ơn!</strong></p>
+        </div>
+
+        <div class="footer">
+            <p>Email này được gửi tự động, vui lòng không reply.</p>
+            <p>© 2025 Phòng khám Nha khoa DentalClinic</p>
+        </div>
+    </div>
+</body>
+
+</html>

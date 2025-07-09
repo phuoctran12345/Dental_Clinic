@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>🔧 N8N Template Fix Test</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .success {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .error {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>🔧 N8N Template Syntax Fix</h2>
+
+        <div class="error">
+            <h4>❌ SYNTAX CŨ (KHÔNG HOẠT ĐỘNG):</h4>
+            <div class="code">
+                Xin chào {{ $node["Webhook"].json["userName"] }}!<br>
+                Bác sĩ: {{ $node["Webhook"].json["doctorName"] }}<br>
+                Ngày khám: {{ $node["Webhook"].json["appointmentDate"] }}<br>
+                Số tiền: {{ $node["Webhook"].json["formattedAmount"] }}
+            </div>
+        </div>
+
+        <div class="success">
+            <h4>✅ SYNTAX MỚI (ĐÚNG):</h4>
+            <div class="code">
+                Xin chào {{ $json.userName }}!<br>
+                Bác sĩ: {{ $json.doctorName }}<br>
+                Ngày khám: {{ $json.appointmentDate }}<br>
+                Số tiền: {{ $json.formattedAmount }}
+            </div>
+        </div>
+
+        <div class="warning">
+            <h4>🔄 CÁC BƯỚC FIX N8N:</h4>
+            <ol>
+                <li><strong>Mở N8N Workflow</strong> → kinggg123.app.n8n.cloud</li>
+                <li><strong>Chỉnh sửa HTML Node</strong> hoặc Gmail Node</li>
+                <li><strong>Thay ALL template syntax</strong> từ cũ sang mới</li>
+                <li><strong>Test workflow</strong> bằng cách gửi webhook</li>
+                <li><strong>Kiểm tra email</strong> → phải hiển thị data thật</li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <h4>📧 EMAIL TEMPLATE HOÀN CHỈNH:</h4>
+            <div class="code">
+                &lt;!DOCTYPE html&gt;<br>
+                &lt;html&gt;<br>
+                &lt;head&gt;<br>
+                &nbsp;&nbsp;&lt;meta charset="UTF-8"&gt;<br>
+                &nbsp;&nbsp;&lt;title&gt;Xác nhận thanh toán&lt;/title&gt;<br>
+                &lt;/head&gt;<br>
+                &lt;body&gt;<br>
+                &nbsp;&nbsp;&lt;h2&gt;🎉 Thanh toán thành công!&lt;/h2&gt;<br>
+                &nbsp;&nbsp;&lt;p&gt;Xin chào &lt;strong&gt;{{ $json.userName }}&lt;/strong&gt;,&lt;/p&gt;<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&lt;div style="background: #d4edda; padding: 15px; border-radius: 5px;"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;h3&gt;💰 THÔNG TIN THANH TOÁN&lt;/h3&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Số tiền:&lt;/strong&gt; {{ $json.formattedAmount
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Mã hóa đơn:&lt;/strong&gt; {{ $json.billId
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;SĐT:&lt;/strong&gt; {{ $json.userPhone }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&lt;div style="background: #e7f3ff; padding: 15px; border-radius: 5px;"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;h3&gt;📅 THÔNG TIN CUỘC HẸN&lt;/h3&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Bác sĩ:&lt;/strong&gt; {{ $json.doctorName
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Ngày khám:&lt;/strong&gt; {{ $json.appointmentDate
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Giờ khám:&lt;/strong&gt; {{ $json.appointmentTime
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Dịch vụ:&lt;/strong&gt; {{ $json.serviceName
+                }}&lt;/p&gt;<br>
+                &nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;<br>
+                &nbsp;&nbsp;&lt;p&gt;Cảm ơn bạn đã sử dụng dịch vụ!&lt;/p&gt;<br>
+                &lt;/body&gt;<br>
+                &lt;/html&gt;
+            </div>
+        </div>
+
+        <div class="warning">
+            <h4>🧪 TEST N8N:</h4>
+            <button onclick="testN8nWebhook()"
+                style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                🧪 Test N8N Webhook
+            </button>
+            <div id="testResult" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="error">
+            <h4>🚨 LƯU Ý:</h4>
+            <ul>
+                <li><strong>N8N phải dùng syntax mới:</strong> {{ $json.fieldName }}</li>
+                <li><strong>Kiểm tra HTML Node</strong> trong workflow</li>
+                <li><strong>Test bằng webhook thật</strong> từ Java backend</li>
+                <li><strong>Reset anti-spam</strong> nếu cần: <a href="/TestFull/reset_antispam.jsp?action=reset">Reset
+                        cache</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function testN8nWebhook() {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.innerHTML = '<div class="warning">🔄 Đang gửi test webhook...</div>';
+
+            // Test data giống như backend Java gửi
+            const testData = {
+                type: "payment_success",
+                to: "test@example.com",
+                userName: "PhuocTHDev TEST",
+                userPhone: "0123456789",
+                doctorEmail: "doctor@clinic.vn",
+                doctorName: "Bác sĩ Nguyễn Văn A",
+                appointmentDate: "2025-01-15",
+                appointmentTime: "09:00 - 10:00",
+                serviceName: "Bọc răng sứ",
+                billId: "BILL_TEST_123",
+                orderId: "ORDER_TEST_456",
+                billAmount: 2000000,
+                formattedAmount: "2.000.000 VNĐ",
+                clinicName: "Phòng khám Nha khoa",
+                clinicAddress: "123 Đường ABC, Quận 1, TP.HCM",
+                clinicPhone: "028-1234-5678",
+                timestamp: new Date().toISOString()
+            };
+
+            fetch('https://kinggg123.app.n8n.cloud/webhook/send-appointment-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(testData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = '<div class="success">✅ Test webhook gửi thành công! Kiểm tra email để xem template có render đúng không.</div>';
+                    } else {
+                        resultDiv.innerHTML = '<div class="error">❌ Test webhook thất bại: ' + response.status + '</div>';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<div class="error">❌ Lỗi: ' + error.message + '</div>';
+                });
+        }
+    </script>
+</body>
+
+</html>

@@ -196,17 +196,35 @@ public class CheckBillServlet extends HttpServlet {
                     System.out.println("   Time: " + appointmentTime);
                     System.out.println("   Doctor: " + doctorName);
                     
-                    // Gửi email qua N8n
-                    N8nWebhookService.sendAppointmentToN8n(
+                    // 📧 GỬI EMAIL THANH TOÁN THÀNH CÔNG QUA N8N (CheckBillServlet)
+                    String userName = user.getUsername() != null ? user.getUsername() : "Khách hàng";
+                    String userPhone = bill.getCustomerPhone() != null ? bill.getCustomerPhone() : "Chưa cập nhật";
+                    String currentBillId = bill.getBillId() != null ? bill.getBillId() : "N/A";
+                    String currentOrderId = bill.getOrderId() != null ? bill.getOrderId() : "N/A";
+                    double billAmount = bill.getAmount() != null ? bill.getAmount().doubleValue() : 0.0;
+                    
+                    // Gửi email thanh toán thành công với đầy đủ thông tin
+                    N8nWebhookService.sendPaymentSuccessToN8n(
                         userEmail,
+                        userName,
+                        userPhone,
                         doctorEmail,
+                        doctorName,
                         appointmentDate,
                         appointmentTime,
-                        doctorName,
-                        serviceName
+                        serviceName,
+                        currentBillId,
+                        currentOrderId,
+                        billAmount,
+                        "Phòng khám Nha khoa DentalClinic",
+                        "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
+                        "028-3838-9999"
                     );
                     
-                    System.out.println("📧 CHECKBILLSERVLET - ĐÃ GỬI EMAIL QUA N8N");
+                    System.out.println("📧 CHECKBILLSERVLET - ĐÃ GỬI EMAIL THANH TOÁN QUA N8N");
+                    System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
+                    System.out.println("💰 Số tiền: " + String.format("%,.0f", bill.getAmount().doubleValue()) + " VNĐ");
+                    System.out.println("📄 Hóa đơn: " + currentBillId);
                     
                 } catch (Exception emailError) {
                     System.err.println("❌ CHECKBILLSERVLET - LỖI GỬI EMAIL: " + emailError.getMessage());

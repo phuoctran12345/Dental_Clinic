@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🔍 N8N Debug Test</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .error {
+            background: #ffebee;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: #e8f5e8;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 N8N Webhook Debug</h1>
+
+    <button onclick="testSimple()">📤 Test Đơn Giản</button>
+    <button onclick="testFull()">📤 Test Đầy Đủ</button>
+    <button onclick="testMinimal()">📤 Test Tối Thiểu</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function testSimple() {
+            const data = {
+                "to": "phuocthde180577@fpt.edu.vn",
+                "userName": "TEST SIMPLE",
+                "billId": "BILL_SIMPLE123"
+            };
+            await sendTest("SIMPLE", data);
+        }
+
+        async function testFull() {
+            const data = {
+                "type": "payment_success",
+                "to": "phuocthde180577@fpt.edu.vn",
+                "userName": "FULL TEST USER",
+                "userPhone": "0123456789",
+                "doctorName": "BS. Full Test",
+                "appointmentDate": "2025-07-10",
+                "appointmentTime": "15:00 - 16:00",
+                "serviceName": "Full Test Service",
+                "billId": "BILL_FULL123",
+                "formattedAmount": "1.000.000 VND",
+                "clinicName": "Full Test Clinic",
+                "clinicAddress": "123 Full Test Street",
+                "clinicPhone": "028-9999-8888"
+            };
+            await sendTest("FULL", data);
+        }
+
+        async function testMinimal() {
+            const data = {
+                "to": "phuocthde180577@fpt.edu.vn",
+                "userName": "MINIMAL"
+            };
+            await sendTest("MINIMAL", data);
+        }
+
+        async function sendTest(testName, data) {
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.innerHTML = `<h3>🧪 ${testName} TEST - ${new Date().toLocaleTimeString()}</h3>`;
+
+            try {
+                const response = await fetch('https://kinggg123.app.n8n.cloud/webhook/send-appointment-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.text();
+
+                if (response.ok) {
+                    testDiv.innerHTML += `
+                        <div class="success">
+                            ✅ SUCCESS - Status: ${response.status}<br>
+                            📧 Email sent to: ${data.to}<br>
+                            📋 Data sent:<br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                            🔄 Response:<br>
+                            <pre>${result}</pre>
+                        </div>
+                    `;
+                } else {
+                    testDiv.innerHTML += `
+                        <div class="error">
+                            ❌ ERROR - Status: ${response.status}<br>
+                            <pre>${result}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                testDiv.innerHTML += `
+                    <div class="error">
+                        🚨 NETWORK ERROR:<br>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+
+            resultsDiv.appendChild(testDiv);
+        }
+    </script>
+</body>
+
+</html>
