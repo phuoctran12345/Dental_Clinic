@@ -20,6 +20,7 @@ public class User implements Serializable{
     private String role; // 'ADMIN', 'DOCTOR', 'PATIENT', 'STAFF'
     private Date createdAt;
     private String avatar;
+    private String phone; // Thêm thuộc tính phone
 
     public User(int aInt, String string, String string0, String string1, Timestamp timestamp) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -118,7 +119,11 @@ public class User implements Serializable{
     }
 
     public String getPhone() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     

@@ -632,6 +632,60 @@ public class AppointmentDAO {
     }
 
     /**
+     * Tạo reservation cho người thân với relative_id và booked_by_user_id
+     */
+    public static SlotReservation createReservationForRelative(int doctorId, LocalDate workDate, int slotId, int patientId, String reason, int relativeId, int bookedByUserId) {
+        try {
+            if (!isSlotAvailable(doctorId, workDate, slotId)) {
+                return null;
+            }
+
+            Connection conn = DBContext.getConnection();
+            String sql = """
+            INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason, relative_id, booked_by_user_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+            Timestamp expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
+            String reservationReason = String.format("RESERVATION|%s|%s",
+                    expiresAt.toString(),
+                    reason != null ? reason : "");
+
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            ps.setDate(3, java.sql.Date.valueOf(workDate));
+            ps.setInt(4, slotId);
+            ps.setString(5, STATUS_WAITING_PAYMENT);
+            ps.setString(6, reservationReason);
+            ps.setInt(7, relativeId);
+            ps.setInt(8, bookedByUserId);
+
+            int result = ps.executeUpdate();
+            SlotReservation reservation = null;
+            if (result > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    int appointmentId = rs.getInt(1);
+                    reservation = new SlotReservation(doctorId, workDate, slotId, patientId);
+                    reservation.setAppointmentId(appointmentId);
+                    reservation.setExpiresAt(expiresAt);
+                    reservation.setReservedAt(Timestamp.valueOf(LocalDateTime.now()));
+                    
+                    System.out.println("✅ TẠO RESERVATION CHO NGƯỜI THÂN: Appointment " + appointmentId 
+                        + " | RelativeId " + relativeId + " | BookedBy " + bookedByUserId);
+                }
+            }
+            conn.close();
+            return reservation;
+        } catch (Exception e) {
+            System.err.println("❌ LỖI TẠO RESERVATION CHO NGƯỜI THÂN: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Tạo appointment cho người thân
      * @return appointment_id
      */
@@ -706,6 +760,41 @@ public class AppointmentDAO {
 
     public static boolean insertAppointmentBySlotId(int patientId, Integer doctorId, Integer slotId, LocalDate workDate, LocalTime startTime, String reason) {
         return insertAppointmentBySlotId(patientId, doctorId.intValue(), slotId.intValue(), workDate, startTime, reason);
+    }
+
+    /**
+     * Insert appointment cho người thân với relative_id
+     */
+    public static boolean insertAppointmentBySlotIdForRelative(int patientId, int doctorId, int slotId, LocalDate workDate, LocalTime startTime, String reason, int relativeId, int bookedByUserId) {
+        try {
+            Connection conn = DBContext.getConnection();
+            String sql = """
+                INSERT INTO Appointment (patient_id, doctor_id, slot_id, work_date, reason, status, relative_id, booked_by_user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, patientId);
+            ps.setInt(2, doctorId);
+            ps.setInt(3, slotId);
+            ps.setDate(4, java.sql.Date.valueOf(workDate));
+            ps.setString(5, reason);
+            ps.setString(6, STATUS_BOOKED);
+            ps.setInt(7, relativeId);
+            ps.setInt(8, bookedByUserId);
+
+            int result = ps.executeUpdate();
+            conn.close();
+
+            System.out.println("✅ TẠO LỊCH HẸN CHO NGƯỜI THÂN THÀNH CÔNG: Patient " + patientId
+                    + " | Doctor " + doctorId + " | Slot " + slotId + " | Date " + workDate 
+                    + " | RelativeId " + relativeId + " | BookedBy " + bookedByUserId);
+            return result > 0;
+        } catch (Exception e) {
+            System.err.println("❌ LỖI TẠO LỊCH HẸN CHO NGƯỜI THÂN: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean completeReservation(int appointmentId) {

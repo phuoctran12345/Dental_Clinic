@@ -359,7 +359,7 @@
                                                                                             var="service">
                                                                                             <div class="col-md-6 mb-2">
                                                                                                 <div class="service-item"
-                                                                                                    onclick="selectService(this, ${service.serviceId}, '${service.serviceName}', ${service.price}, 'self_${doctor.doctor_id}')">
+                                                                                                    onclick="selectService(this, ${service.serviceId}, '${fn:escapeXml(service.serviceName)}', ${service.price}, 'self_${doctor.doctor_id}')">
                                                                                                     <h6
                                                                                                         style="color: #00796b; margin-bottom: 6px;">
                                                                                                         ${service.serviceName}
@@ -557,7 +557,7 @@
                                                                                             var="service">
                                                                                             <div class="col-md-6 mb-2">
                                                                                                 <div class="service-item"
-                                                                                                    onclick="selectService(this, ${service.serviceId}, '${service.serviceName}', ${service.price}, 'relative_${doctor.doctor_id}')">
+                                                                                                    onclick="selectService(this, ${service.serviceId}, '${fn:escapeXml(service.serviceName)}', ${service.price}, 'relative_${doctor.doctor_id}')">
                                                                                                     <h6
                                                                                                         style="color: #00796b; margin-bottom: 6px;">
                                                                                                         ${service.serviceName}
@@ -687,11 +687,11 @@
                                             minDate: "today",
                                             locale: {
                                                 firstDayOfWeek: 1
-                                        },
+                                                },
                                             onChange: function (selectedDates, dateStr) {
                                                 updateSchedules(dateStr, ${ doctor.doctor_id }, 'self');
-                                        }
-                                    });
+                                                }
+                                            });
 
                                             // Tab relative
                                             flatpickr("#work_date_picker_relative_${doctor.doctor_id}", {
@@ -700,11 +700,11 @@
                                             minDate: "today",
                                             locale: {
                                                 firstDayOfWeek: 1
-                                        },
+                                                },
                                             onChange: function (selectedDates, dateStr) {
                                                 updateSchedules(dateStr, ${ doctor.doctor_id }, 'relative');
-                                        }
-                                    });
+                                                }
+                                            });
                                         </c:forEach>
                                     });
 

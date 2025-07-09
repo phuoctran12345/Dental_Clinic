@@ -52,4 +52,24 @@ public class RelativesDAO {
         }
         return relativeId;
     }
+
+    // Cập nhật thông tin người thân
+    public static boolean updateRelative(int relativeId, String fullName, String phone, String dob, String gender, String relationship) {
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = "UPDATE Relatives SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, relationship = ? WHERE relative_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, fullName);
+                ps.setString(2, phone);
+                ps.setDate(3, dob != null && !dob.isEmpty() ? Date.valueOf(dob) : null);
+                ps.setString(4, gender);
+                ps.setString(5, relationship);
+                ps.setInt(6, relativeId);
+                int affectedRows = ps.executeUpdate();
+                return affectedRows > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

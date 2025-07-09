@@ -42,6 +42,7 @@ import model.TimeSlot;
 import utils.N8nWebhookService;
 import dao.UserDAO;
 import java.time.LocalDate;
+import dao.RelativesDAO;
 
 /**
  * Servlet xử lý thanh toán PayOS với QR code + tích hợp đặt lịch appointment
@@ -169,8 +170,111 @@ public class PayOSServlet extends HttpServlet {
                     // RESERVATION: Tạm khóa slot trong 5 phút để thanh toán
                     SlotReservation reservation = null;
                     try {
-                        reservation = AppointmentDAO.createReservation(
-                            doctorId, appointmentDate, slotId, patient.getPatientId(), reason);
+                        // Kiểm tra có phải đặt lịch cho người thân không
+                        String bookingFor = request.getParameter("bookingFor");
+                        String relativeIdStr = request.getParameter("relativeId");
+                        
+                        if ("relative".equals(bookingFor) && relativeIdStr != null && !relativeIdStr.isEmpty()) {
+                            // Lấy thông tin người thân từ URL parameters (được truyền từ BookingPageServlet)
+                            String relativeName = request.getParameter("relativeName");
+                            String relativePhone = request.getParameter("relativePhone");
+                            String relativeDob = request.getParameter("relativeDob");
+                            String relativeGender = request.getParameter("relativeGender");
+                            String relativeRelationship = request.getParameter("relativeRelationship");
+                            
+                            System.out.println("🔍 === THANH TOÁN CHO NGƯỜI THÂN - NHẬN THÔNG TIN ===");
+                            System.out.println("   🆔 RelativeId từ URL: " + relativeIdStr);
+                            System.out.println("   👤 Tên: " + relativeName);
+                            System.out.println("   📞 SĐT: " + relativePhone);
+                            System.out.println("   🎂 Ngày sinh: " + relativeDob);
+                            System.out.println("   ⚥ Giới tính: " + relativeGender);
+                            System.out.println("   👥 Quan hệ: " + relativeRelationship);
+                            System.out.println("   👤 User đặt lịch: " + user.getId() + " (" + user.getEmail() + ")");
+                            
+                            try {
+                                int relativeId = Integer.parseInt(relativeIdStr);
+                                
+                                // KIỂM TRA: Có thông tin từ form không?
+                                boolean hasFormData = relativeName != null && !relativeName.trim().isEmpty() &&
+                                                    relativePhone != null && !relativePhone.trim().isEmpty();
+                                
+                                System.out.println("   📝 Có dữ liệu form: " + hasFormData);
+                                
+                                if (hasFormData) {
+                                    // TẠO MỚI hoặc CẬP NHẬT thông tin người thân
+                                    System.out.println("🔄 ĐANG XỬ LÝ THÔNG TIN NGƯỜI THÂN...");
+                                    
+                                    // Thử update trước (nếu đã tồn tại)
+                                    boolean updated = RelativesDAO.updateRelative(
+                                        relativeId,
+                                        relativeName.trim(),
+                                        relativePhone.trim(),
+                                        relativeDob,
+                                        relativeGender,
+                                        relativeRelationship
+                                    );
+                                    
+                                    if (updated) {
+                                        System.out.println("✅ CẬP NHẬT THÔNG TIN NGƯỜI THÂN THÀNH CÔNG!");
+                                        System.out.println("   🆔 ID: " + relativeId);
+                                        System.out.println("   👤 Tên mới: " + relativeName.trim());
+                                        System.out.println("   📞 SĐT mới: " + relativePhone.trim());
+                                    } else {
+                                        System.out.println("⚠️ KHÔNG THỂ UPDATE - THỬ TẠO MỚI...");
+                                        
+                                        // Tạo mới nếu update không thành công
+                                        RelativesDAO relativesDAO = new RelativesDAO();
+                                        int newRelativeId = relativesDAO.getOrCreateRelative(
+                                            user.getId(),
+                                            relativeName.trim(),
+                                            relativePhone.trim(),
+                                            relativeDob,
+                                            relativeGender,
+                                            relativeRelationship
+                                        );
+                                        
+                                        if (newRelativeId > 0) {
+                                            relativeId = newRelativeId; // Sử dụng ID mới
+                                            System.out.println("✅ TẠO MỚI NGƯỜI THÂN THÀNH CÔNG!");
+                                            System.out.println("   🆔 ID mới: " + newRelativeId);
+                                            System.out.println("   👤 Tên: " + relativeName.trim());
+                                        } else {
+                                            System.err.println("❌ THẤT BẠI: Không thể tạo mới người thân!");
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("⚠️ THIẾU THÔNG TIN FORM - Sử dụng relative_id có sẵn: " + relativeId);
+                                }
+                                
+                                // Tạo reservation cho người thân (CHỈ reservation, chưa tạo appointment)
+                                System.out.println("🔒 ĐANG TẠO RESERVATION CHO NGƯỜI THÂN...");
+                                reservation = AppointmentDAO.createReservationForRelative(
+                                    doctorId, appointmentDate, slotId, patient.getPatientId(), reason, relativeId, user.getId());
+                                
+                                if (reservation != null) {
+                                    System.out.println("✅ TẠO RESERVATION THÀNH CÔNG!");
+                                    System.out.println("   🏥 Appointment ID: " + reservation.getAppointmentId());
+                                    System.out.println("   👤 Patient ID: " + patient.getPatientId());
+                                    System.out.println("   👥 Relative ID: " + relativeId);
+                                    System.out.println("   🎫 Booked by User ID: " + user.getId());
+                                } else {
+                                    System.err.println("❌ THẤT BẠI: Không thể tạo reservation!");
+                                }
+                                    
+                            } catch (NumberFormatException e) {
+                                System.err.println("❌ LỖI PARSE RELATIVE ID: " + relativeIdStr);
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                System.err.println("❌ LỖI XỬ LÝ NGƯỜI THÂN: " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                            
+                            System.out.println("========================================");
+                        } else {
+                            // Tạo reservation bình thường
+                            reservation = AppointmentDAO.createReservation(
+                                doctorId, appointmentDate, slotId, patient.getPatientId(), reason);
+                        }
                     } catch (Exception e) {
                         System.err.println("ERROR creating slot reservation: " + e.getMessage());
                         e.printStackTrace();
@@ -368,7 +472,7 @@ public class PayOSServlet extends HttpServlet {
 
                             // Lấy tên dịch vụ
                             Service service = (Service) session.getAttribute("serviceInfo");
-                            String serviceName = service != null ? service.getServiceName() : "Khám bệnh";
+                            String serviceName = service != null ? service.getServiceName() : "Khám tổng quát";
 
                             // Lấy thông tin bill (sử dụng bill đã có sẵn)
                             double billAmount = currentBill != null ? currentBill.getAmount().doubleValue() : 0.0;
@@ -412,21 +516,133 @@ public class PayOSServlet extends HttpServlet {
             } else if (currentBill.getDoctorId() != null && currentBill.getAppointmentDate() != null) {
                 // Fallback: Tạo appointment trực tiếp nếu không có reservation
                 try {
+       
+                    User user = (User) session.getAttribute("user");
                     // Extract slot ID from notes
                     int slotId = extractSlotIdFromNotes(currentBill.getAppointmentNotes());
                     if (slotId > 0) {
-                        boolean directAppointment = AppointmentDAO.insertAppointmentBySlotId(
-                            slotId,
-                            currentBill.getPatientId(),
-                            currentBill.getDoctorId(),
-                            currentBill.getAppointmentDate().toLocalDate(),
-                            LocalTime.of(9, 0), // Default time, sẽ được override bởi slot
-                            currentBill.getAppointmentNotes()
-                        );
+                        // Kiểm tra có phải đặt lịch cho người thân không
+                        String bookingFor = request.getParameter("bookingFor");
+                        String relativeIdStr = request.getParameter("relativeId");
                         
-                        if (directAppointment) {
-                            appointmentCreated = true;
-                            System.out.println("🎯 TẠO LỊCH HẸN TRỰC TIẾP THÀNH CÔNG");
+                        if ("relative".equals(bookingFor) && relativeIdStr != null && !relativeIdStr.isEmpty()) {
+                            // Lấy thông tin người thân từ form
+                            String relativeName = request.getParameter("relativeName");
+                            String relativePhone = request.getParameter("relativePhone");
+                            String relativeDob = request.getParameter("relativeDob");
+                            String relativeGender = request.getParameter("relativeGender");
+                            String relativeRelationship = request.getParameter("relativeRelationship");
+                            
+                            System.out.println("🎯 === TẠO APPOINTMENT CHO NGƯỜI THÂN (FALLBACK) ===");
+                            System.out.println("   🆔 RelativeId: " + relativeIdStr);
+                            System.out.println("   👤 Tên từ form: " + relativeName);
+                            System.out.println("   📞 SĐT từ form: " + relativePhone);
+                            System.out.println("   🏥 Bill Patient ID: " + currentBill.getPatientId());
+                            System.out.println("   👨‍⚕️ Doctor ID: " + currentBill.getDoctorId());
+                            System.out.println("   🕐 Slot ID: " + slotId);
+                            
+                            try {
+                                int relativeId = Integer.parseInt(relativeIdStr);
+                                
+                                Integer userId = currentBill.getUserId();
+                                if (userId == null) {
+                                    System.err.println("❌ currentBill.getUserId() trả về null!");
+                                    // Thử lấy user từ session
+                                    user = (User) session.getAttribute("user");
+                                    if (user == null) {
+                                        System.err.println("❌ Không tìm thấy user trong session! Thoát.");
+                                        return;
+                                    }
+                                } else {
+                                    UserDAO userDAO = new UserDAO();
+                                    user = userDAO.getUserById(userId);
+                                    if (user == null) {
+                                        System.err.println("❌ Không tìm thấy user trong DB với userId: " + userId);
+                                        // Thử lấy user từ session
+                                        user = (User) session.getAttribute("user");
+                                        if (user == null) {
+                                            System.err.println("❌ Không tìm thấy user trong session! Thoát.");
+                                            return;
+                                        }
+                                    }
+                                }
+                                System.out.println("   👤 User đặt lịch: " + user.getId() + " (" + user.getEmail() + ")");
+                                if (user == null) {
+                                    System.err.println("❌ KHÔNG TÌM THẤY USER: " + currentBill.getUserId());
+                                    // Thử lấy từ session làm fallback
+                                    user = (User) session.getAttribute("user");
+                                    if (user == null) {
+                                        System.err.println("❌ KHÔNG TÌM THẤY USER TRONG SESSION - Thoát!");
+                                        return;
+                                    }
+                                }
+                                
+                                System.out.println("   👤 User đặt lịch: " + user.getId() + " (" + user.getEmail() + ")");
+                                
+                                // Update thông tin người thân trước khi tạo appointment
+                                if (relativeName != null && !relativeName.trim().isEmpty()) {
+                                    System.out.println("🔄 ĐANG UPDATE THÔNG TIN NGƯỜI THÂN...");
+                                    boolean updated = RelativesDAO.updateRelative(
+                                        relativeId,
+                                        relativeName.trim(),
+                                        relativePhone != null ? relativePhone.trim() : "",
+                                        relativeDob,
+                                        relativeGender,
+                                        relativeRelationship
+                                    );
+                                    System.out.println("   📝 Update result: " + updated);
+                                } else {
+                                    System.out.println("⚠️ KHÔNG CÓ THÔNG TIN TỪ FORM - Skip update");
+                                }
+                                
+                                // Tạo appointment cho người thân
+                                System.out.println("🏥 ĐANG TẠO APPOINTMENT CHO NGƯỜI THÂN...");
+                                boolean relativeAppointment = AppointmentDAO.insertAppointmentBySlotIdForRelative(
+                                    currentBill.getPatientId(),
+                                    currentBill.getDoctorId(),
+                                    slotId,
+                                    currentBill.getAppointmentDate().toLocalDate(),
+                                    LocalTime.of(9, 0),
+                                    currentBill.getAppointmentNotes(),
+                                    relativeId,
+                                    user.getId()
+                                );
+                                
+                                if (relativeAppointment) {
+                                    appointmentCreated = true;
+                                    System.out.println("✅ TẠO APPOINTMENT CHO NGƯỜI THÂN THÀNH CÔNG!");
+                                    System.out.println("   🆔 Relative ID: " + relativeId);
+                                    System.out.println("   👤 Patient ID: " + currentBill.getPatientId());
+                                    System.out.println("   👨‍⚕️ Doctor ID: " + currentBill.getDoctorId());
+                                    System.out.println("   📅 Ngày khám: " + currentBill.getAppointmentDate().toLocalDate());
+                                    System.out.println("   🎫 Booked by User ID: " + user.getId());
+                                } else {
+                                    System.err.println("❌ THẤT BẠI: Không thể tạo appointment cho người thân!");
+                                }
+                            } catch (NumberFormatException e) {
+                                System.err.println("❌ LỖI PARSE RELATIVE ID: " + relativeIdStr);
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                System.err.println("❌ LỖI TẠO APPOINTMENT CHO NGƯỜI THÂN: " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                            
+                            System.out.println("============================================");
+                        } else {
+                            // Đặt lịch bình thường cho chính bệnh nhân
+                            boolean directAppointment = AppointmentDAO.insertAppointmentBySlotId(
+                                slotId,
+                                currentBill.getPatientId(),
+                                currentBill.getDoctorId(),
+                                currentBill.getAppointmentDate().toLocalDate(),
+                                LocalTime.of(9, 0), // Default time, sẽ được override bởi slot
+                                currentBill.getAppointmentNotes()
+                            );
+                            
+                            if (directAppointment) {
+                                appointmentCreated = true;
+                                System.out.println("🎯 TẠO LỊCH HẸN TRỰC TIẾP THÀNH CÔNG");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -1198,20 +1414,67 @@ public class PayOSServlet extends HttpServlet {
                 boolean appointmentCreated = false;
                 if (bill.getDoctorId() != null && bill.getAppointmentDate() != null) {
                     try {
-                        // Extract slot ID from notes
+                        // Extract slot ID from notes  
                         int slotId = extractSlotIdFromNotes(bill.getAppointmentNotes());
                         if (slotId > 0) {
-                            boolean directAppointment = AppointmentDAO.insertAppointmentBySlotId(
-                                slotId,
-                                bill.getPatientId(),
-                                bill.getDoctorId(),
-                                bill.getAppointmentDate().toLocalDate(),
-                                LocalTime.of(9, 0),
-                                bill.getAppointmentNotes()
-                            );
+                            // Kiểm tra có phải đặt lịch cho người thân không
+                            String bookingFor = request.getParameter("bookingFor");
+                            String relativeIdStr = request.getParameter("relativeId");
                             
-                            if (directAppointment) {
-                                appointmentCreated = true;
+                            if ("relative".equals(bookingFor) && relativeIdStr != null && !relativeIdStr.isEmpty()) {
+                                // Lấy thông tin người thân từ form
+                                String relativeName = request.getParameter("relativeName");
+                                String relativePhone = request.getParameter("relativePhone");
+                                String relativeDob = request.getParameter("relativeDob");
+                                String relativeGender = request.getParameter("relativeGender");
+                                String relativeRelationship = request.getParameter("relativeRelationship");
+                                try {
+                                    int relativeId = Integer.parseInt(relativeIdStr);
+                                    // Nếu relativeId đã có, update lại thông tin người thân
+                                    RelativesDAO.updateRelative(
+                                        relativeId,
+                                        relativeName,
+                                        relativePhone,
+                                        relativeDob,
+                                        relativeGender,
+                                        relativeRelationship
+                                    );
+                                    
+                                    // Lấy user từ bill.getUserId()
+                                    UserDAO userDAO = new UserDAO();
+                                    User testUser = userDAO.getUserById(bill.getUserId());
+                                    
+                                    boolean relativeAppointment = AppointmentDAO.insertAppointmentBySlotIdForRelative(
+                                        bill.getPatientId(),
+                                        bill.getDoctorId(),
+                                        slotId,
+                                        bill.getAppointmentDate().toLocalDate(),
+                                        LocalTime.of(9, 0),
+                                        bill.getAppointmentNotes(),
+                                        relativeId,
+                                        testUser.getId()
+                                    );
+                                    if (relativeAppointment) {
+                                        appointmentCreated = true;
+                                        System.out.println("🎯 TẠO LỊCH HẸN CHO NGƯỜI THÂN TRONG TEST - RelativeId: " + relativeId);
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.err.println("❌ LỖI PARSE RELATIVE ID TRONG TEST: " + relativeIdStr);
+                                }
+                            } else {
+                                // Đặt lịch bình thường
+                                boolean directAppointment = AppointmentDAO.insertAppointmentBySlotId(
+                                    slotId,
+                                    bill.getPatientId(),
+                                    bill.getDoctorId(),
+                                    bill.getAppointmentDate().toLocalDate(),
+                                    LocalTime.of(9, 0),
+                                    bill.getAppointmentNotes()
+                                );
+                                
+                                if (directAppointment) {
+                                    appointmentCreated = true;
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -1835,4 +2098,6 @@ public class PayOSServlet extends HttpServlet {
         public String getCreatedAt() { return createdAt; }
         public String getQrCode() { return qrCode; }
     }
+
+   
 } 

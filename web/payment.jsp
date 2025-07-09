@@ -372,6 +372,17 @@
                                 <div class="col-4"><small>Hoàn thành</small></div>
                             </div>
 
+                            <!-- Hidden form với thông tin người thân -->
+                            <form id="paymentHiddenForm" style="display: none;">
+                                <input type="hidden" name="bookingFor" value="${param.bookingFor}">
+                                <input type="hidden" name="relativeId" value="${param.relativeId}">
+                                <input type="hidden" name="doctorId" value="${param.doctorId}">
+                                <input type="hidden" name="workDate" value="${param.workDate}">
+                                <input type="hidden" name="slotId" value="${param.slotId}">
+                                <input type="hidden" name="serviceId" value="${param.serviceId}">
+                                <input type="hidden" name="reason" value="${param.reason}">
+                            </form>
+
                             <div class="row">
                                 <!-- Service Information -->
                                 <div class="col-md-6">
@@ -820,8 +831,19 @@
                                         // Wait 3 seconds then redirect
                                         setTimeout(() => {
                                             updateStatus('✅ Hoàn tất! Chuyển trang...', 'success');
+                                            // Redirect với thông tin người thân
+                                            const hiddenForm = document.getElementById('paymentHiddenForm');
+                                            const formData = new FormData(hiddenForm);
+                                            const bookingFor = formData.get('bookingFor');
+                                            const relativeId = formData.get('relativeId');
+
+                                            let successUrl = 'payment?action=success';
+                                            if (bookingFor === 'relative' && relativeId) {
+                                                successUrl += '&bookingFor=relative&relativeId=' + relativeId;
+                                            }
+
                                             setTimeout(() => {
-                                                window.location.href = 'payment?action=success';
+                                                window.location.href = successUrl;
                                             }, 1000);
                                         }, 3000);
                                     }
@@ -946,7 +968,17 @@
 
                                                 if (redirectTime <= 0) {
                                                     clearInterval(redirectCounter);
-                                                    window.location.href = 'payment?action=success';
+                                                    // Redirect với thông tin người thân
+                                                    const hiddenForm = document.getElementById('paymentHiddenForm');
+                                                    const formData = new FormData(hiddenForm);
+                                                    const bookingFor = formData.get('bookingFor');
+                                                    const relativeId = formData.get('relativeId');
+
+                                                    let successUrl = 'payment?action=success';
+                                                    if (bookingFor === 'relative' && relativeId) {
+                                                        successUrl += '&bookingFor=relative&relativeId=' + relativeId;
+                                                    }
+                                                    window.location.href = successUrl;
                                                 }
                                             }, 1000);
 
@@ -1122,8 +1154,20 @@
 
                         showToast('🔄 Đang xác nhận thanh toán thực tế...', 'info');
 
-                        // Send real payment confirmation
-                        fetch('checkBill?action=autoUpdate&orderId=' + orderId + '&paymentRef=REAL_PAYMENT')
+                        // Lấy thông tin từ hidden form
+                        const hiddenForm = document.getElementById('paymentHiddenForm');
+                        const formData = new FormData(hiddenForm);
+                        const bookingFor = formData.get('bookingFor');
+                        const relativeId = formData.get('relativeId');
+
+                        // Tạo URL với thông tin đầy đủ cho người thân
+                        let confirmUrl = 'payment?action=success&orderId=' + orderId + '&paymentRef=REAL_PAYMENT';
+                        if (bookingFor === 'relative' && relativeId) {
+                            confirmUrl += '&bookingFor=relative&relativeId=' + relativeId;
+                        }
+
+                        // Send real payment confirmation với thông tin người thân
+                        fetch(confirmUrl)
                             .then(response => response.json())
                             .then(data => {
                                 console.log('Real payment confirmation result:', data);
@@ -1144,8 +1188,19 @@
                                     showToast('🎉 Cảm ơn! Thanh toán đã được xác nhận!', 'success');
                                     createSuccessEffect();
 
+                                    // Redirect với thông tin người thân
+                                    const hiddenForm = document.getElementById('paymentHiddenForm');
+                                    const formData = new FormData(hiddenForm);
+                                    const bookingFor = formData.get('bookingFor');
+                                    const relativeId = formData.get('relativeId');
+
+                                    let successUrl = 'payment?action=success';
+                                    if (bookingFor === 'relative' && relativeId) {
+                                        successUrl += '&bookingFor=relative&relativeId=' + relativeId;
+                                    }
+
                                     setTimeout(() => {
-                                        window.location.href = 'payment?action=success';
+                                        window.location.href = successUrl;
                                     }, 2000);
 
                                 } else {

@@ -250,39 +250,98 @@ public class BookingPageServlet extends HttpServlet {
         
         // TẠO RELATIVE_ID TỰ ĐỘNG KHI CHỌN "RELATIVE"
         if ("relative".equals(bookingFor)) {
-            System.out.println("🎯 User chọn đặt lịch cho người thân - Tạo relative_id tự động");
+            System.out.println("🎯 User chọn đặt lịch cho người thân - Xử lý thông tin từ form");
             
-            // Tạo thông tin người thân mặc định từ thông tin user
-            String defaultName = "Người thân của " + patient.getUsername();
-            String defaultPhone = patient.getPhone() != null ? patient.getPhone() : "0000000000";
-            String defaultDob = "1990-01-01"; // Ngày sinh mặc định
-            String defaultGender = "Khác";
-            String defaultRelationship = "Khác";
+            // Lấy thông tin người thân từ form
+            String relativeName = request.getParameter("relativeName");
+            String relativePhone = request.getParameter("relativePhone");
+            String relativeDob = request.getParameter("relativeDob");
+            String relativeGender = request.getParameter("relativeGender");
+            String relativeRelationship = request.getParameter("relativeRelationship");
             
-            try {
-                RelativesDAO relativesDAO = new RelativesDAO();
-                int relativeId = relativesDAO.getOrCreateRelative(
-                    patient.getId(),
-                    defaultName,
-                    defaultPhone,
-                    defaultDob,
-                    defaultGender,
-                    defaultRelationship
-                );
+            // Nếu form có đầy đủ thông tin, dùng thông tin từ form
+            if (relativeName != null && !relativeName.trim().isEmpty() &&
+                relativePhone != null && !relativePhone.trim().isEmpty() &&
+                relativeDob != null && !relativeDob.trim().isEmpty() &&
+                relativeGender != null && !relativeGender.trim().isEmpty() &&
+                relativeRelationship != null && !relativeRelationship.trim().isEmpty()) {
                 
-                if (relativeId > 0) {
-                    relativeIdStr = String.valueOf(relativeId);
-                    System.out.println("✅ Đã tạo relative_id tự động: " + relativeId + " cho user_id: " + patient.getId());
-                } else {
-                    request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
+                try {
+                    RelativesDAO relativesDAO = new RelativesDAO();
+                    
+                    // Nếu đã có relativeId, update lại thông tin
+                    if (relativeIdStr != null && !relativeIdStr.isEmpty()) {
+                        int existingRelativeId = Integer.parseInt(relativeIdStr);
+                        boolean updated = RelativesDAO.updateRelative(
+                            existingRelativeId,
+                            relativeName.trim(),
+                            relativePhone.trim(),
+                            relativeDob,
+                            relativeGender.trim(),
+                            relativeRelationship.trim()
+                        );
+                        if (updated) {
+                            System.out.println("✅ Cập nhật thông tin người thân: " + existingRelativeId + " | " + relativeName);
+                        }
+                    } else {
+                        // Tạo mới người thân với thông tin từ form
+                        int relativeId = relativesDAO.getOrCreateRelative(
+                            patient.getId(),
+                            relativeName.trim(),
+                            relativePhone.trim(),
+                            relativeDob,
+                            relativeGender.trim(),
+                            relativeRelationship.trim()
+                        );
+                        
+                        if (relativeId > 0) {
+                            relativeIdStr = String.valueOf(relativeId);
+                            System.out.println("✅ Tạo người thân mới từ form: " + relativeId + " | " + relativeName);
+                        } else {
+                            request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
+                            doGet(request, response);
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("❌ Lỗi xử lý thông tin người thân từ form: " + e.getMessage());
+                    request.setAttribute("error", "Có lỗi khi xử lý thông tin người thân!");
                     doGet(request, response);
                     return;
                 }
-            } catch (Exception e) {
-                System.err.println("❌ Lỗi tạo relative_id: " + e.getMessage());
-                request.setAttribute("error", "Có lỗi khi tạo thông tin người thân!");
-                doGet(request, response);
-                return;
+            } else {
+                // Nếu form thiếu thông tin, tạo thông tin mặc định
+                String defaultName = "Người thân của " + patient.getUsername();
+                String defaultPhone = patient.getPhone() != null ? patient.getPhone() : "0000000000";
+                String defaultDob = "1990-01-01";
+                String defaultGender = "Khác";
+                String defaultRelationship = "Khác";
+                
+                try {
+                    RelativesDAO relativesDAO = new RelativesDAO();
+                    int relativeId = relativesDAO.getOrCreateRelative(
+                        patient.getId(),
+                        defaultName,
+                        defaultPhone,
+                        defaultDob,
+                        defaultGender,
+                        defaultRelationship
+                    );
+                    
+                    if (relativeId > 0) {
+                        relativeIdStr = String.valueOf(relativeId);
+                        System.out.println("✅ Tạo relative_id mặc định: " + relativeId + " cho user_id: " + patient.getId());
+                    } else {
+                        request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
+                        doGet(request, response);
+                        return;
+                    }
+                } catch (Exception e) {
+                    System.err.println("❌ Lỗi tạo relative_id mặc định: " + e.getMessage());
+                    request.setAttribute("error", "Có lỗi khi tạo thông tin người thân!");
+                    doGet(request, response);
+                    return;
+                }
             }
         }
 
@@ -317,6 +376,32 @@ public class BookingPageServlet extends HttpServlet {
             // Thêm thông tin người thân vào URL nếu có
             if ("relative".equals(bookingFor) && relativeIdStr != null && !relativeIdStr.isEmpty()) {
                 paymentUrlBuilder.append("&bookingFor=relative&relativeId=").append(relativeIdStr);
+                
+                // Thêm thông tin chi tiết người thân vào URL để PayOSServlet có thể lấy
+                String relativeName = request.getParameter("relativeName");
+                String relativePhone = request.getParameter("relativePhone");
+                String relativeDob = request.getParameter("relativeDob");
+                String relativeGender = request.getParameter("relativeGender");
+                String relativeRelationship = request.getParameter("relativeRelationship");
+                
+                if (relativeName != null && !relativeName.trim().isEmpty()) {
+                    try {
+                        paymentUrlBuilder.append("&relativeName=").append(java.net.URLEncoder.encode(relativeName.trim(), "UTF-8"));
+                        paymentUrlBuilder.append("&relativePhone=").append(java.net.URLEncoder.encode(relativePhone != null ? relativePhone.trim() : "", "UTF-8"));
+                        paymentUrlBuilder.append("&relativeDob=").append(java.net.URLEncoder.encode(relativeDob != null ? relativeDob : "", "UTF-8"));
+                        paymentUrlBuilder.append("&relativeGender=").append(java.net.URLEncoder.encode(relativeGender != null ? relativeGender.trim() : "", "UTF-8"));
+                        paymentUrlBuilder.append("&relativeRelationship=").append(java.net.URLEncoder.encode(relativeRelationship != null ? relativeRelationship.trim() : "", "UTF-8"));
+                        
+                        System.out.println("✅ TRUYỀN THÔNG TIN NGƯỜI THÂN QUA URL:");
+                        System.out.println("   - Tên: " + relativeName);
+                        System.out.println("   - SĐT: " + relativePhone);
+                        System.out.println("   - Ngày sinh: " + relativeDob);
+                        System.out.println("   - Giới tính: " + relativeGender);
+                        System.out.println("   - Quan hệ: " + relativeRelationship);
+                    } catch (Exception e) {
+                        System.err.println("❌ Lỗi encode thông tin người thân: " + e.getMessage());
+                    }
+                }
             }
             
             String paymentUrl = paymentUrlBuilder.toString();
