@@ -580,6 +580,7 @@ public class PatientDAO {
         }
     }
     
+    //=================================================================================
     //code của C.TRung =======================================================
     public static boolean updatePatientAvatar(int patientId, String avatarPath) {
         String sql = "UPDATE Patients SET avatar = ? WHERE patient_id = ?";
@@ -641,5 +642,200 @@ public class PatientDAO {
     }
     
     // =================================================================
+    // CODE CỦA BẢO CHÂU
+    
+    
+    /* Lấy tất cả bệnh nhân với phân trang*/
+    public List<Patients> getAllPatientsWithPagination(int offset, int limit) {
+        List<Patients> patients = new ArrayList<>();
+        String sql = "SELECT * FROM patients ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patients patient = new Patients();
+                patient.setPatientId(rs.getInt("patient_id"));
+                patient.setFullName(rs.getString("full_name"));
+                patient.setEmail(rs.getString("email"));
+                patient.setPhone(rs.getString("phone"));
+                patient.setDateOfBirth(rs.getDate("date_of_birth"));
+                patient.setGender(rs.getString("gender"));
+                patient.setAvatar(rs.getString("avatar"));                
+                patients.add(patient);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return patients;
+    }
+    
+    // Lấy tổng số bệnh nhân
+    public int getTotalPatients() {
+        String sql = "SELECT COUNT(*) FROM patients";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+    
+    // Lấy số bệnh nhân hoạt động (giả sử tất cả đều hoạt động)
+    public int getActivePatients() {
+        String sql = "SELECT COUNT(*) FROM patients WHERE status = 'active' OR status IS NULL";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return getTotalPatients(); // Nếu không có cột status, trả về tổng số
+    }
+    
+    // Lấy số bệnh nhân mới trong tháng này
+    public int getNewPatientsThisMonth() {
+        String sql = "SELECT COUNT(*) FROM patients WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+    
+    
+    // Tìm kiếm bệnh nhân theo tên hoặc phone
+    public List<Patients> searchPatients(String keyword, int offset, int limit) {
+        List<Patients> patients = new ArrayList<>();
+        String sql = "SELECT * FROM patients WHERE full_name LIKE ? OR phone LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            String searchKeyword = "%" + keyword + "%";
+            stmt.setString(1, searchKeyword);
+            stmt.setString(2, searchKeyword);
+            stmt.setInt(3, limit);
+            stmt.setInt(4, offset);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Patients patient = new Patients();
+                patient.setPatientId(rs.getInt("patient_id"));
+                patient.setFullName(rs.getString("full_name"));
+                patient.setEmail(rs.getString("email"));
+                patient.setPhone(rs.getString("phone"));
+                patient.setDateOfBirth(rs.getDate("date_of_birth"));
+                patient.setGender(rs.getString("gender"));
+                patient.setAvatar(rs.getString("avatar"));
+                
+                patients.add(patient);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return patients;
+    }
+    
+    // Thêm bệnh nhân mới
+    public boolean addPatient(Patients patient) {
+        String sql = "INSERT INTO patients (full_name, email, phone, date_of_birth, gender, avatar) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, patient.getFullName());
+            stmt.setString(2, patient.getEmail());
+            stmt.setString(3, patient.getPhone());
+            stmt.setDate(4, patient.getDateOfBirth());
+            stmt.setString(5, patient.getGender());
+            stmt.setString(6, patient.getAvatar());
+            
+            return stmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    // Cập nhật thông tin bệnh nhân
+    public boolean updatePatient(Patients patient) {
+        String sql = "UPDATE patients SET full_name = ?, email = ?, phone = ?, date_of_birth = ?, gender = ?, avatar = ?, updated_at = CURRENT_TIMESTAMP WHERE patient_id = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, patient.getFullName());
+            stmt.setString(2, patient.getEmail());
+            stmt.setString(3, patient.getPhone());
+            stmt.setDate(4, patient.getDateOfBirth());
+            stmt.setString(5, patient.getGender());
+            stmt.setString(6, patient.getAvatar());
+            stmt.setInt(7, patient.getPatientId());
+            
+            return stmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    // Xóa bệnh nhân
+    public boolean deletePatient(int patientId) {
+        String sql = "DELETE FROM patients WHERE patient_id = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, patientId);
+            return stmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 
 }

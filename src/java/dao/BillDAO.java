@@ -844,6 +844,10 @@ public class BillDAO {
         }
         return billId;
     }
+    
+    
+    
+    
 
     // Đảm bảo có hàm close để tránh lỗi linter
     public static void close(java.sql.ResultSet rs, java.sql.PreparedStatement ps, java.sql.Connection conn) {

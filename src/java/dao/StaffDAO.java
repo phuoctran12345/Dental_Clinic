@@ -21,10 +21,12 @@ public class StaffDAO {
     private static final String GET_ALL = "SELECT * FROM Staff";
     private static final String GET_BY_ID = "SELECT * FROM Staff WHERE staff_id = ?";
     private static final String GET_BY_USER_ID = "SELECT * FROM Staff WHERE user_id = ?";
-    private static final String INSERT = "INSERT INTO Staff (user_id, full_name, phone, date_of_birth, gender, address, position, employment_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO Staff (userId, fullName, phone, dateOfBirth, gender, address, position, employmentType) VALUES (?, ?, ?, ?, ?, ?, ?, ?,)";
     private static final String UPDATE = "UPDATE Staff SET full_name = ?, phone = ?, date_of_birth = ?, gender = ?, address = ?, position = ?, employment_type = ?, avatar = ? WHERE staff_id = ?";
     private static final String DELETE = "DELETE FROM Staff WHERE staff_id = ?";
     private static final String COUNT_BY_NAME = "SELECT COUNT(*) as total FROM Staff WHERE full_name = ?";
+
+
 
     /**
      * Lấy kết nối đến database
@@ -75,6 +77,49 @@ public class StaffDAO {
         }
         return staffList;
     }
+    
+     /**
+     * Lấy danh sách tất cả nhân viên
+     */
+    public static List<Staff> getAllStaff() throws SQLException {
+        List<Staff> staffList = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ptm = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnect();
+            if (conn != null) {
+                ptm = conn.prepareStatement(GET_ALL);
+                rs = ptm.executeQuery();
+                while (rs.next()) {
+                    Staff staff = new Staff();
+                    staff.setStaffId(rs.getInt("staff_id"));
+                    staff.setUserId(rs.getInt("user_id"));
+                    staff.setFullName(rs.getString("full_name"));
+                    staff.setPhone(rs.getString("phone"));
+                    staff.setDateOfBirth(rs.getDate("date_of_birth"));
+                    staff.setGender(rs.getString("gender"));
+                    staff.setAddress(rs.getString("address"));
+                    staff.setPosition(rs.getString("position"));
+                    staff.setEmploymentType(rs.getString("employment_type"));
+                    staff.setCreatedAt(rs.getDate("created_at"));
+                    
+                    // Lấy email từ JOIN query
+                    staff.setUserEmail(rs.getString("email"));
+                    
+                    staffList.add(staff);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) rs.close();
+            if (ptm != null) ptm.close();
+            if (conn != null) conn.close();
+        }
+        return staffList;
+    }
+
 
     /**
      * Lấy thông tin nhân viên theo ID
@@ -162,6 +207,15 @@ public class StaffDAO {
 
     /**
      * Thêm nhân viên mới
+     * @param userId
+     * @param userId
+     * @param userId
+     * @param userId
+     * @param userId
+     * @param userId
+     * @param userId
+     * @param employmentType
+     * @return 
      */
     public static boolean insert(int userId, String fullName, String phone, String dateOfBirth, String gender, String address, String position, String employmentType) {
         Connection conn = null;
@@ -340,6 +394,46 @@ public class StaffDAO {
             }
         }
     }
+    
+    public void addStaff(Staff staff, String password) throws SQLException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn == null) throw new SQLException("Không thể kết nối cơ sở dữ liệu.");
+            conn.setAutoCommit(false);
+
+            String insertUserSql = "INSERT INTO users (password_hash, email, role, created_at) VALUES (?, ?, ?, GETDATE())";
+            pstmt = conn.prepareStatement(insertUserSql, PreparedStatement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, password);
+            pstmt.setString(2, staff.getUserEmail());
+            pstmt.setString(3, "STAFF");
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            int userId = rs.next() ? rs.getInt(1) : 0;
+
+            String insertStaffSql = "INSERT INTO Staff (user_id, full_name, phone, position, employment_type, created_at, status, hire_date, department, work_schedule) " +
+                                  "VALUES (?, ?, ?, ?, ?, GETDATE(), 'active', GETDATE(), 'General', 'full_day')";
+            pstmt = conn.prepareStatement(insertStaffSql);
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, staff.getFullName());
+            pstmt.setString(3, staff.getPhone());
+            pstmt.setString(4, staff.getPosition());
+            pstmt.setString(5, staff.getEmploymentType());
+            pstmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        }
+    }
+    
 
     // Test main
     public static void main(String[] args) {
@@ -368,6 +462,29 @@ public class StaffDAO {
             e.printStackTrace();
         }
     }
+    
+    
+     /**
+     * Thêm nhân viên mới
+     * /**
+ * Thêm một nhân viên mới vào cơ sở dữ liệu.
+ * @param userId ID của người dùng tương ứng
+ * @param fullName Họ và tên đầy đủ của nhân viên
+ * @param phone Số điện thoại của nhân viên
+ * @param dateOfBirth Ngày sinh (định dạng yyyy-MM-dd)
+ * @param gender Giới tính (male, female, hoặc other)
+ * @param address Địa chỉ của nhân viên
+ * @param position Chức vụ của nhân viên
+ * @param employmentType Loại nhân viên (fulltime hoặc parttime)
+ * @return true nếu chèn thành công, false nếu thất bại
+ */
+    
+    /**
+     * Thêm nhân viên mới
+     */
+    
+     
+   
 
     public void close() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody

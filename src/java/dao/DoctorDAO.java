@@ -1711,4 +1711,78 @@ public class DoctorDAO {
         System.err.println("⚠️ Không tìm thấy bác sĩ với ID: " + doctorId);
         return null;
     }
+    
+    
+    
+    //=================================================================================================================
+    // CODE của Bảo Châu
+    
+    public void addDoctor(Doctors doctor, String password) throws SQLException {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn == null) throw new SQLException("Không thể kết nối cơ sở dữ liệu.");
+            conn.setAutoCommit(false);
+
+            String insertUserSql = "INSERT INTO users (password_hash, email, role, created_at) VALUES (?, ?, ?, GETDATE())";
+            pstmt = conn.prepareStatement(insertUserSql, PreparedStatement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, password);
+            pstmt.setString(2, doctor.getUserEmail());
+            pstmt.setString(3, "DOCTOR");
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            int userId = rs.next() ? rs.getInt(1) : 0;
+
+            String insertDoctorSql = "INSERT INTO Doctors (user_id, full_name, phone, specialty, license_number, created_at, status) " +
+                                   "VALUES (?, ?, ?, ?, ?, GETDATE(), 'active')";
+            pstmt = conn.prepareStatement(insertDoctorSql);
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, doctor.getFull_name());
+            pstmt.setString(3, doctor.getPhone());
+            pstmt.setString(4, doctor.getSpecialty());
+            pstmt.setString(5, "LIC" + System.currentTimeMillis());
+            pstmt.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        }
+    }
+    
+    
+    public boolean delete(int doctorId) throws SQLException {
+        String sql = "DELETE FROM doctors WHERE doctor_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, doctorId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Trả về true nếu xóa thành công
+        }
+    }
+    
+    public static boolean updatePassword(int userId, String hashedPassword) {
+        String sql = "UPDATE Users SET password_hash = ? WHERE user_id = ?";
+        
+        try (Connection conn = getConnect(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, hashedPassword);
+            ps.setInt(2, userId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+  
 }

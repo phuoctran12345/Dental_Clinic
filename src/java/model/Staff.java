@@ -22,15 +22,27 @@ public class Staff {
     private String employmentType; // Loại nhân viên (fulltime/parttime)
     private Date createdAt;       // Ngày tạo
     private String avatar;        // Đường dẫn avatar
+    private String userEmail;  
 
     // Constructor mặc định
     public Staff() {
     }
 
-    // Constructor đầy đủ tham số
-    public Staff(long staffId, long userId, String fullName, String phone, 
-                Date dateOfBirth, String gender, String address, String position, 
-                String employmentType, Date createdAt) {
+    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender, String address, String position, String employmentType) {
+        this.staffId = staffId;
+        this.userId = userId;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.address = address;
+        this.position = position;
+        this.employmentType = employmentType;
+    }
+    
+    
+
+    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender, String address, String position, String employmentType, Date createdAt, String avatar, String userEmail) {
         this.staffId = staffId;
         this.userId = userId;
         this.fullName = fullName;
@@ -41,7 +53,19 @@ public class Staff {
         this.position = position;
         this.employmentType = employmentType;
         this.createdAt = createdAt;
+        this.avatar = avatar;
+        this.userEmail = userEmail;
     }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    
     
     
 

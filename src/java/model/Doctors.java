@@ -17,6 +17,7 @@ public class Doctors {
     private Date created_at;
     private String status;
     private String avatar;
+    private String userEmail;     // Email từ user table
     private List<DoctorSchedule> schedules;
     private List<String> workDates;
 
@@ -50,6 +51,17 @@ public class Doctors {
         this.schedules = new ArrayList<>();
         this.workDates = new ArrayList<>();
     }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+  
+    
 
     public Doctors() {
         this.schedules = new ArrayList<>();
