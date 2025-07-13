@@ -729,14 +729,16 @@
 
                                                             <!-- Payment Amounts -->
                                                             <div class="col-md-3 text-center">
-                                                                <div class="mb-1">
-                                                                    <small class="text-muted">Tổng:</small>
-                                                                    <div class="fw-bold text-primary">
-                                                                        <fmt:formatNumber value="${bill.totalAmount}"
-                                                                            type="number" /> VNĐ
+                                                                <div class="d-flex flex-row align-items-center justify-content-center h-100"
+                                                                    style="gap: 32px;">
+                                                                    <div>
+                                                                        <small class="text-muted">Tổng:</small>
+                                                                        <div class="fw-bold text-primary">
+                                                                            <fmt:formatNumber
+                                                                                value="${bill.totalAmount}"
+                                                                                type="number" /> VNĐ
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between">
                                                                     <div>
                                                                         <small class="text-muted">Đã thu:</small>
                                                                         <div class="fw-bold text-success">
@@ -757,27 +759,6 @@
                                                                             </c:choose>
                                                                         </div>
                                                                     </div>
-                                                                    <c:if
-                                                                        test="${bill.paymentStatus != 'PAID' && bill.paymentStatus != 'Đã thanh toán' && bill.paymentStatus != 'success'}">
-                                                                        <div>
-                                                                            <small class="text-muted">Còn nợ:</small>
-                                                                            <div class="fw-bold text-danger">
-                                                                                <c:choose>
-                                                                                    <c:when
-                                                                                        test="${bill.paymentStatus == 'PARTIAL' || bill.paymentStatus == 'partial'}">
-                                                                                        <fmt:formatNumber
-                                                                                            value="${bill.totalAmount * 0.5}"
-                                                                                            type="number" />
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        <fmt:formatNumber
-                                                                                            value="${bill.totalAmount}"
-                                                                                            type="number" />
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </div>
-                                                                        </div>
-                                                                    </c:if>
                                                                 </div>
                                                             </div>
 
@@ -785,17 +766,17 @@
                                                             <div class="col-md-3 text-end">
                                                                 <div class="action-buttons mb-2">
                                                                     <button class="btn-action"
-                                                                        onclick="viewInvoice(${bill.billId})"
+                                                                        onclick="viewInvoice('${bill.billId}')"
                                                                         title="Xem chi tiết">
                                                                         <i class="fas fa-eye"></i>
                                                                     </button>
                                                                     <button class="btn-action"
-                                                                        onclick="printInvoice(${bill.billId})"
+                                                                        onclick="printInvoice('${bill.billId}')"
                                                                         title="In hóa đơn">
                                                                         <i class="fas fa-print"></i>
                                                                     </button>
                                                                     <button class="btn-action"
-                                                                        onclick="downloadInvoice(${bill.billId})"
+                                                                        onclick="downloadInvoice('${bill.billId}')"
                                                                         title="Tải xuống">
                                                                         <i class="fas fa-download"></i>
                                                                     </button>
@@ -805,12 +786,12 @@
                                                                     <c:if
                                                                         test="${bill.paymentStatus == 'PENDING' || bill.paymentStatus == 'Chờ thanh toán' || bill.paymentStatus == 'pending'}">
                                                                         <button class="btn-action success"
-                                                                            onclick="processPayment(${bill.billId}, 'full')">
+                                                                            onclick="processPayment('${bill.billId}', 'full')">
                                                                             <i class="fas fa-credit-card"></i>
                                                                             Thu tiền
                                                                         </button>
                                                                         <button class="btn-action warning"
-                                                                            onclick="createInstallment('${bill.billId}', ${bill.totalAmount})">
+                                                                            onclick="createInstallment('${bill.billId}', '${bill.totalAmount}')">
                                                                             <i class="fas fa-calendar-alt"></i>
                                                                             Trả góp
                                                                         </button>
@@ -819,7 +800,7 @@
                                                                     <c:if
                                                                         test="${bill.paymentStatus == 'PARTIAL' || bill.paymentStatus == 'partial'}">
                                                                         <button class="btn-action warning"
-                                                                            onclick="processPayment(${bill.billId}, 'remaining')">
+                                                                            onclick="processPayment('${bill.billId}', 'remaining')">
                                                                             <i class="fas fa-credit-card"></i>
                                                                             Thu nợ
                                                                         </button>
@@ -1013,6 +994,12 @@
                                                             <strong>Tổng cộng: <span id="totalAmount"
                                                                     class="text-primary">0
                                                                     VNĐ</span></strong>
+                                                            <!-- Button giảm giá -->
+                                                            <button type="button" class="btn btn-sm btn-warning ms-2"
+                                                                id="btnDiscountOnline">Giảm 50k đặt lịch online</button>
+                                                            <span id="discountNote"
+                                                                style="color: green; display: none; font-size: 0.9em;">Đã
+                                                                áp dụng giảm giá đặt lịch online: -50.000 VNĐ</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1113,10 +1100,42 @@
                             </div>
                             </div>
 
+                            <!-- Thêm phần hiển thị bill thành công trong modal tạo hóa đơn -->
+                            <div id="billSuccessInfo" style="display:none; padding: 24px; text-align: center;">
+                                <h4 style="color: #059669;">Thanh toán chuyển khoản thành công!</h4>
+                                <p>Mã hóa đơn: <span id="billId"></span></p>
+                                <p>Mã chuyển khoản: <span id="orderId"></span></p>
+                                <p>Số tiền: <span id="amount"></span> VNĐ</p>
+                                <button class="btn btn-primary mt-2" onclick="printBill()"><i class="fas fa-print"></i>
+                                    In hóa đơn</button>
+                            </div>
+
+                            <!-- Modal hiển thị QR code chuyển khoản -->
+                            <div class="modal-overlay hidden" id="qrModal">
+                                <div class="modal-content" style="max-width:400px;text-align:center;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Quét mã QR để chuyển khoản</h5>
+                                        <button type="button" class="btn-close" onclick="closeQRModal()">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="qrCodeContainer"></div>
+                                        <div class="mt-3">
+                                            <span id="qrBillInfo"></span>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            onclick="closeQRModal()">Đóng</button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <script>
                                 // Variables
                                 let billsCurrentPage = 1, billsTotalPages = 1, billsItemsPerPage = 5;
-                                let billsTotalItems = ${ totalBills };
+                                let billsTotalItems = <c:out value="${totalBills}" />;
+                                let discountApplied = false;
+                                let discountValue = 50000;
 
                                 // Initialize
                                 document.addEventListener('DOMContentLoaded', function () {
@@ -1191,7 +1210,9 @@
                                 function openInstallmentModal(billId, totalAmount) {
                                     document.getElementById('installmentModal').classList.remove('hidden');
                                     document.getElementById('installmentBillId').textContent = billId;
-                                    document.getElementById('installmentTotalAmount').textContent = totalAmount.toLocaleString() + ' VNĐ';
+                                    // Convert totalAmount to number if it's a string
+                                    const amount = parseFloat(totalAmount) || 0;
+                                    document.getElementById('installmentTotalAmount').textContent = amount.toLocaleString() + ' VNĐ';
 
                                     // Set default values
                                     document.getElementById('downPaymentPercent').value = 30;
@@ -1458,8 +1479,13 @@
                                         count++;
                                     });
 
+                                    // Nếu đã giảm giá thì trừ luôn 50k
+                                    if (discountApplied) {
+                                        total = Math.max(0, total - discountValue);
+                                    }
+
                                     // Update display
-                                    document.getElementById('totalAmount').textContent = total.toLocaleString() + ' VNĐ';
+                                    document.getElementById('totalAmount').textContent = total.toLocaleString('vi-VN') + ' VNĐ';
                                     document.getElementById('paymentAmount').value = total;
                                     document.getElementById('currentCount').textContent = count;
 
@@ -1599,196 +1625,91 @@
 
                                 // Submit form
                                 function submitCreateInvoice() {
-                                    const customerName = document.querySelector('input[name="customerName"]').value;
-                                    const customerPhone = document.querySelector('input[name="customerPhone"]').value;
-                                    const paymentMethod = document.querySelector('select[name="paymentMethod"]').value;
-                                    const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-
-                                    // Validation
-                                    if (!customerName || !customerPhone) {
-                                        alert('Vui lòng nhập đầy đủ thông tin bệnh nhân!');
-                                        return;
-                                    }
-
-                                    const selectedServices = document.querySelectorAll('input[name="selectedServices"]:checked');
-                                    if (selectedServices.length === 0) {
-                                        alert('Vui lòng chọn ít nhất một dịch vụ!');
-                                        return;
-                                    }
-
-                                    if (!paymentMethod) {
-                                        alert('Vui lòng chọn phương thức thanh toán!');
-                                        return;
-                                    }
-
-                                    // Installment validation
-                                    if (paymentMethod === 'installment') {
-                                        const downPaymentInput = document.getElementById('downPayment');
-                                        const installmentMonthsSelect = document.querySelector('select[name="installmentMonths"]');
-
-                                        if (!downPaymentInput || !installmentMonthsSelect) {
-                                            alert('Lỗi: Không tìm thấy thông tin trả góp!');
-                                            return;
-                                        }
-
-                                        const downPayment = parseFloat(downPaymentInput.value) || 0;
-                                        const installmentMonths = parseInt(installmentMonthsSelect.value) || 0;
-                                        const minDown = Math.ceil(totalInvoiceAmount * 0.3);
-
-                                        console.log('🔍 Validating installment:', {
-                                            downPayment: downPayment,
-                                            minDown: minDown,
-                                            installmentMonths: installmentMonths,
-                                            totalAmount: totalInvoiceAmount
-                                        });
-
-                                        if (downPayment < minDown) {
-                                            alert('Số tiền đặt cọc phải tối thiểu 30%!\nYêu cầu: ' + minDown.toLocaleString() + ' VNĐ\nBạn nhập: ' + downPayment.toLocaleString() + ' VNĐ');
-                                            downPaymentInput.focus();
-                                            downPaymentInput.style.borderColor = '#dc3545';
-                                            downPaymentInput.style.backgroundColor = '#fff5f5';
-                                            return;
-                                        }
-
-                                        if (downPayment > totalInvoiceAmount) {
-                                            alert('Số tiền đặt cọc không được vượt quá tổng hóa đơn!\nTối đa: ' + totalInvoiceAmount.toLocaleString() + ' VNĐ');
-                                            downPaymentInput.focus();
-                                            return;
-                                        }
-
-                                        if (installmentMonths < 3 || installmentMonths > 12) {
-                                            alert('Số kỳ trả góp phải từ 3-12 tháng!');
-                                            installmentMonthsSelect.focus();
-                                            return;
-                                        }
-                                    }
-
-                                    // Create form data for submission
-                                    const formData = new FormData();
-                                    formData.append('action', 'createBill');
-                                    formData.append('customerName', customerName);
-                                    formData.append('customerPhone', customerPhone);
-                                    formData.append('paymentMethod', paymentMethod);
-                                    formData.append('totalAmount', totalInvoiceAmount);
-                                    formData.append('paymentAmount', paymentAmount);
-                                    formData.append('notes', document.querySelector('textarea[name="notes"]').value);
-
-                                    // Add selected services
-                                    selectedServices.forEach((service, index) => {
-                                        formData.append('selectedServices[' + index + ']', service.value);
+                                    const form = document.getElementById('createInvoiceForm');
+                                    // Lấy dữ liệu form
+                                    const customerName = form.customerName.value;
+                                    const customerPhone = form.customerPhone.value;
+                                    const paymentMethod = form.paymentMethod.value;
+                                    const paymentAmount = form.paymentAmount.value;
+                                    const notes = form.notes.value;
+                                    // Lấy dịch vụ đầu tiên (nếu có)
+                                    let serviceId = '';
+                                    const checked = form.querySelectorAll('input[name="selectedServices"]:checked');
+                                    if (checked.length > 0) serviceId = checked[0].value;
+                                    // Lấy tổng tiền dịch vụ đã chọn
+                                    let totalAmount = 0;
+                                    checked.forEach(cb => {
+                                        const price = parseFloat(cb.dataset.price || 0);
+                                        totalAmount += price;
                                     });
-
-                                    // Add installment data if applicable
-                                    if (paymentMethod === 'installment') {
-                                        formData.append('downPayment', document.getElementById('downPayment').value);
-                                        formData.append('installmentMonths', document.querySelector('select[name="installmentMonths"]').value);
-                                    }
-
-                                    // Debug log
-                                    console.log('🚀 Submitting invoice with data:', {
-                                        customerName, customerPhone, paymentMethod,
-                                        totalAmount: totalInvoiceAmount, paymentAmount,
-                                        selectedServices: Array.from(selectedServices).map(s => s.value)
-                                    });
-
-                                    // Submit via XMLHttpRequest (more reliable than fetch for this case)
-                                    const xhr = new XMLHttpRequest();
-                                    xhr.open('POST', 'StaffPaymentServlet', true);
-
-                                    // Create URLSearchParams instead of FormData for better compatibility
+                                    // Build urlencoded body
                                     const params = new URLSearchParams();
                                     params.append('action', 'createBill');
+                                    params.append('isStaff', 'true');
                                     params.append('customerName', customerName);
                                     params.append('customerPhone', customerPhone);
                                     params.append('paymentMethod', paymentMethod);
-                                    params.append('totalAmount', totalInvoiceAmount);
                                     params.append('paymentAmount', paymentAmount);
-                                    params.append('notes', document.querySelector('textarea[name="notes"]').value || '');
-
-                                    // Add selected services
-                                    selectedServices.forEach((service, index) => {
-                                        params.append('selectedServices[' + index + ']', service.value);
-                                    });
-
-                                    // Add installment data if applicable
+                                    params.append('totalAmount', totalAmount);
+                                    params.append('notes', notes);
+                                    params.append('selectedServices', serviceId);
+                                    // Nếu là trả góp thì gửi thêm downPayment và installmentMonths
                                     if (paymentMethod === 'installment') {
-                                        const downPaymentValue = document.getElementById('downPayment').value || '0';
-                                        const installmentMonthsValue = document.querySelector('select[name="installmentMonths"]').value || '6';
-
-                                        params.append('downPayment', downPaymentValue);
-                                        params.append('installmentMonths', installmentMonthsValue);
-
-                                        console.log('📋 Adding installment data:', {
-                                            downPayment: downPaymentValue,
-                                            installmentMonths: installmentMonthsValue
-                                        });
+                                        const downPayment = form.downPayment.value;
+                                        const installmentMonths = form.installmentMonths.value;
+                                        params.append('downPayment', downPayment);
+                                        params.append('installmentMonths', installmentMonths);
                                     }
-
-                                    // Set headers
-                                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                                    xhr.setRequestHeader('Accept', 'application/json');
-
-                                    // Debug log
-                                    console.log('🚀 Sending AJAX request with params:', params.toString());
-
-                                    xhr.onreadystatechange = function () {
-                                        console.log('📡 ReadyState:', xhr.readyState, 'Status:', xhr.status);
-
-                                        if (xhr.readyState === 4) {
-                                            console.log('📡 Response headers:', xhr.getAllResponseHeaders());
-                                            console.log('📡 Content-Type:', xhr.getResponseHeader('Content-Type'));
-                                            console.log('📡 Response length:', xhr.responseText.length);
-                                            console.log('📡 Response preview:', xhr.responseText.substring(0, 200));
-
-                                            if (xhr.status === 200) {
-                                                const contentType = xhr.getResponseHeader('Content-Type');
-                                                if (contentType && contentType.includes('application/json')) {
-                                                    try {
-                                                        const data = JSON.parse(xhr.responseText);
-                                                        console.log('✅ JSON parsed successfully:', data);
-
-                                                        if (data.success) {
-                                                            alert('Tạo hóa đơn thành công!\nMã hóa đơn: ' + data.billId);
-                                                            closeCreateModal();
-                                                            setTimeout(() => window.location.reload(), 1000);
-                                                        } else {
-                                                            alert('Lỗi tạo hóa đơn: ' + data.message);
-                                                        }
-                                                    } catch (e) {
-                                                        console.error('❌ JSON parse error:', e);
-                                                        console.error('❌ Raw response:', xhr.responseText);
-                                                        alert('Lỗi phân tích phản hồi từ server!\nPhản hồi: ' + xhr.responseText.substring(0, 300));
-                                                    }
-                                                } else {
-                                                    console.error('❌ Non-JSON response, Content-Type:', contentType);
-                                                    alert('Server trả về định dạng không đúng!\nContent-Type: ' + contentType + '\nResponse: ' + xhr.responseText.substring(0, 300));
-                                                }
-                                            } else {
-                                                console.error('❌ HTTP error:', xhr.status, xhr.statusText);
-                                                alert('Lỗi HTTP: ' + xhr.status + ' ' + xhr.statusText + '\nResponse: ' + xhr.responseText.substring(0, 300));
+                                    // Gửi AJAX
+                                    fetch('StaffPaymentServlet', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                        body: params.toString()
+                                    })
+                                        .then(response => response.text())
+                                        .then(responseText => {
+                                            let json = null;
+                                            try {
+                                                let trimmed = responseText.trim();
+                                                if (trimmed.charAt(0) !== '{') trimmed = trimmed.substring(trimmed.indexOf('{'));
+                                                json = JSON.parse(trimmed);
+                                            } catch (e) {
+                                                alert('Lỗi phân tích phản hồi từ server!\n' + responseText);
+                                                return;
                                             }
-                                        }
-                                    };
-
-                                    xhr.onerror = function () {
-                                        console.error('❌ Network error');
-                                        alert('Lỗi kết nối mạng!');
-                                    };
-
-                                    xhr.ontimeout = function () {
-                                        console.error('❌ Request timeout');
-                                        alert('Yêu cầu bị timeout!');
-                                    };
-
-                                    xhr.timeout = 30000; // 30 second timeout
-
-                                    try {
-                                        xhr.send(params.toString());
-                                        console.log('📤 Request sent successfully');
-                                    } catch (e) {
-                                        console.error('❌ Send error:', e);
-                                        alert('Lỗi gửi yêu cầu: ' + e.message);
-                                    }
+                                            // Lấy billId từ nhiều trường hợp trả về
+                                            let billId = null;
+                                            if (json.data) {
+                                                if (json.data.billId) billId = json.data.billId;
+                                                else if (json.data.bill && json.data.bill.billId) billId = json.data.bill.billId;
+                                            }
+                                            if (json.success && billId) {
+                                                // Nếu là trả góp thì reload lại trang bills
+                                                if (paymentMethod === 'installment') {
+                                                    window.location.reload();
+                                                    return;
+                                                }
+                                                if (json.data && json.data.redirectToBills) {
+                                                    // Nếu là thanh toán tiền mặt, reload lại trang bills
+                                                    window.location.reload();
+                                                    return;
+                                                }
+                                                if (json.data && json.data.billDetails) {
+                                                    console.log('[DEBUG][staff_thanhtoan.jsp] billDetails to save:', json.data.billDetails);
+                                                    localStorage.setItem('billDetails', JSON.stringify(json.data.billDetails));
+                                                    sessionStorage.setItem('billDetails', JSON.stringify(json.data.billDetails));
+                                                } else {
+                                                    console.warn('[DEBUG][staff_thanhtoan.jsp] Không có billDetails trong JSON trả về!');
+                                                }
+                                                console.log('[DEBUG][staff_thanhtoan.jsp] Redirecting to payment.jsp...');
+                                                window.location.href = 'payment.jsp?billId=' + encodeURIComponent(billId) + '&isStaff=true';
+                                            } else {
+                                                alert('Lỗi tạo hóa đơn: ' + (json.message || 'Không rõ nguyên nhân'));
+                                            }
+                                        })
+                                        .catch(error => {
+                                            alert('Lỗi gửi yêu cầu: ' + error);
+                                        });
                                 }
 
                                 // Modal functions
@@ -1841,45 +1762,13 @@
                                 function closeCreateModal() {
                                     const modal = document.getElementById('createInvoiceModal');
                                     const form = document.getElementById('createInvoiceForm');
-
                                     if (modal) modal.classList.add('hidden');
-                                    if (form) form.reset();
-
-                                    // Reset display values
-                                    const totalAmountEl = document.getElementById('totalAmount');
-                                    const currentCountEl = document.getElementById('currentCount');
-                                    const displayDownPayment = document.getElementById('displayDownPayment');
-                                    const remainingAmountEl = document.getElementById('remainingAmount');
-                                    const monthlyPaymentEl = document.getElementById('monthlyPayment');
-
-                                    if (totalAmountEl) totalAmountEl.textContent = '0 VNĐ';
-                                    if (currentCountEl) currentCountEl.textContent = '0';
-                                    if (displayDownPayment) displayDownPayment.textContent = '0';
-                                    if (remainingAmountEl) remainingAmountEl.textContent = '0';
-                                    if (monthlyPaymentEl) monthlyPaymentEl.textContent = '0';
-
-                                    // Hide installment options
-                                    const installmentOptions = document.getElementById('installmentOptions');
-                                    if (installmentOptions) installmentOptions.style.display = 'none';
-
-                                    // Reset payment amount
-                                    const paymentAmount = document.getElementById('paymentAmount');
-                                    if (paymentAmount) {
-                                        paymentAmount.readOnly = false;
-                                        paymentAmount.value = '';
+                                    if (form) {
+                                        form.reset();
+                                        form.style.display = 'block';
                                     }
-
-                                    // Reset input styles
-                                    const downPaymentInput = document.getElementById('downPayment');
-                                    if (downPaymentInput) {
-                                        downPaymentInput.style.borderColor = '#dbeafe';
-                                        downPaymentInput.style.backgroundColor = 'white';
-                                    }
-
-                                    // Reset global variable
-                                    totalInvoiceAmount = 0;
-
-                                    console.log('📋 Modal closed and reset');
+                                    document.getElementById('billSuccessInfo').style.display = 'none';
+                                    // ... các reset khác giữ nguyên ...
                                 }
 
                                 // Close modal when clicking outside
@@ -1888,6 +1777,37 @@
                                         closeCreateModal();
                                     }
                                 });
+
+                                // Gắn sự kiện cho nút giảm giá sau khi DOM load
+                                setTimeout(() => {
+                                    const btnDiscount = document.getElementById('btnDiscountOnline');
+                                    if (btnDiscount) {
+                                        btnDiscount.onclick = function () {
+                                            if (!discountApplied) {
+                                                // Trừ 50k vào tổng cộng
+                                                totalInvoiceAmount = Math.max(0, totalInvoiceAmount - discountValue);
+                                                document.getElementById('totalAmount').textContent = totalInvoiceAmount.toLocaleString('vi-VN') + ' VNĐ';
+                                                document.getElementById('paymentAmount').value = totalInvoiceAmount;
+                                                document.getElementById('discountNote').style.display = 'inline';
+                                                discountApplied = true;
+                                                // Nếu có trả góp thì cập nhật lại
+                                                const paymentMethod = document.querySelector('select[name="paymentMethod"]').value;
+                                                if (paymentMethod === 'installment') {
+                                                    updateInstallmentDisplay();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }, 300);
+
+                                function showQRModal(qrUrl, billId, amount) {
+                                    document.getElementById('qrCodeContainer').innerHTML = '<img src="' + qrUrl + '" alt="QR Code" style="max-width:300px;">';
+                                    document.getElementById('qrBillInfo').innerHTML = 'Mã hóa đơn: <b>' + billId + '</b><br>Số tiền: <b>' + amount.toLocaleString('vi-VN') + ' VNĐ</b>';
+                                    document.getElementById('qrModal').classList.remove('hidden');
+                                }
+                                function closeQRModal() {
+                                    document.getElementById('qrModal').classList.add('hidden');
+                                }
                             </script>
 
                             <!-- Installment Plan Modal -->

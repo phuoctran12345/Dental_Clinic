@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 import dao.MedicineDAO;
 import dao.BillDAO;
-import dao.ServiceDAO;
+import dao.ServiceDAO; 
 import model.Medicine;
 import model.Bill;
 import model.User;
@@ -93,55 +93,47 @@ public class StaffSellMedicineServlet extends HttpServlet {
             String customerName = request.getParameter("customer_name");
             String[] medicineIds = request.getParameterValues("medicine_id");
             String[] quantities = request.getParameterValues("quantity");
-            
-            // Validation đơn giản
-            if (medicineIds == null || medicineIds.length == 0) {
-                out.println("{\"success\": false, \"message\": \"Vui lòng chọn thuốc!\"}");
-                return;
-            }
-            
-            // Nếu không có tên khách hàng, dùng mặc định
-            if (customerName == null || customerName.trim().isEmpty()) {
-                customerName = "Khách mua thuốc";
-            }
-            
-            // Tính tổng tiền và tạo chi tiết
+            // Lấy giá bán từng thuốc từ DB
+            MedicineDAO medicineDAO = new MedicineDAO();
+            List<Medicine> medicines = new ArrayList<>();
             BigDecimal totalAmount = BigDecimal.ZERO;
             StringBuilder medicineDetails = new StringBuilder();
             medicineDetails.append("=== BÁN THUỐC ===\n");
             medicineDetails.append("Ngày: ").append(new java.util.Date()).append("\n");
             medicineDetails.append("Nhân viên: ").append(user.getUsername()).append("\n\n");
-            
-            MedicineDAO medicineDAO = new MedicineDAO();
-            
+            boolean enoughStock = true;
             for (int i = 0; i < medicineIds.length; i++) {
                 int medicineId = Integer.parseInt(medicineIds[i]);
                 int quantity = Integer.parseInt(quantities[i]);
-                
                 Medicine medicine = medicineDAO.getMedicineById(medicineId);
                 if (medicine != null && medicine.getQuantityInStock() >= quantity) {
-                    BigDecimal price = new BigDecimal("10000"); // 10,000 VND per unit
+                    BigDecimal price = medicine.getPrice() != null ? medicine.getPrice() : BigDecimal.ZERO;
                     BigDecimal itemTotal = price.multiply(new BigDecimal(quantity));
                     totalAmount = totalAmount.add(itemTotal);
-                    
                     medicineDetails.append(String.format("• %s x %d %s = %,d VND\n", 
                         medicine.getName(), quantity, 
                         medicine.getUnit() != null ? medicine.getUnit() : "viên", 
                         itemTotal.longValue()));
-                    
-                    // Cập nhật tồn kho
-                    medicineDAO.reduceMedicineStock(medicineId, quantity);
+                    medicines.add(medicine);
+                } else {
+                    enoughStock = false;
+                    break;
                 }
             }
-            
+            if (!enoughStock) {
+                out.println("{\"success\": false, \"message\": \"Không đủ thuốc trong kho!\"}");
+                return;
+            }
+            // Trừ kho và lưu hóa đơn
+            for (int i = 0; i < medicineIds.length; i++) {
+                int medicineId = Integer.parseInt(medicineIds[i]);
+                int quantity = Integer.parseInt(quantities[i]);
+                medicineDAO.reduceMedicineStock(medicineId, quantity);
+            }
             medicineDetails.append(String.format("\nTỔNG CỘNG: %,d VND", totalAmount.longValue()));
-            
-            // LƯU ĐƠN GIẢN - CHỈ TỔNG TIỀN
             BillDAO billDAO = new BillDAO();
             boolean saved = billDAO.createSimpleSale(user.getId(), totalAmount, medicineDetails.toString(), customerName.trim());
-            
             if (saved) {
-                // Trả về thông tin để in bill
                 String jsonResponse = String.format(
                         "{\"success\": true, " +
                         "\"message\": \"Bán hàng thành công!\", " +
@@ -154,7 +146,6 @@ public class StaffSellMedicineServlet extends HttpServlet {
                         totalAmount.longValue(),
                         medicineDetails.toString().replace("\"", "\\\"").replace("\n", "\\n")
                 );
-                
                 out.println(jsonResponse);
             } else {
                 out.println("{\"success\": false, \"message\": \"Lỗi lưu dữ liệu!\"}");

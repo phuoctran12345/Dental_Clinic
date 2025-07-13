@@ -4,9 +4,9 @@
     Author     : ASUS
 --%>
 
-<%@page pageEncoding="UTF-8"%>
-<%@ include file="/jsp/doctor/doctor_header.jsp" %>
-<%@ include file="/jsp/doctor/doctor_menu.jsp" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="doctor_header.jsp" %>
+<%@ include file="doctor_menu.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 

@@ -5,228 +5,167 @@
                 <%@page import="java.text.SimpleDateFormat" %>
                     <%@page import="java.util.Date" %>
 
-
                         <%@ include file="/jsp/patient/user_header.jsp" %>
-
                             <%@ include file="/jsp/patient/user_menu.jsp" %>
-
-
-
-
-
 
                                 <!DOCTYPE html>
                                 <html>
 
                                 <head>
-                                    <title>Thông Tin Cá Nhân</title>
- <style>
-            /* Thiết lập cơ bản */
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f5f7fa;
-                margin: 0;
-                color: #333;
-                font-size: 16px;
-                padding-top: 10px;
-            }
+                                    <title>Lịch khám của tôi</title>
+                                    <style>
+                                        body {
+                                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                            background: #f5f7fa;
+                                            margin: 0;
+                                            color: #333;
+                                            font-size: 16px;
+                                            padding-top: 10px;
+                                        }
 
-            /* Khung chính */
-            .dashboard {
-                padding: 20px 35px 30px 290px;
-                max-width: 100%;
-                margin: 0 auto;
-            }
+                                        .dashboard {
+                                            padding: 20px 35px 30px 290px;
+                                            max-width: 100%;
+                                            margin: 0 auto;
+                                        }
 
-            /* Tiêu đề */
-            h2 {
-                color: #2c5282;
-            }
+                                        h2,
+                                        h3 {
+                                            color: #2c5282;
+                                        }
 
-            /* Bảng lịch hẹn */
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                background: #ffffff;
-                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-                border-radius: 6px;
-                overflow: hidden;
-                margin-bottom: 25px;
-                border: 1px solid #ddd;
-            }
+                                        table {
+                                            width: 100%;
+                                            border-collapse: collapse;
+                                            background: #ffffff;
+                                            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+                                            border-radius: 6px;
+                                            overflow: hidden;
+                                            margin-bottom: 15px;
+                                            border: 1px solid #ddd;
+                                        }
 
-            table thead {
-                background: #4E80EE;
-                color: white;
-            }
+                                        table thead {
+                                            background: #4E80EE;
+                                            color: white;
+                                        }
 
-            table th {
-                padding: 15px 14px;
-                font-weight: 600;
-                text-align: left;
-                font-size: 17px;
-                border-right: 1px solid rgba(255,255,255,0.3);
-            }
+                                        table th {
+                                            padding: 15px 14px;
+                                            font-weight: 600;
+                                            text-align: left;
+                                            font-size: 17px;
+                                            border-right: 1px solid rgba(255, 255, 255, 0.3);
+                                        }
 
-            table th:last-child {
-                border-right: none;
-            }
+                                        table th:last-child {
+                                            border-right: none;
+                                        }
 
-            table td {
-                padding: 14px;
-                border-bottom: 1px solid #ddd;
-                border-right: 1px solid #ddd;
-                font-size: 16px;
-            }
+                                        table td {
+                                            padding: 14px;
+                                            border-bottom: 1px solid #ddd;
+                                            border-right: 1px solid #ddd;
+                                            font-size: 16px;
+                                        }
 
-            table td:last-child {
-                border-right: none;
-            }
+                                        table td:last-child {
+                                            border-right: none;
+                                        }
 
-            table tbody tr:last-child td {
-                border-bottom: none;
-            }
+                                        table tbody tr:last-child td {
+                                            border-bottom: none;
+                                        }
 
+                                        .pagination-container {
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                            margin: 20px 0;
+                                            gap: 10px;
+                                        }
 
-            /* Status styling */
-            .status {
-                font-weight: 600;
-                padding: 4px 8px;
-                border-radius: 3px;
-                font-size: 15px;
-            }
-            
-            .status-confirmed {
-                color: #276749;
-                background-color: #f0fff4;
-            }
-            
-            .status-pending {
-                color: #975a16;
-                background-color: #fffaf0;
-            }
-            
-            .status-cancelled {
-                color: #9b2c2c;
-                background-color: #fff5f5;
-            }
+                                        .pagination {
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 8px;
+                                            background: white;
+                                            padding: 15px 20px;
+                                            border-radius: 8px;
+                                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                                            border: 1px solid #e2e8f0;
+                                        }
 
-            /* Form tìm kiếm */
-            form[method="get"] {
-                display: flex;
-                gap: 15px;
-                align-items: center;
-                margin-bottom: 25px;
-                background: white;
-                padding: 20px;
-                border-radius: 6px;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-                border: 1px solid #e2e8f0;
-            }
+                                        .pagination a,
+                                        .pagination button {
+                                            padding: 8px 12px;
+                                            border: 1px solid #cbd5e0;
+                                            background: #f8fafc;
+                                            color: #4a5568;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 14px;
+                                            font-weight: 500;
+                                            transition: all 0.2s;
+                                            text-decoration: none;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            min-width: 36px;
+                                            height: 36px;
+                                        }
 
-            form[method="get"] input[type="text"],
-            form[method="get"] select {
-                padding: 12px 14px;
-                border: 1px solid #cbd5e0;
-border-radius: 5px;
-                font-size: 16px;
-                background: #f8fafc;
-            }
+                                        .pagination a:hover,
+                                        .pagination button:hover {
+                                            background: #e2e8f0;
+                                            border-color: #4E80EE;
+                                            transform: translateY(-1px);
+                                        }
 
-            form[method="get"] input[type="text"]:focus,
-            form[method="get"] select:focus {
-                border-color: #4E80EE;
-                outline: none;
-                box-shadow: 0 0 0 2px rgba(78, 128, 238, 0.2);
-            }
+                                        .pagination a.active {
+                                            background: #4E80EE;
+                                            color: white;
+                                            border-color: #4E80EE;
+                                            font-weight: 600;
+                                        }
 
-            /* Nút */
-            button {
-                padding: 14px 28px;
-                background: #4E80EE;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: 600;
-                font-size: 16px;
-                cursor: pointer;
-                transition: all 0.2s;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
+                                        .pagination button:disabled {
+                                            opacity: 0.5;
+                                            cursor: not-allowed;
+                                            transform: none;
+                                        }
 
-            button:hover {
-                background: #3a5fcd;
-                transform: translateY(-1px);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
+                                        .page-info {
+                                            margin: 0 10px;
+                                            color: #718096;
+                                            font-size: 14px;
+                                            font-weight: 500;
+                                        }
 
-            /* Danh sách bác sĩ */
-            .list-docter {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 20px;
-            }
+                                        .empty-message {
+                                            text-align: center;
+                                            padding: 30px;
+                                            color: #718096;
+                                            background: #f8fafc;
+                                            border-radius: 6px;
+                                            font-size: 17px;
+                                            margin: 15px 0;
+                                            border: 1px dashed #cbd5e0;
+                                        }
 
-            .doctor-card {
-                background: white;
-                border-radius: 6px;
-                padding: 20px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                border: 1px solid #e2e8f0;
-            }
+                                        @media (max-width: 1200px) {
+                                            .dashboard {
+                                                padding-left: 240px;
+                                            }
+                                        }
 
-            .doctor-card h3 {
-                color: #2c5282;
-                margin-top: 0;
-                margin-bottom: 12px;
-                font-size: 18px;
-                font-weight: 700;
-            }
-
-            .doctor-card p {
-                margin: 10px 0;
-                color: #4a5568;
-                font-size: 16px;
-            }
-
-            .doctor-card form button {
-                width: 100%;
-                margin-top: 12px;
-            }
-
-            /* Thông báo trống */
-            p[style*="text-align: center"],
-            .empty-message {
-                text-align: center;
-                padding: 30px;
-                color: #718096;
-                background: #f8fafc;
-                border-radius: 6px;
-                font-size: 17px;
-                margin: 15px 0;
-                border: 1px dashed #cbd5e0;
-            }
-
-            /* Responsive adjustments */
-            @media (max-width: 1200px) {
-                .dashboard {
-                    padding-left: 240px;
-                }
-            }
-
-            @media (max-width: 768px) {
-                .dashboard {
-                    padding-left: 20px;
-                    padding-right: 20px;
-                }
-                
-                form[method="get"] {
-                    flex-direction: column;
-                    align-items: stretch;
-                }
-            }
-        </style>
-
+                                        @media (max-width: 768px) {
+                                            .dashboard {
+                                                padding-left: 20px;
+                                                padding-right: 20px;
+                                            }
+                                        }
+                                    </style>
                                 </head>
 
                                 <body>
@@ -235,109 +174,327 @@ border-radius: 5px;
 
                                         <% List<Appointment> appointment = (List<Appointment>)
                                                 request.getAttribute("appointment");
+                                                int itemsPerPage = 5;
+                                                int currentPage = 1;
+                                                String pageParam = request.getParameter("page");
+                                                if (pageParam != null && !pageParam.isEmpty()) {
+                                                try {
+                                                currentPage = Integer.parseInt(pageParam);
+                                                } catch (NumberFormatException e) {
+                                                currentPage = 1;
+                                                }
+                                                }
+
                                                 if (appointment != null && !appointment.isEmpty()) {
-                                                %>
-                                                <table border="1" cellpadding="5" cellspacing="0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Bác sĩ</th>
-                                                            <th>Ngày</th>
-                                                            <th>Giờ</th>
-                                                            <th>Trạng thái</th>
-                                                            <th>Lý do</th>
-                                                            <th>Xem báo cáo</th>
+                                                int totalItems = appointment.size();
+                                                int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+                                                int startIndex = (currentPage - 1) * itemsPerPage;
+                                                int endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+                                                List<Appointment> pageAppointments = appointment.subList(startIndex,
+                                                    endIndex);
+                                                    %>
 
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <% for (Appointment ap : appointment) { %>
+                                                    <table>
+                                                        <thead>
                                                             <tr>
-                                                                <td>
-                                                                    <%= ap.getDoctorName()%>
-                                                                </td>
-                                                                <td>
-                                                                    <%= ap.getFormattedWorkDate()%>
-                                                                </td>
-                                                                <td>
-                                                                    <%= ap.getFormattedTimeRange()%>
-                                                                </td>
-                                                                <td>
-                                                                    <%= ap.getStatus()%>
-                                                                </td>
-                                                                <td>
-                                                                    <%= ap.getReason()%>
-                                                                </td>
-                                                                <td><a
-                                                                        href="MedicalReportDetailServlet?appointmentId=<%= ap.getAppointmentId()%>">Xem
-                                                                        báo cáo</a></td>
-
+                                                                <th>Bác sĩ</th>
+                                                                <th>Ngày</th>
+                                                                <th>Giờ</th>
+                                                                <th>Trạng thái</th>
+                                                                <th>Lý do</th>
+                                                                <th>Xem báo cáo</th>
                                                             </tr>
-                                                            <% } %>
-                                                    </tbody>
-                                                </table>
-                                                <% } else { %>
-                                                    <p>Bạn chưa có lịch hẹn nào.</p>
-                                                    <% } %>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% for (Appointment ap : pageAppointments) { %>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= ap.getDoctorName() !=null ?
+                                                                            ap.getDoctorName() : "Chưa có thông tin" %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= ap.getFormattedWorkDate() %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= ap.getFormattedTimeRange() %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= ap.getStatus() %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= ap.getReason() %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a
+                                                                            href="MedicalReportDetailServlet?appointmentId=<%= ap.getAppointmentId() %>">
+                                                                            Xem báo cáo
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                        </tbody>
+                                                    </table>
 
-                                                        <div class="recent-visits mt-5">
-                                                            <h3>Lịch khám của người thân</h3>
+                                                    <!-- Pagination for personal appointments -->
+                                                    <% if (totalPages> 1) { %>
+                                                        <div class="pagination-container">
+                                                            <div class="pagination">
+                                                                <!-- Previous button -->
+                                                                <% if (currentPage> 1) { %>
+                                                                    <a href="?page=<%= currentPage - 1 %>">← Trước</a>
+                                                                    <% } else { %>
+                                                                        <button disabled>← Trước</button>
+                                                                        <% } %>
 
-                                                            <% List<Appointment> relativeAppointments = (List
-                                                                <Appointment>)
-                                                                    request.getAttribute("relativeAppointments");
-                                                                    %>
+                                                                            <!-- Page numbers -->
+                                                                            <% int startPage=Math.max(1, currentPage -
+                                                                                2); int endPage=Math.min(totalPages,
+                                                                                currentPage + 2); for (int i=startPage;
+                                                                                i <=endPage; i++) { if (i==currentPage)
+                                                                                { %>
+                                                                                <a href="?page=<%= i %>" class="active">
+                                                                                    <%= i %>
+                                                                                </a>
+                                                                                <% } else { %>
+                                                                                    <a href="?page=<%= i %>">
+                                                                                        <%= i %>
+                                                                                    </a>
+                                                                                    <% } } %>
 
-                                                                    <% if (relativeAppointments !=null &&
-                                                                        !relativeAppointments.isEmpty()) { %>
-                                                                        <table class="table table-bordered"
-                                                                            style="width: 100%; text-align: left;">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>Người khám</th>
-                                                                                    <th>Bác sĩ</th>
-                                                                                    <th>Ngày khám</th>
-                                                                                    <th>Khung giờ</th>
-                                                                                    <th>Trạng thái</th>
-                                                                                    <th>Xem báo cáo</th>
+                                                                                        <!-- Next button -->
+                                                                                        <% if (currentPage < totalPages)
+                                                                                            { %>
+                                                                                            <a
+                                                                                                href="?page=<%= currentPage + 1 %>">Sau
+                                                                                                →</a>
+                                                                                            <% } else { %>
+                                                                                                <button disabled>Sau
+                                                                                                    →</button>
+                                                                                                <% } %>
 
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <% for (Appointment ap :
-                                                                                    relativeAppointments) {%>
-                                                                                    <tr>
-                                                                                        <td>
-                                                                                            <%= ap.getPatientName()%>
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            <%= ap.getDoctorName()%>
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            <%=
-                                                                                                ap.getFormattedWorkDate()%>
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            <%=
-                                                                                                ap.getFormattedTimeRange()%>
-                                                                                        </td>
-                                                                                        <td>
-                                                                                            <%= ap.getStatus()%>
-                                                                                        </td>
-                                                                                        <td><a
-                                                                                                href="MedicalReportDetailServlet?appointmentId=<%= ap.getAppointmentId()%>">Xem
-                                                                                                báo cáo</a></td>
-
-                                                                                    </tr>
-                                                                                    <% } %>
-                                                                            </tbody>
-                                                                        </table>
-                                                                        <% } else { %>
-                                                                            <p>Hiện bạn chưa có lịch khám cho người
-                                                                                thân.</p>
-                                                                            <% } %>
+                                                                                                    <span
+                                                                                                        class="page-info">
+                                                                                                        Trang <%=
+                                                                                                            currentPage
+                                                                                                            %> / <%=
+                                                                                                                totalPages
+                                                                                                                %>
+                                                                                                                (Hiển
+                                                                                                                thị <%=
+                                                                                                                    startIndex
+                                                                                                                    + 1
+                                                                                                                    %>-
+                                                                                                                    <%= endIndex
+                                                                                                                        %>
+                                                                                                                        trong
+                                                                                                                        <%= totalItems
+                                                                                                                            %>
+                                                                                                                            lịch
+                                                                                                                            hẹn)
+                                                                                                    </span>
+                                                            </div>
                                                         </div>
+                                                        <% } %>
 
+                                                            <% } else { %>
+                                                                <p class="empty-message">Bạn chưa có lịch hẹn nào.</p>
+                                                                <% } %>
 
+                                                                    <!-- Lịch khám của người thân -->
+                                                                    <div style="margin-top: 40px;">
+                                                                        <h3>Lịch khám của người thân</h3>
+
+                                                                        <% List<Appointment> relativeAppointments =
+                                                                            (List<Appointment>)
+                                                                                request.getAttribute("relativeAppointments");
+                                                                                int relativePage = 1;
+                                                                                String relativePageParam =
+                                                                                request.getParameter("relativePage");
+                                                                                if (relativePageParam != null &&
+                                                                                !relativePageParam.isEmpty()) {
+                                                                                try {
+                                                                                relativePage =
+                                                                                Integer.parseInt(relativePageParam);
+                                                                                } catch (NumberFormatException e) {
+                                                                                relativePage = 1;
+                                                                                }
+                                                                                }
+
+                                                                                if (relativeAppointments != null &&
+                                                                                !relativeAppointments.isEmpty()) {
+                                                                                int relativeTotalItems =
+                                                                                relativeAppointments.size();
+                                                                                int relativeTotalPages = (int)
+                                                                                Math.ceil((double) relativeTotalItems /
+                                                                                itemsPerPage);
+                                                                                int relativeStartIndex = (relativePage -
+                                                                                1) * itemsPerPage;
+                                                                                int relativeEndIndex =
+                                                                                Math.min(relativeStartIndex +
+                                                                                itemsPerPage, relativeTotalItems);
+                                                                                List<Appointment>
+                                                                                    pageRelativeAppointments =
+                                                                                    relativeAppointments.subList(relativeStartIndex,
+                                                                                    relativeEndIndex);
+                                                                                    %>
+
+                                                                                    <table>
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>Người khám</th>
+                                                                                                <th>Bác sĩ</th>
+                                                                                                <th>Ngày khám</th>
+                                                                                                <th>Khung giờ</th>
+                                                                                                <th>Trạng thái</th>
+                                                                                                <th>Xem báo cáo</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <% for (Appointment ap :
+                                                                                                pageRelativeAppointments)
+                                                                                                { %>
+                                                                                                <tr>
+                                                                                                    <td>
+                                                                                                        <%= ap.getPatientName()
+                                                                                                            !=null ?
+                                                                                                            ap.getPatientName()
+                                                                                                            : "Chưa có thông tin"
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= ap.getDoctorName()
+                                                                                                            !=null ?
+                                                                                                            ap.getDoctorName()
+                                                                                                            : "Chưa có thông tin"
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= ap.getFormattedWorkDate()
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= ap.getFormattedTimeRange()
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= ap.getStatus()
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <a
+                                                                                                            href="MedicalReportDetailServlet?appointmentId=<%= ap.getAppointmentId() %>">
+                                                                                                            Xem báo cáo
+                                                                                                        </a>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <% } %>
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                    <!-- Pagination for relative appointments -->
+                                                                                    <% if (relativeTotalPages> 1) { %>
+                                                                                        <div
+                                                                                            class="pagination-container">
+                                                                                            <div class="pagination">
+                                                                                                <!-- Previous button -->
+                                                                                                <% if (relativePage> 1)
+                                                                                                    { %>
+                                                                                                    <a
+                                                                                                        href="?relativePage=<%= relativePage - 1 %>&page=<%= currentPage %>">←
+                                                                                                        Trước</a>
+                                                                                                    <% } else { %>
+                                                                                                        <button
+                                                                                                            disabled>←
+                                                                                                            Trước</button>
+                                                                                                        <% } %>
+
+                                                                                                            <!-- Page numbers -->
+                                                                                                            <% int
+                                                                                                                relativeStartPage=Math.max(1,
+                                                                                                                relativePage
+                                                                                                                - 2);
+                                                                                                                int
+                                                                                                                relativeEndPage=Math.min(relativeTotalPages,
+                                                                                                                relativePage
+                                                                                                                + 2);
+                                                                                                                for (int
+                                                                                                                i=relativeStartPage;
+                                                                                                                i
+                                                                                                                <=relativeEndPage;
+                                                                                                                i++) {
+                                                                                                                if
+                                                                                                                (i==relativePage)
+                                                                                                                { %>
+                                                                                                                <a href="?relativePage=<%= i %>&page=<%= currentPage %>"
+                                                                                                                    class="active">
+                                                                                                                    <%= i
+                                                                                                                        %>
+                                                                                                                </a>
+                                                                                                                <% } else
+                                                                                                                    { %>
+                                                                                                                    <a
+                                                                                                                        href="?relativePage=<%= i %>&page=<%= currentPage %>">
+                                                                                                                        <%= i
+                                                                                                                            %>
+                                                                                                                    </a>
+                                                                                                                    <% } }
+                                                                                                                        %>
+
+                                                                                                                        <!-- Next button -->
+                                                                                                                        <% if
+                                                                                                                            (relativePage
+                                                                                                                            <
+                                                                                                                            relativeTotalPages)
+                                                                                                                            {
+                                                                                                                            %>
+                                                                                                                            <a
+                                                                                                                                href="?relativePage=<%= relativePage + 1 %>&page=<%= currentPage %>">Sau
+                                                                                                                                →</a>
+                                                                                                                            <% } else
+                                                                                                                                {
+                                                                                                                                %>
+                                                                                                                                <button
+                                                                                                                                    disabled>Sau
+                                                                                                                                    →</button>
+                                                                                                                                <% }
+                                                                                                                                    %>
+
+                                                                                                                                    <span
+                                                                                                                                        class="page-info">
+                                                                                                                                        Trang
+                                                                                                                                        <%= relativePage
+                                                                                                                                            %>
+                                                                                                                                            /
+                                                                                                                                            <%= relativeTotalPages
+                                                                                                                                                %>
+                                                                                                                                                (Hiển
+                                                                                                                                                thị
+                                                                                                                                                <%= relativeStartIndex
+                                                                                                                                                    +
+                                                                                                                                                    1
+                                                                                                                                                    %>
+                                                                                                                                                    -
+                                                                                                                                                    <%= relativeEndIndex
+                                                                                                                                                        %>
+                                                                                                                                                        trong
+                                                                                                                                                        <%= relativeTotalItems
+                                                                                                                                                            %>
+                                                                                                                                                            lịch
+                                                                                                                                                            hẹn)
+                                                                                                                                    </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <% } %>
+
+                                                                                            <% } else { %>
+                                                                                                <p
+                                                                                                    class="empty-message">
+                                                                                                    Hiện bạn chưa có
+                                                                                                    lịch khám cho người
+                                                                                                    thân.</p>
+                                                                                                <% } %>
+                                                                    </div>
+                                    </div>
                                 </body>
 
                                 </html>

@@ -1,17 +1,6 @@
-<%-- 
-    Document   : home
-    Created on : 29 thg 5, 2025, 01:31:54
-    Author     : tranhongphuoc
---%>
 
-<%-- 
-    Document   : index
-    Created on : May 26, 2025, 4:11:36 PM
-    Author     : lebao
---%>
-
-<!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
@@ -67,178 +56,13 @@
                 transition: background 0.3s ease, color 0.3s ease;
             }
 
-            .header {
-                background: var(--header-bg);
-                padding: 10px 25px;
-                box-shadow: 0 2px 5px var(--shadow-color);
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1000;
-            }
-
-            .header-top {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: -20px;
-            }
-
-            .logo {
-                display: flex;
-                align-items: center;
-                transition: transform 0.3s ease;
-            }
-
-            .logo img {
-                width: 90px;
-                height: 90px;
-                object-fit: contain;
-                margin-right: 15px;
-                background: transparent;
-                border: none;
-            }
-
-            .logo h1 {
-                font-size: 48px;
-                font-weight: 700;
-                color: var(--highlight-text);
-                text-transform: uppercase;
-                line-height: 1.2;
-            }
-
-            .logo span {
-                color: var(--highlight-text);
-                font-weight: 400;
-                font-size: 34px;
-                text-transform: none;
-            }
-
-            .auth-buttons {
-                display: flex;
-                padding-right: 50px;
-                gap: 20px;
-                margin-top: 0;
-                align-items: center;
-            }
-
-            .auth-btn {
-                padding: 10px 30px;
-                text-decoration: none;
-                font-size: 18px;
-                font-weight: 500;
-                border-radius: 5px;
-                transition: all 0.3s ease;
-            }
-
-            .auth-btn.register {
-                background: var(--header-bg);
-                color: var(--highlight-text);
-            }
-
-            .auth-btn.register:hover {
-                background: var(--link-color);
-                color: #fff;
-                transform: translateY(-2px);
-                box-shadow: 0 3px 8px var(--shadow-color);
-            }
-
-            .auth-btn.login {
-                background: var(--header-bg);
-                color: var(--highlight-text);
-                border: 1px solid var(--link-color);
-            }
-
-            .auth-btn.login:hover {
-                background: var(--link-color);
-                color: #fff;
-                transform: translateY(-2px);
-                box-shadow: 0 3px 8px var(--shadow-color);
-            }
-
-            .theme-toggle {
-                background: none;
-                border: none;
-                font-size: 18px;
-                cursor: pointer;
-                color: var(--highlight-text);
-                transition: color 0.3s ease;
-            }
-
-            .theme-toggle:hover {
-                color: var(--link-color);
-            }
-
-            .language-selector {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .language-selector select {
-                padding: 8px;
-                border-radius: 5px;
-                border: 1px solid var(--link-color);
-                background: var(--header-bg);
-                color: var(--text-color);
-                font-size: 16px;
-                cursor: pointer;
-            }
-
-            .nav {
-                display: flex;
-                justify-content: end;
-            }
-
-            .nav ul {
-                display: flex;
-                list-style: none;
-                gap: 35px;
-                border-top: 1px solid rgba(0, 0, 0, 0.3);
-                margin-bottom: -5px;
-                margin-right: 20px;
-            }
-
-            .nav ul li {
-                position: relative;
-                margin-top: 10px;
-            }
-
-            .nav ul li a {
-                text-decoration: none;
-                color: #1e3a8a;
-                font-weight: 700;
-                font-size: 17px;
-                padding: 10px 15px;
-                transition: color 0.1s ease;
-            }
-
-            .nav ul li a::after {
-                content: '';
-                position: absolute;
-                width: 0;
-                height: 1px;
-                background-color: var(--link-color);
-                bottom: 0;
-                left: 15px;
-                transition: width 0.3s ease;
-            }
-
-            .nav ul li a:hover::after, .nav ul li a.active::after {
-                width: calc(100% - 30px);
-            }
-
-            .nav ul li a:hover, .nav ul li a.active {
-                color: var(--link-color);
-                font-weight: bold;
-            }
-
             .hero {
-                background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('img/banner2.jpg') no-repeat center center fixed;
-                color: #112ff2;
-                padding: 100px 0;
-                text-align: center;
+                background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), url('img/banner.png');
+                background-size: cover; /* Ảnh sẽ bao phủ toàn bộ màn hình */
+                background-position: center; /* Căn giữa ảnh */
+                color: #fff;
+                padding: 120px 0;
+                text-align: left;
                 position: relative;
                 overflow: hidden;
                 object-fit: cover;
@@ -258,23 +82,6 @@
             .hero h3 {
                 font-size: 43px;
                 margin-bottom: 20px;
-            }
-
-            .btn {
-                display: inline-block;
-                padding: 15px 30px;
-                background-color: var(--btn-bg);
-                color: white;
-                text-decoration: none;
-                border-radius: 20px;
-                font-weight: bold;
-                transition: all 0.3s ease;
-            }
-
-            .btn:hover {
-                background-color: var(--btn-hover-bg);
-                transform: translateY(-3px);
-                box-shadow: 0 5px 15px var(--shadow-color);
             }
 
             .services {
@@ -750,129 +557,9 @@
                 background: linear-gradient(135deg, #1e3a8a, #2563eb);
             }
 
-            .footer {
-                background: var(--footer-bg);
-                padding: 30px;
-                text-align: justify;
-            }
-
-            .footer-container {
-                max-width: 1200px;
-                margin: 0 50px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 50px;
-            }
-
-            .footer-col {
-                flex: 1;
-                min-width: 250px;
-            }
-
-            .footer-col h4 {
-                font-size: 27px;
-                margin-bottom: 12px;
-                color: white;
-            }
-
-            .footer-col p {
-                color: white;
-                line-height: 1.6;
-                margin-bottom: 10px;
-                font-size: 14px;
-            }
-
-            .footer-links {
-                list-style: none;
-            }
-
-            .footer-links li {
-                margin-bottom: 10px;
-            }
-
-            .footer-links li a {
-                color: whitesmoke;
-                text-decoration: none;
-                transition: all 0.3s ease;
-            }
-
-            .copyright {
-                text-align: center;
-                padding: 20px 0;
-                color: white;
-                background-color: var(--copyright-bg);
-                font-size: 14px;
-            }
-
             @media screen and (max-width: 768px) {
                 body {
                     padding-top: 80px;
-                }
-
-                .header {
-                    padding: 8px 10px;
-                }
-
-                .header-top {
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-
-                .logo img {
-                    width: 50px;
-                    height: 50px;
-                    margin-right: 10px;
-                }
-
-                .logo h1 {
-                    font-size: 24px;
-                }
-
-                .logo span {
-                    font-size: 18px;
-                }
-
-                .auth-buttons {
-                    padding-right: 0;
-                    gap: 8px;
-                    flex-direction: row;
-                }
-
-                .auth-btn {
-                    padding: 6px 12px;
-                    font-size: 12px;
-                }
-
-                .theme-toggle {
-                    font-size: 14px;
-                }
-
-                .language-selector select {
-                    padding: 6px;
-                    font-size: 12px;
-                }
-
-                .nav {
-                    justify-content: center;
-                }
-
-                .nav ul {
-                    flex-direction: row;
-                    gap: 10px;
-                    margin-right: 0;
-                    border-top: none;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                }
-
-                .nav ul li a {
-                    font-size: 12px;
-                    padding: 6px 8px;
-                }
-
-                .nav ul li a::after {
-                    left: 8px;
                 }
 
                 .hero {
@@ -1135,82 +822,11 @@
                     padding: 8px 20px;
                     font-size: 12px;
                 }
-
-                .footer {
-                    padding: 20px 10px;
-                }
-
-                .footer-container {
-                    margin: 0 10px;
-                    gap: 15px;
-                }
-
-                .footer-col {
-                    min-width: 100%;
-                }
-
-                .footer-col h4 {
-                    font-size: 18px;
-                    margin-bottom: 8px;
-                }
-
-                .footer-col p {
-                    font-size: 10px;
-                }
-
-                .footer-links li a {
-                    font-size: 10px;
-                }
-
-                .copyright {
-                    font-size: 10px;
-                    padding: 10px 0;
-                }
             }
 
             @media screen and (min-width: 769px) and (max-width: 1024px) {
                 body {
                     padding-top: 150px;
-                }
-
-                .logo img {
-                    width: 80px;
-                    height: 80px;
-                }
-
-                .logo h1 {
-                    font-size: 40px;
-                }
-
-                .logo span {
-                    font-size: 28px;
-                }
-
-                .auth-buttons {
-                    gap: 15px;
-                    padding-right: 20px;
-                }
-
-                .auth-btn {
-                    padding: 8px 25px;
-                    font-size: 16px;
-                }
-
-                .theme-toggle {
-                    font-size: 16px;
-                }
-
-                .language-selector select {
-                    padding: 7px;
-                    font-size: 14px;
-                }
-
-                .nav ul {
-                    gap: 20px;
-                }
-
-                .nav ul li a {
-                    font-size: 16px;
                 }
 
                 .hero {
@@ -1290,50 +906,17 @@
                 .map iframe {
                     height: 400px;
                 }
-
-                .footer-container {
-                    margin: 0 20px;
-                    gap: 30px;
-                }
             }
         </style>
     </head>
     <body>
-        <header class="header">
-            <div class="header-top">
-                <div class="logo">
-                    <img src="img/logo.png" alt="HAPPY Smile Logo">
-                    <h1>HAPPY <span>Smile</span></h1>
-                </div>
-                <div class="auth-buttons">
-                    <a href="login.jsp" class="auth-btn login" data-lang="login">Đăng nhập</a>
-                    <a href="signup.jsp" class="auth-btn register" data-lang="register">Đăng ký</a>
-                    <button class="theme-toggle" id="theme-toggle">🌙</button>
-                    <div class="language-selector">
-                        <select id="language-switcher">
-                            <option value="vi">Tiếng Việt</option>
-                            <option value="en">English</option>
-                            <option value="ja">日本語</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <nav class="nav">
-                <ul>
-                    <li><a href="#hero" class="active" data-lang="overview">Tổng quan</a></li>
-                    <li><a href="#services" data-lang="services">Dịch vụ</a></li>
-                    <li><a href="#team" data-lang="team">Đội ngũ bác sĩ</a></li>
-                    <li><a href="#news" data-lang="news">Tin tức</a></li>
-                    <li><a href="#contact" data-lang="contact">Liên hệ</a></li>
-                </ul>
-            </nav>
-        </header>
+        <%@ include file="/includes/header.jsp" %>
 
         <section class="hero" id="hero">
             <div class="hero-content">
                 <h2 data-lang="hero-subtitle">Phòng khám nha khoa</h2>
                 <h3 data-lang="hero-title">HAPPY SMILE</h3>
-                <a href="#" class="btn" data-lang="book-appointment">Đặt lịch khám ngay</a>
+                
             </div>
         </section>
 
@@ -1474,35 +1057,35 @@
             <div class="news-grid">
                 <div class="news-card">
                     <div class="news-image">
-                        <img src="img/placeholder-news.png" alt="Cách chăm sóc răng miệng">
+                        <img src="img/tintuc1.png" alt="Cách chăm sóc răng miệng">
                     </div>
                     <div class="news-content">
                         <div class="news-date">17/05/2025</div>
-                        <h4 class="news-title" data-lang="news-title-1">5 Cách chăm sóc răng miệng hiệu quả tại nhà</h4>
+                        <h4 class="news-title" data-lang="news-title-1">TOP 11 cách chăm sóc răng miệng hiệu quả, cho răng khỏe đẹp</h4>
                         <p class="news-excerpt" data-lang="news-excerpt-1">Chăm sóc răng miệng đúng cách không chỉ giúp bạn có hàm răng trắng sáng mà còn phòng ngừa nhiều bệnh lý...</p>
-                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
+                        <a href="https://elitedental.com.vn/top-cac-cach-cham-soc-rang-mieng-hieu-qua-cho-rang-khoe-dep.html" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
                 <div class="news-card">
                     <div class="news-image">
-                        <img src="img/placeholder-news.png" alt="Niềng răng trong suốt">
+                        <img src="img/tintuc2.jpg" alt="Niềng răng trong suốt">
                     </div>
                     <div class="news-content">
                         <div class="news-date">10/05/2025</div>
                         <h4 class="news-title" data-lang="news-title-2">Những điều cần biết về niềng răng trong suốt</h4>
                         <p class="news-excerpt" data-lang="news-excerpt-2">Niềng răng trong suốt đang là xu hướng được nhiều người lựa chọn nhờ tính thẩm mỹ cao và thuận tiện...</p>
-                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
+                        <a href="https://medlatec.vn/tin-tuc/nieng-rang-trong-suot--uu-nhuoc-diem-va-nhung-dieu-can-luu-y-s99-n31947" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
                 <div class="news-card">
                     <div class="news-image">
-                        <img src="img/placeholder-news.png" alt="Phòng ngừa sâu răng">
+                        <img src="img/tintuc3.png" alt="Phòng ngừa sâu răng">
                     </div>
                     <div class="news-content">
                         <div class="news-date">05/05/2025</div>
                         <h4 class="news-title" data-lang="news-title-3">Phòng ngừa sâu răng cho trẻ em hiệu quả</h4>
                         <p class="news-excerpt" data-lang="news-excerpt-3">Trẻ em là đối tượng dễ bị sâu răng. Hãy cùng tìm hiểu các biện pháp phòng ngừa sâu răng hiệu quả...</p>
-                        <a href="#" class="news-link" data-lang="read-more">Xem thêm</a>
+                        <a href="https://elitedental.com.vn/doctors/nguyen-thi-xuan-ngoc" class="news-link" data-lang="read-more">Xem thêm</a>
                     </div>
                 </div>
             </div>
@@ -1554,56 +1137,10 @@
             </div>
         </section>
 
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-col">
-                    <h4 data-lang="footer-title">HAPPY SMILE</h4>
-                    <p data-lang="footer-about">Phòng khám nha khoa tư nhân chuyên về răng, miệng, và cấy ghép implant. Chúng tôi cam kết mang đến dịch vụ chất lượng với giá cả hợp lý.</p>
-                    <p data-lang="footer-address">Địa chỉ: Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng</p>
-                    <p data-lang="footer-hotline">Hotline: 0123 456 789</p>
-                    <p data-lang="footer-email">Email: support@happysmile.com</p>
-                    <p data-lang="footer-website">Website: happysmile.com.vn</p>
-                </div>
-                <div class="footer-col">
-                    <h4 data-lang="footer-services-title">DỊCH VỤ</h4>
-                    <ul class="footer-links">
-                        <li><a href="#" data-lang="service-general-checkup">Khám tổng quát</a></li>
-                        <li><a href="#" data-lang="service-whitening">Tẩy trắng răng</a></li>
-                        <li><a href="#" data-lang="service-veneers">Bọc răng sứ</a></li>
-                        <li><a href="#" data-lang="service-braces">Niềng răng</a></li>
-                        <li><a href="#" data-lang="service-implant">Cấy ghép Implant</a></li>
-                        <li><a href="#" data-lang="service-periodontal">Điều trị nha chu</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4 data-lang="footer-help-title">TRỢ GIÚP</h4>
-                    <ul class="footer-links">
-                        <li><a href="#" data-lang="footer-help-booking">Hướng dẫn đặt lịch</a></li>
-                        <li><a href="#" data-lang="footer-help-payment">Hướng dẫn thanh toán</a></li>
-                        <li><a href="#" data-lang="footer-help-process">Quy trình khám bệnh</a></li>
-                        <li><a href="#" data-lang="footer-help-faq">Câu hỏi thường gặp</a></li>
-                        <li><a href="#" data-lang="footer-help-privacy">Chính sách bảo mật</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4 data-lang="footer-cooperation-title">HỢP TÁC</h4>
-                    <ul class="footer-links">
-                        <li><a href="#" data-lang="footer-cooperation-account">Tài khoản</a></li>
-                        <li><a href="#" data-lang="footer-cooperation-contact">Liên hệ</a></li>
-                        <li><a href="#" data-lang="footer-cooperation-recruitment">Tuyển dụng</a></li>
-                        <li><a href="#" data-lang="footer-cooperation-insurance">Đối tác bảo hiểm</a></li>
-                        <li><a href="#" data-lang="footer-cooperation-training">Cơ sở đào tạo</a></li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
-
-        <div class="copyright" data-lang="copyright">
-            Bản quyền thuộc về HAPPY Smile © 2025. All Rights Reserved.
-        </div>
+        <%@ include file="/includes/footer.jsp" %>
 
         <script>
-// Translations object
+            // Translations object
             const translations = {
                 vi: {
                     "login": "Đăng nhập",
@@ -1643,7 +1180,7 @@
                     "testimonial-3": "Mình thường xuyên đến HAPPY Smile để khám và vệ sinh răng định kỳ. Môi trường phòng khám sạch sẽ, hiện đại và thân thiện. Các bác sĩ và nhân viên rất chuyên nghiệp và chu đáo. Chất lượng dịch vụ xứng đáng với giá tiền.",
                     "testimonial-author-3": "Khách hàng thường xuyên",
                     "news-title": "TIN TỨC NHA KHOA",
-                    "news-title-1": "5 Cách chăm sóc răng miệng hiệu quả tại nhà",
+                    "news-title-1": "TOP 11 cách chăm sóc răng miệng hiệu quả, cho răng khỏe đẹp",
                     "news-excerpt-1": "Chăm sóc răng miệng đúng cách không chỉ giúp bạn có hàm răng trắng sáng mà còn phòng ngừa nhiều bệnh lý...",
                     "news-title-2": "Những điều cần biết về niềng răng trong suốt",
                     "news-excerpt-2": "Niềng răng trong suốt đang là xu hướng được nhiều người lựa chọn nhờ tính thẩm mỹ cao và thuận tiện...",
@@ -1725,7 +1262,7 @@
                     "testimonial-3": "I regularly visit HAPPY Smile for checkups and cleanings. The clinic environment is clean, modern, and friendly. The doctors and staff are very professional and attentive. The service quality is worth the price.",
                     "testimonial-author-3": "Regular Client",
                     "news-title": "DENTAL NEWS",
-                    "news-title-1": "5 Effective Ways to Care for Your Teeth at Home",
+                    "news-title-1": "TOP 11 Effective Ways to Care for Your Teeth at Home",
                     "news-excerpt-1": "Proper dental care not only helps you achieve a bright smile but also prevents many oral diseases...",
                     "news-title-2": "What You Need to Know About Clear Aligners",
                     "news-excerpt-2": "Clear aligners are a popular choice due to their high aesthetics and convenience...",
@@ -1807,7 +1344,7 @@
                     "testimonial-3": "HAPPY Smileに定期的に検診とクリーニングのために通っています。クリニックの環境は清潔でモダン、フレンドリーです。医師とスタッフは非常にプロフェッショナルで丁寧です。サービスの質は価格に見合っています。",
                     "testimonial-author-3": "定期的なお客様",
                     "news-title": "歯科ニュース",
-                    "news-title-1": "自宅で効果的に歯をケアする5つの方法",
+                    "news-title-1": "自宅で効果的に歯をケアする11の方法",
                     "news-excerpt-1": "正しい歯のケアは、白い歯を手に入れるだけでなく、多くの口腔疾患を予防します...",
                     "news-title-2": "透明な矯正について知っておくべきこと",
                     "news-excerpt-2": "透明な矯正は、審美性が高く便利なため、多くの人に選ばれるトレンドです...",
@@ -1853,7 +1390,7 @@
                 }
             };
 
-// Function to update page content based on selected language
+            // Function to update page content based on selected language
             function updateLanguage(lang) {
                 // Update all elements with data-lang attributes
                 document.querySelectorAll('[data-lang]').forEach(element => {
@@ -1888,7 +1425,7 @@
                 document.getElementById('language-switcher').value = lang;
             }
 
-// Initialize language from session
+            // Initialize language from session
             <%
                 String language = (String) session.getAttribute("language");
                 if (language == null) {
@@ -1898,7 +1435,7 @@
             const currentLang = '<%= language%>';
             updateLanguage(currentLang);
 
-// Handle language switcher change event
+            // Handle language switcher change event
             document.getElementById('language-switcher').addEventListener('change', function () {
                 const selectedLang = this.value;
                 // Update content immediately
@@ -1921,7 +1458,7 @@
                 localStorage.setItem('theme', newTheme);
             });
 
-// Initialize theme from localStorage
+            // Initialize theme from localStorage
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('theme-toggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';

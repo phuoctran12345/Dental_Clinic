@@ -6,6 +6,11 @@ select * from Services
 select * from Medicine
 select * from TimeSlot
 
+-- lệnh tui xoá data để tui test 
+DELETE FROM PaymentInstallments WHERE bill_id IN (SELECT bill_id FROM Bills);
+DELETE FROM Bills;
+
+
 
 CREATE TABLE [dbo].[Appointment] (
     [appointment_id]          INT            IDENTITY (1, 1) NOT NULL,
@@ -374,6 +379,39 @@ CREATE NONCLUSTERED INDEX [IX_Services_Category]
     ON [dbo].[Services]([category] ASC);
 
 
+-- Tạo bảng Blog
+CREATE TABLE [dbo].[Blog] (
+    [blog_id]    INT            IDENTITY (1, 1) NOT NULL,
+    [title]      NVARCHAR (255) NULL,
+    [content]    NTEXT          NULL,
+    [image_url]  NVARCHAR (MAX) NULL,
+    [created_at] DATETIME       DEFAULT (getdate()) NULL,
+    PRIMARY KEY CLUSTERED ([blog_id] ASC)
+);
+
+-- Insert tin tức vào bảng Blog
+insert into blog ( [title] , [content] , [image_url] , [created_at] ) 
+values 
+( /* title */ N'5 Lý Do Bạn Nên Khám Tổng Quát Răng Miệng Định Kỳ' ,/* content */ N'Khám tổng quát răng miệng định kỳ là một trong những cách tốt nhất để duy trì sức khỏe răng miệng. Việc khám định kỳ giúp phát hiện sớm các vấn đề như sâu răng, viêm nướu, và các bệnh lý khác. Bác sĩ có thể đưa ra lời khuyên chăm sóc răng miệng phù hợp với tình trạng của bạn. Đặc biệt, việc khám định kỳ giúp tiết kiệm chi phí điều trị trong tương lai.' ,/* image_url */ N'https://b2976109.smushcdn.com/2976109/wp-content/uploads/2019/04/tooth_anatomy.jpg?lossy=2&strip=1&webp=1' ,/* created_at */ '2025-01-02 09:00:00.000'  ), 
+
+( /* title */ N'Cạo Vôi Răng - Quy Trình Vệ Sinh Răng Miệng Cần Thiết' ,/* content */ N'Cạo vôi răng là quy trình loại bỏ mảng bám và vôi răng tích tụ theo thời gian. Việc này giúp ngăn ngừa viêm nướu, hôi miệng và các bệnh lý nướu răng nghiêm trọng. Nha sĩ khuyến nghị nên cạo vôi răng 6 tháng một lần để duy trì sức khỏe răng miệng tối ưu. Quy trình này an toàn và không đau đớn khi thực hiện bởi nha sĩ chuyên nghiệp.' ,/* image_url */ N'https://nhakhoadrgreen.vn/wp-content/uploads/2025/04/cach-lam-sach-cao-rang-tai-nha-1-1024x684.jpg' ,/* created_at */ '2025-01-02 10:30:00.000'  ), 
+
+( /* title */ N'Trám Răng Composite - Giải Pháp Hiện Đại Cho Răng Sâu' ,/* content */ N'Trám răng composite là phương pháp điều trị răng sâu tiên tiến với vật liệu có màu sắc tự nhiên giống răng thật. Composite có độ bền cao, thẩm mỹ tốt và an toàn cho sức khỏe. Quy trình trám răng composite nhanh chóng, ít xâm lấn và giúp bảo tồn tối đa cấu trúc răng tự nhiên. Đây là lựa chọn ưu tiên cho việc điều trị răng sâu ở vùng răng trước.' ,/* image_url */ N'https://nhakhoamientay.com/wp-content/uploads/2021/04/tram-rang-composite-la-gi.jpg' ,/* created_at */ '2025-01-02 11:45:00.000'  ), 
+
+( /* title */ N'Niềng Răng Invisalign - Chỉnh Nha Trong Suốt Thời Đại Mới' ,/* content */ N'Niềng răng Invisalign là công nghệ chỉnh nha tiên tiến với khay niềng trong suốt, có thể tháo lắp. Phương pháp này mang lại hiệu quả cao trong việc chỉnh răng mà không ảnh hưởng đến thẩm mỹ. Bệnh nhân có thể ăn uống, vệ sinh răng miệng bình thường. Invisalign phù hợp với người lớn và thanh thiếu niên muốn có nụ cười đẹp mà không cần đeo mắc cài kim loại truyền thống.' ,/* image_url */ N'https://invisalign.com.vn/wp-content/uploads/2019/06/invisalign-la-gi.jpg' ,/* created_at */ '2025-01-02 13:15:00.000'  ), 
+
+( /* title */ N'Tẩy Trắng Răng Laser - Công Nghệ Làm Trắng Răng An Toàn' ,/* content */ N'Tẩy trắng răng bằng công nghệ laser là phương pháp hiện đại giúp răng trắng sáng nhanh chóng. Laser kích hoạt gel tẩy trắng, loại bỏ các vết ố vàng do tuổi tác, cà phê, thuốc lá. Quy trình thực hiện trong 60-90 phút với kết quả ngay lập tức. Công nghệ này an toàn, không làm tổn hại men răng và duy trì hiệu quả lâu dài khi được chăm sóc đúng cách.' ,/* image_url */ N'/images/teeth-whitening.jpg' ,/* created_at */ '2025-01-02 14:30:00.000'  ), 
+
+( /* title */ N'Điều Trị Tủy Răng - Cứu Vãn Răng Bị Viêm Tủy' ,/* content */ N'Điều trị tủy răng là phương pháp cứu vãn răng bị viêm tủy hoặc nhiễm khuẩn. Quy trình này loại bỏ mô tủy bị tổn thương, làm sạch ống tủy và hàn lấp kín. Với công nghệ hiện đại, điều trị tủy răng không còn đau đớn như trước. Việc điều trị kịp thời giúp bảo tồn răng tự nhiên, tránh phải nhổ răng và thay thế bằng implant.' ,/* image_url */ N'https://login.medlatec.vn//ImagePath/images/20210819/20210819_tai-sao-can-phai-dieu-tri-tuy-rang-1.jpg' ,/* created_at */ '2025-01-02 15:45:00.000'  ), 
+
+( /* title */ N'Phẫu Thuật Nhổ Răng Khôn An Toàn - Những Điều Cần Biết' ,/* content */ N'Răng khôn mọc lệch, mọc ngầm có thể gây đau nhức, viêm nhiễm và ảnh hưởng đến răng khác. Phẫu thuật nhổ răng khôn với kỹ thuật hiện đại giúp giảm thiểu đau đớn và thời gian hồi phục. Bác sĩ sẽ đánh giá tình trạng răng khôn qua X-quang và tư vấn phương án phẫu thuật phù hợp. Sau phẫu thuật, việc chăm sóc đúng cách giúp vết thương lành nhanh.' ,/* image_url */ N'/images/wisdom-tooth.jpg' ,/* created_at */ '2025-01-02 16:30:00.000'  ), 
+
+( /* title */ N'Bọc Răng Sứ - Giải Pháp Phục Hồi Răng Hư Tổn' ,/* content */ N'Bọc răng sứ là phương pháp phục hồi răng bị hư tổn nặng, răng yếu sau điều trị tủy. Răng sứ có độ bền cao, thẩm mỹ tự nhiên và tương thích sinh học tốt. Có nhiều loại sứ như sứ kim loại, sứ zirconia, sứ e.max với ưu điểm riêng. Việc bọc răng sứ giúp bảo vệ răng khỏi tổn thương thêm và phục hồi chức năng nhai bình thường.' ,/* image_url */ N'/images/dental-crown.jpg' ,/* created_at */ '2025-01-02 17:15:00.000'  ), 
+
+( /* title */ N'Chăm Sóc Răng Miệng Tại Nhà - Hướng Dẫn Chi Tiết' ,/* content */ N'Chăm sóc răng miệng đúng cách tại nhà là nền tảng cho sức khỏe răng miệng tốt. Đánh răng 2 lần/ngày với kem đánh răng có fluoride, sử dụng chỉ nha khoa để làm sạch kẽ răng. Súc miệng với nước súc miệng kháng khuẩn giúp diệt vi khuẩn gây hại. Chế độ ăn uống lành mạnh, hạn chế đường và acid cũng góp phần bảo vệ răng. Thăm khám nha sĩ định kỳ 6 tháng một lần.' ,/* image_url */ N'https://www.vinmec.com/static/uploads/medium_20190626_104545_053307_kham_rang_max_1800x1800_jpg_809c6546f2.jpg' ,/* created_at */ '2025-01-02 18:00:00.000'  ), 
+
+( /* title */ N'Tầm Quan Trọng Của Chụp X-Quang Răng Trong Chẩn Đoán' ,/* content */ N'Chụp X-quang răng là công cụ chẩn đoán quan trọng giúp nha sĩ phát hiện các bệnh lý không thể nhìn thấy bằng mắt thường. X-quang cho thấy tình trạng răng, chân răng, xương hàm và phát hiện sâu răng ẩn, áp xe, u nang. Có các loại X-quang như phim cắn, phim quanh chóp và phim toàn cảnh phù hợp với từng mục đích chẩn đoán. Công nghệ X-quang số hiện đại giảm thiểu tia xạ và cho hình ảnh rõ nét hơn.' ,/* image_url */ N'/images/dental-xray.jpg' ,/* created_at */ '2025-01-02 19:00:00.000'  );
+
 insert into services ( [service_name] , [description] , [price] , [status] , [category] , [created_at] , [updated_at] , [created_by] , [image] ) 
 values ( /* service_name */ N'Khám tổng quát răng miệng' ,/* description */ N'Kiểm tra sức khỏe răng miệng tổng quát, tư vấn chăm sóc răng' ,/* price */ 200000 ,/* status */ N'active' ,/* category */ N'Khám cơ bản' ,/* created_at */ '2025-06-11 18:37:32.0733333' ,/* updated_at */ '2025-06-11 18:37:32.0733333' ,/* created_by */ null ,/* image */ N'https://b2976109.smushcdn.com/2976109/wp-content/uploads/2019/04/tooth_anatomy.jpg?lossy=2&strip=1&webp=1'  ), 
 ( /* service_name */ N'Khám tổng quát' ,/* description */ N'Khám răng tổng quát, tư vấn chăm sóc răng miệng' ,/* price */ 100000 ,/* status */ N'active' ,/* category */ N'Khám cơ bản' ,/* created_at */ '2025-06-11 18:37:32.0733333' ,/* updated_at */ '2025-06-11 18:37:32.0733333' ,/* created_by */ null ,/* image */ N'https://www.vinmec.com/static/uploads/medium_20190626_104545_053307_kham_rang_max_1800x1800_jpg_809c6546f2.jpg'  ), 
@@ -616,4 +654,27 @@ CREATE TABLE [dbo].[Relatives] (
     [created_at]     DATETIME       DEFAULT (getdate()) NULL,
     PRIMARY KEY CLUSTERED ([relative_id] ASC),
     FOREIGN KEY ([user_id]) REFERENCES [dbo].[users] ([user_id])
+);
+
+-- Bảng lưu thông tin tái khám  
+CREATE TABLE Reexamination (
+    reexam_id INT IDENTITY(1,1) PRIMARY KEY, -- Mã tái khám tự tăng
+    appointment_id INT NOT NULL,-- ID cuộc hẹn gốc cần tái khám
+    reexam_count INT DEFAULT 1,-- Số lần tái khám (ví dụ: 1, 2, 3...)  
+    note NVARCHAR(500), -- Ghi chú lý do tái khám 
+    created_by INT NOT NULL,-- ID người tạo yêu cầu (bác sĩ hoặc nhân viên)  
+    created_at DATETIME DEFAULT GETDATE(), -- Thời điểm tạo   
+    approved_by INT NULL, -- Người duyệt (nếu có)   
+    approved_at DATETIME NULL, -- Thời gian duyệt  
+    scheduled_appointment_id INT NULL, -- ID cuộc hẹn tái khám đã đặt (nếu có)
+    status NVARCHAR(50) DEFAULT N'active' CHECK (status IN ('active', 'booked', 'completed', 'cancelled')),
+	-- Trạng thái yêu cầu tái khám:
+    -- 'active'    : Mới tạo
+    -- 'booked'    : Đã đặt lịch tái khám (đã gán scheduled_appointment_id)
+    -- 'completed' : Đã hoàn thành tái khám
+    -- 'cancelled' : Hủy bỏ
+
+    -- Khóa ngoại
+    FOREIGN KEY (appointment_id) REFERENCES Appointment(appointment_id),
+    FOREIGN KEY (scheduled_appointment_id) REFERENCES Appointment(appointment_id)
 );

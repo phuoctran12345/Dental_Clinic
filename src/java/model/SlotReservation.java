@@ -32,6 +32,9 @@ public class SlotReservation {
     private String payosOrderId; // Tương ứng với Bills.payos_order_id
     private String billId;       // Link với Bills.bill_id
     
+    // Appointment details
+    private String reason;       // Lý do khám bệnh
+    
     // Constants cho status (English - Chỉ 4 trạng thái chính)
     public static final String STATUS_BOOKED = "BOOKED";               // ĐÃ ĐẶT LỊCH
     public static final String STATUS_COMPLETED = "COMPLETED";         // HOÀN THÀNH
@@ -53,6 +56,14 @@ public class SlotReservation {
         this.status = STATUS_BOOKED;
         this.reservedAt = Timestamp.valueOf(LocalDateTime.now());
         this.expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)); // 5 phút
+    }
+    
+    /**
+     * Constructor với reason
+     */
+    public SlotReservation(int doctorId, LocalDate workDate, int slotId, int patientId, String reason) {
+        this(doctorId, workDate, slotId, patientId);
+        this.reason = reason;
     }
     
     // Getters and Setters
@@ -160,6 +171,14 @@ public class SlotReservation {
     
     public void setBillId(String billId) {
         this.billId = billId;
+    }
+    
+    public String getReason() {
+        return reason;
+    }
+    
+    public void setReason(String reason) {
+        this.reason = reason;
     }
     
     // Utility Methods

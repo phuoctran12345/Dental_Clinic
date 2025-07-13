@@ -21,7 +21,7 @@ public class DoctorScheduleDAO {
     private static final String INSERT = "INSERT INTO DoctorSchedule (doctor_id, work_date, slot_id, status) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_STATUS = "UPDATE DoctorSchedule SET status = ? WHERE schedule_id = ?";
     private static final String DELETE = "DELETE FROM DoctorSchedule WHERE schedule_id = ?";
-    private static final String GET_PENDING = "SELECT * FROM DoctorSchedule WHERE status = 'pending'";
+    private static final String GET_PENDING = "SELECT * FROM DoctorSchedule WHERE status = 'pending' ORDER BY work_date ASC";
     private static final String GET_APPROVED_BY_DOCTOR = "SELECT * FROM DoctorSchedule WHERE doctor_id = ? AND status = 'approved'";
     
     private static final String GET_AVAILABLE_BY_DOCTOR = 
@@ -49,13 +49,13 @@ public class DoctorScheduleDAO {
         "WHERE ds.doctor_id = ? " +
         "AND ds.work_date = ? " +
         "AND ds.work_date >= CONVERT(date, GETDATE()) " +
-        "AND ds.status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved', N'Chờ xác nhận') " +
+        "AND ds.status = 'approved' " +
         "AND NOT EXISTS (" +
         "    SELECT 1 FROM Appointment ap " +
         "    WHERE ap.doctor_id = ds.doctor_id " +
         "      AND ap.work_date = ds.work_date " +
         "      AND ap.slot_id = ds.slot_id " +
-        "      AND ap.status IN (N'Đã đặt', N'Đang chờ khám')" +
+        "      AND ap.status IN ('BOOKED', 'Đang chờ khám')" +
         ") " +
         "ORDER BY ts.start_time ASC";
         
@@ -66,7 +66,7 @@ public class DoctorScheduleDAO {
         
     private static final String GET_WORK_DATES_BY_DOCTOR = 
         "SELECT DISTINCT work_date FROM DoctorSchedule " +
-        "WHERE doctor_id = ? AND status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved') " +
+        "WHERE doctor_id = ? AND status = 'approved' " +
         "ORDER BY work_date ASC";
         
     private static final String GET_APPROVED_SLOTS_BY_DOCTOR_DATE = 
@@ -74,7 +74,7 @@ public class DoctorScheduleDAO {
         "FROM DoctorSchedule ds " +
         "WHERE ds.doctor_id = ? " +
         "AND ds.work_date = ? " +
-        "AND ds.status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved', N'Chờ xác nhận') " +
+        "AND ds.status = 'approved' " +
         "ORDER BY ds.slot_id ASC";
 
     // Khai báo biến instance
@@ -132,6 +132,7 @@ public class DoctorScheduleDAO {
         return schedule;
     }
 
+    // Khi insert lịch nghỉ phép, LUÔN set status = 'pending'
     public boolean addSchedule(DoctorSchedule schedule) {
         try {
             conn = DBContext.getConnection();
@@ -144,13 +145,13 @@ public class DoctorScheduleDAO {
                 } else {
                     ps.setInt(3, schedule.getSlotId());
                 }
-                ps.setString(4, "Chờ xác nhận"); // Đặt tiếng Việt chuẩn
+                ps.setString(4, "pending"); // CHUẨN HÓA: luôn là 'pending'
                 int result = ps.executeUpdate();
-                System.out.println("Insert result: " + result); // In ra để debug
+                System.out.println("Insert result: " + result);
                 return result > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // In lỗi ra log/console
+            e.printStackTrace();
         } finally {
             DBContext.closeConnection(conn, ps, rs);
         }
@@ -229,6 +230,48 @@ public class DoctorScheduleDAO {
             e.printStackTrace();
         } finally {
             DBContext.closeConnection(conn, ps, rs);
+        }
+        return schedules;
+    }
+    
+    /**
+     * ✅ HÀM MỚI: Lấy tất cả lịch chờ phê duyệt (bao gồm cả nghỉ phép)
+     * (CHỈ LẤY status = 'pending')
+     */
+    public List<DoctorSchedule> getAllPendingSchedulesIncludingLeaves() {
+        List<DoctorSchedule> schedules = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                // SQL lấy tất cả lịch chờ phê duyệt, chỉ lấy status = 'pending'
+                String sql = "SELECT * FROM DoctorSchedule WHERE status = 'pending' ORDER BY work_date ASC, doctor_id ASC";
+                ps = conn.prepareStatement(sql);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    DoctorSchedule schedule = mapResultSetToSchedule(rs);
+                    schedules.add(schedule);
+                }
+                System.out.println("📋 [MANAGER] Found " + schedules.size() + " pending schedules");
+                for (DoctorSchedule s : schedules) {
+                    System.out.println("   - Doctor " + s.getDoctorId() + " | Date: " + s.getWorkDate() + 
+                                     " | Status: " + s.getStatus() + " | Slot: " + s.getSlotId());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in getAllPendingSchedulesIncludingLeaves: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
         return schedules;
     }
@@ -436,33 +479,45 @@ public class DoctorScheduleDAO {
         try {
             conn = DBContext.getConnection();
             if (conn != null) {
-                String sql = "SELECT DISTINCT work_date " +
-                           "FROM DoctorSchedule " +
-                           "WHERE doctor_id = ? " +
-                           "AND work_date >= CONVERT(date, GETDATE()) " +
-                           "AND work_date <= DATEADD(day, ?, CONVERT(date, GETDATE())) " +
-                           "AND status IN (N'Đã xác nhận đăng kí lịch hẹn với bác sĩ', N'approved') " +
-                           "AND work_date NOT IN (" +
-                           "    SELECT work_date FROM DoctorSchedule " +
-                           "    WHERE doctor_id = ? " +
-                           "    AND (slot_id IS NULL OR status LIKE N'%nghỉ%' OR status LIKE N'%leave%')" +
-                           ") " +
-                           "ORDER BY work_date ASC";
+                // Lấy danh sách ngày nghỉ của bác sĩ
+                String leaveSql = "SELECT DISTINCT work_date FROM DoctorSchedule " +
+                                "WHERE doctor_id = ? " +
+                                "AND work_date >= CONVERT(date, GETDATE()) " +
+                                "AND work_date <= DATEADD(day, ?, CONVERT(date, GETDATE())) " +
+                                "AND (slot_id IS NULL OR status LIKE N'%nghỉ%' OR status LIKE N'%leave%') " +
+                                "ORDER BY work_date ASC";
                 
-                ps = conn.prepareStatement(sql);
+                ps = conn.prepareStatement(leaveSql);
                 ps.setInt(1, doctorId);
                 ps.setInt(2, daysAhead);
-                ps.setInt(3, doctorId);
-                
                 rs = ps.executeQuery();
                 
+                // Tạo set để lưu ngày nghỉ
+                java.util.Set<String> leaveDates = new java.util.HashSet<>();
                 while (rs.next()) {
-                    // Format ngày thành yyyy-MM-dd
                     java.sql.Date date = rs.getDate("work_date");
                     if (date != null) {
-                        workDates.add(date.toString()); // Trả về format yyyy-MM-dd
+                        leaveDates.add(date.toString());
                     }
                 }
+                
+                // Tạo 14 ngày tiếp theo từ ngày hiện tại
+                java.time.LocalDate currentDate = java.time.LocalDate.now();
+                for (int i = 0; i < daysAhead; i++) {
+                    java.time.LocalDate checkDate = currentDate.plusDays(i);
+                    String dateStr = checkDate.toString();
+                    
+                    // Chỉ thêm vào danh sách nếu không phải ngày nghỉ
+                    if (!leaveDates.contains(dateStr)) {
+                        workDates.add(dateStr);
+                    }
+                }
+                
+                System.out.println("📅 [AUTOMATION] Generated work dates for doctor " + doctorId + ":");
+                System.out.println("   - Total days generated: " + daysAhead);
+                System.out.println("   - Leave dates found: " + leaveDates.size());
+                System.out.println("   - Available work dates: " + workDates.size());
+                System.out.println("   - Work dates: " + workDates);
             }
         } catch (SQLException e) {
             System.err.println("Error in getWorkDatesExcludingLeaves: " + e.getMessage());
@@ -637,6 +692,41 @@ public class DoctorScheduleDAO {
     public void autoGenerateFullDaySchedules(long doctorId) {
         System.out.println("⚠️ [DEPRECATED] autoGenerateFullDaySchedules() - Hàm này không còn được sử dụng");
         // Không thực hiện gì cả
+    }
+
+    /**
+     * Lấy danh sách lịch nghỉ phép theo status (pending, approved, rejected)
+     */
+    public List<DoctorSchedule> getDoctorSchedulesByStatus(String status) {
+        List<DoctorSchedule> schedules = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                String sql = "SELECT * FROM DoctorSchedule WHERE status = ? ORDER BY work_date ASC, doctor_id ASC";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, status);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    DoctorSchedule schedule = mapResultSetToSchedule(rs);
+                    schedules.add(schedule);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in getDoctorSchedulesByStatus: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+        return schedules;
     }
 
     // Test main method

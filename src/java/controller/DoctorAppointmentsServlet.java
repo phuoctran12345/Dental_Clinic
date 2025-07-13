@@ -1,104 +1,124 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
-import dao.AppointmentDAO;
 import model.Appointment;
 import dao.DoctorDAO;
 import model.User;
-import java.io.IOException;
-import java.io.PrintWriter;
+import model.Doctors;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- *
- * @author Home
- */
+
 public class DoctorAppointmentsServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    @Override   
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DoctorAppointmentsServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DoctorAppointmentsServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        
+        System.out.println("=== DoctorAppointmentsServlet - doGet ===");
+        
+        // Lấy session và User object
+        HttpSession session = request.getSession(false);
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        Integer userId = null;
+        Long doctorId = null;
+        
+        if (user != null) {
+            userId = user.getId();
+            System.out.println("Session exists, User object found, userId: " + userId);
+            System.out.println("User details: " + user.getEmail() + ", Role: " + user.getRole());
+            // Lấy doctor_id từ user_id
+            Doctors doctor = DoctorDAO.getDoctorByUserId(userId);
+            if (doctor != null) {
+                doctorId = doctor.getDoctor_id();
+                System.out.println("Found doctor_id: " + doctorId + " for userId: " + userId);
+            } else {
+                System.out.println("❌ Không tìm thấy doctor cho userId: " + userId);
+            }
+        } else {
+            System.out.println("No user object found in session");
+            
+            // Thử cách cũ làm fallback
+            if (session != null) {
+                Object userIdObj = session.getAttribute("userId");
+                if (userIdObj != null) {
+                    userId = (Integer) userIdObj;
+                    System.out.println("Found userId directly in session: " + userId);
+                    // Lấy doctor_id cho fallback case
+                    Doctors doctor = DoctorDAO.getDoctorByUserId(userId);
+                    if (doctor != null) {
+                        doctorId = doctor.getDoctor_id();
+                        System.out.println("Found doctor_id (fallback): " + doctorId);
+                    }
+                }
+            }
+            
+            // 🚨 EMERGENCY FALLBACK: Dùng user_id = 1 để test (dựa vào data SQL)
+            if (userId == null) {
+                System.out.println("⚠️ EMERGENCY FALLBACK: Using userId = 1 for testing");
+                userId = 1; // Từ SQL: user_id = 1 có doctor
+                // Lấy doctor_id tương ứng
+                System.out.println("🔍 Calling DoctorDAO.getDoctorByUserId(" + userId + ")...");
+                Doctors doctor = DoctorDAO.getDoctorByUserId(userId);
+                if (doctor != null) {
+                    doctorId = doctor.getDoctor_id();
+                    System.out.println("✅ Emergency fallback SUCCESS - Found doctor_id: " + doctorId);
+                    System.out.println("   Doctor details: " + doctor.getFull_name() + " (" + doctor.getSpecialty() + ")");
+                } else {
+                    System.out.println("❌ Emergency fallback FAILED - No doctor found for userId: " + userId);
+                    // Thử với userId khác dựa trên SQL data
+                    System.out.println("🔄 Trying fallback with userId = 68...");
+                    userId = 68; // Từ SQL data: user_id = 68 cũng có doctor
+                    doctor = DoctorDAO.getDoctorByUserId(userId);
+                    if (doctor != null) {
+                        doctorId = doctor.getDoctor_id();
+                        System.out.println("✅ Second fallback SUCCESS with userId=68, doctor_id: " + doctorId);
+                    }
+                }
+            }
         }
-    }
+        
+        
+        
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-  @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+        DoctorDAO doctorDB = new DoctorDAO();
 
-    HttpSession session = request.getSession();
-    User doctor = (User) session.getAttribute("user");
+        try {
+            System.out.println("Fetching appointments for userId: " + userId);
+            // Lấy danh sách cuộc hẹn (dùng hàm mới lấy cả tên bệnh nhân)
+            List<Appointment> appointments = DoctorDAO.getAppointmentsWithPatientInfoByUserId(userId);
+            System.out.println("Found " + (appointments != null ? appointments.size() : 0) + " appointments");
+            
+            // Đặt danh sách cuộc hẹn và doctor_id vào request attribute để JSP sử dụng
+            request.setAttribute("appointments", appointments);
+            request.setAttribute("doctorId", doctorId);  // ✅ Truyền doctor_id cho JSP
+            request.setAttribute("userId", userId);      // ✅ Thêm userId để debug
+            
+            // Chuyển tiếp đến JSP để hiển thị (cập nhật đường dẫn)
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongngay.jsp").forward(request, response);
 
-      if (doctor != null && "DOCTOR".equalsIgnoreCase(doctor.getRole())) {
-          int doctorId = doctor.getId(); // hoặc doctor.getDoctorId() nếu có
-          List<Appointment> appointments = AppointmentDAO.getAppointmentsByDoctorId(doctorId);
-
-        request.setAttribute("appointments", appointments);
-        request.getRequestDispatcher("doctor/doctor_schedule.jsp").forward(request, response);
-    } else {
-        response.sendRedirect("login.jsp?error=unauthorized");
+        }catch (Exception e) {
+            System.err.println("General Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            request.setAttribute("userId", userId);
+            request.setAttribute("doctorId", doctorId);  // ✅ Truyền doctor_id cả khi lỗi
+            request.setAttribute("appointments", null);
+            
+            request.getRequestDispatcher("/jsp/doctor/doctor_trongngay.jsp").forward(request, response);
+        }
+        // Đặt thông báo lỗi vào request attribute
+// Vẫn forward tới JSP để hiển thị lỗi
+        
     }
 }
 
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
-}

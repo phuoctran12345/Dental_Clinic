@@ -114,6 +114,7 @@
 
                     <!-- Tab Navigation -->
                     <div class="card schedule-card">
+                        
                         <div class="card-header bg-white border-bottom-0 p-0">
                             <ul class="nav nav-tabs" id="approvalTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
@@ -127,6 +128,7 @@
                                         </span>
                                     </button>
                                 </li>
+                                
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="staff-tab" data-bs-toggle="tab"
                                         data-bs-target="#staff-panel" type="button" role="tab"
@@ -138,6 +140,7 @@
                                         </span>
                                     </button>
                                 </li>
+                                
                             </ul>
                         </div>
 
@@ -210,17 +213,20 @@
                                                                             value="doctor">
                                                                         <input type="hidden" name="schedule_id"
                                                                             value="${schedule.scheduleId}">
+                                                                        
                                                                         <button type="submit" name="action"
                                                                             value="approve"
                                                                             class="btn btn-success btn-sm"
                                                                             onclick="return confirm('Bạn có chắc muốn phê duyệt lịch này?')">
                                                                             <i class="bi bi-check-lg me-1"></i>Duyệt
                                                                         </button>
+                                                                        
                                                                         <button type="submit" name="action"
                                                                             value="reject" class="btn btn-danger btn-sm"
                                                                             onclick="return confirm('Bạn có chắc muốn từ chối lịch này?')">
                                                                             <i class="bi bi-x-lg me-1"></i>Từ chối
                                                                         </button>
+                                                                        
                                                                     </form>
                                                                 </td>
                                                             </tr>

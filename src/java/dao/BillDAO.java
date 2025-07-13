@@ -845,6 +845,112 @@ public class BillDAO {
         return billId;
     }
     
+    /**
+     * Sinh bill_id cho hóa đơn thuốc: HOADONTHUOC_0001, HOADONTHUOC_0002, ...
+     */
+    public String getNextPharmacyBillId() throws SQLException {
+        String sql = "SELECT MAX(CAST(SUBSTRING(bill_id, 13, 4) AS INT)) AS max_num FROM dbo.Bills WHERE bill_id LIKE 'HOADONTHUOC_%'";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            int next = 1;
+            if (rs.next()) {
+                int max = rs.getInt("max_num");
+                if (!rs.wasNull()) next = max + 1;
+            }
+            return String.format("HOADONTHUOC_%04d", next);
+        }
+    }
+    
+    /**
+     * Tạo bill con cho từng kỳ trả góp
+     * @param parentBill Bill gốc (bill trả góp)
+     * @param period Số kỳ (1, 2, 3...)
+     * @param amount Số tiền kỳ này
+     * @param paymentMethod Phương thức thanh toán
+     * @param notes Ghi chú
+     * @return bill_id của bill con được tạo, null nếu lỗi
+     */
+    public String createBillInstallment(Bill parentBill, int period, double amount, String paymentMethod, String notes) {
+        try {
+            // Sinh bill_id cho bill con
+            String childBillId = getNextInstallmentBillId();
+            
+            // Tạo object Bill con
+            Bill childBill = new Bill();
+            childBill.setBillId(childBillId);
+            childBill.setOrderId("INSTALLMENT_" + parentBill.getBillId() + "_" + period);
+            
+            // Set số tiền - đảm bảo originalPrice = amount
+            java.math.BigDecimal amt = java.math.BigDecimal.valueOf(amount);
+            childBill.setAmount(amt);
+            childBill.setOriginalPrice(amt); // QUAN TRỌNG: Set đúng originalPrice
+            
+            // Set thông tin thanh toán
+            childBill.setPaymentStatus("PAID");
+            childBill.setPaymentMethod(paymentMethod);
+            childBill.setParentBillId(parentBill.getBillId());
+            
+            // Lấy thông tin từ bill gốc
+            childBill.setCustomerName(parentBill.getCustomerName());
+            childBill.setCustomerPhone(parentBill.getCustomerPhone());
+            childBill.setCustomerEmail(parentBill.getCustomerEmail());
+            childBill.setServiceId(parentBill.getServiceId());
+            childBill.setPatientId(parentBill.getPatientId());
+            childBill.setUserId(parentBill.getUserId());
+            childBill.setDoctorId(parentBill.getDoctorId());
+            childBill.setAppointmentDate(parentBill.getAppointmentDate());
+            childBill.setAppointmentTime(parentBill.getAppointmentTime());
+            childBill.setAppointmentNotes(parentBill.getAppointmentNotes());
+            
+            // Set các trường khác
+            childBill.setDiscountAmount(java.math.BigDecimal.ZERO);
+            childBill.setTaxAmount(java.math.BigDecimal.ZERO);
+            childBill.setNotes("Thanh toán kỳ trả góp số " + period + ": " + notes);
+            
+            // Log debug
+            System.out.println("[DEBUG] 🚀 createBillInstallment - Creating child bill:");
+            System.out.println("[DEBUG]   - Child Bill ID: " + childBillId);
+            System.out.println("[DEBUG]   - Parent Bill ID: " + parentBill.getBillId());
+            System.out.println("[DEBUG]   - Period: " + period);
+            System.out.println("[DEBUG]   - Amount: " + amount);
+            System.out.println("[DEBUG]   - Original Price: " + childBill.getOriginalPrice());
+            
+            // Tạo bill con
+            Bill createdBill = createBill(childBill);
+            
+            if (createdBill != null) {
+                System.out.println("[DEBUG] ✅ createBillInstallment - Successfully created child bill: " + childBillId);
+                return childBillId;
+            } else {
+                System.err.println("[DEBUG] ❌ createBillInstallment - Failed to create child bill");
+                return null;
+            }
+            
+        } catch (Exception e) {
+            System.err.println("[DEBUG] ❌ createBillInstallment - Error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * Sinh bill_id cho bill con trả góp: ThanhToanTraGop_0001, ThanhToanTraGop_0002, ...
+     */
+    private String getNextInstallmentBillId() throws SQLException {
+        String sql = "SELECT MAX(CAST(SUBSTRING(bill_id, 17, 4) AS INT)) AS max_num FROM dbo.Bills WHERE bill_id LIKE 'ThanhToanTraGop_%'";
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            int next = 1;
+            if (rs.next()) {
+                int max = rs.getInt("max_num");
+                if (!rs.wasNull()) next = max + 1;
+            }
+            return String.format("ThanhToanTraGop_%04d", next);
+        }
+    }
+    
     
     
     

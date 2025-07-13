@@ -192,6 +192,8 @@
                                             <li><strong>🧑 Đặt cho bản thân:</strong> Chọn tab "Đặt cho mình"</li>
                                             <li><strong>👨‍👩‍👧‍👦 Đặt cho người thân:</strong> Chọn tab "Đặt cho người
                                                 thân" và điền thông tin</li>
+                                            <li><strong>📅 Lịch tự động:</strong> Hệ thống tự động hiển thị 14 ngày tiếp
+                                                theo (trừ ngày nghỉ)</li>
                                             <li><strong>⚙️ Server tự động xử lý:</strong> Servlet sẽ validate và lưu
                                                 database</li>
                                             <li><strong>🎯 Kết quả:</strong> Bản thân → patient_id có giá trị | Người
@@ -276,6 +278,15 @@
                                                         data-bs-target="#bookingModal${doctor.doctor_id}">
                                                         Đặt lịch với bác sĩ này
                                                     </button>
+
+                                                    <!-- Hiển thị thông tin ngày làm việc -->
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-calendar-alt me-1"></i>
+                                                            Có ${fn:length(doctor.workDates)} ngày làm việc trong 14
+                                                            ngày tới
+                                                        </small>
+                                                    </div>
 
                                                     <!-- workDates riêng cho từng bác sĩ -->
                                                     <script>
@@ -642,34 +653,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Danh sách lịch hẹn -->
-                                <div class="appointment-list">
-                                    <h3>Lịch hẹn của bạn</h3>
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Ngày khám</th>
-                                                    <th>Giờ khám</th>
-                                                    <th>Bác sĩ</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Lý do</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach items="${appointments}" var="apt">
-                                                    <tr>
-                                                        <td>${apt.workDate}</td>
-                                                        <td>${apt.startTime} - ${apt.endTime}</td>
-                                                        <td>${apt.doctorName}</td>
-                                                        <td>${apt.status}</td>
-                                                        <td>${apt.reason}</td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+
                                 </div>
                                 </div>
 

@@ -206,10 +206,7 @@
                                 color: #1d4ed8;
                             }
 
-                            .status-badge.waiting {
-                                background: #fef3c7;
-                                color: #d97706;
-                            }
+
 
                             .status-badge.treatment {
                                 background: #f3e8ff;
@@ -392,15 +389,7 @@
                                     </div>
                                 </div>
 
-                                <div class="stat-card">
-                                    <div class="stat-content">
-                                        <div class="stat-info">
-                                            <h3>Chờ thanh toán</h3>
-                                            <div class="stat-number">${waitingPaymentCount}</div>
-                                        </div>
-                                        <i class="fas fa-credit-card stat-icon"></i>
-                                    </div>
-                                </div>
+
                             </div>
 
                             <!-- Queue List -->
@@ -436,9 +425,10 @@
                                                                     <c:when test="${appointment.status == 'CANCELLED'}">
                                                                         <div class="status-badge other">Đã hủy</div>
                                                                     </c:when>
+
                                                                     <c:when
                                                                         test="${appointment.status == 'WAITING_PAYMENT'}">
-                                                                        <div class="status-badge waiting">Chờ thanh toán
+                                                                        <div class="status-badge confirmed">Đã đặt lịch
                                                                         </div>
                                                                     </c:when>
                                                                     <c:otherwise>
@@ -491,10 +481,9 @@
                                                                             <option value="CANCELLED" selected>❌ Đã hủy
                                                                             </option>
                                                                         </c:when>
-                                                                        <c:when
-                                                                            test="${appointment.status == 'WAITING_PAYMENT'}">
-                                                                            <option value="WAITING_PAYMENT" selected>💳
-                                                                                Chờ thanh toán</option>
+
+                                                                        <c:when test="${appointment.status == 'WAITING_PAYMENT'}">
+                                                                            <option value="BOOKED" selected>📅 Đã đặt lịch</option>
                                                                         </c:when>
                                                                         <c:otherwise>
                                                                             <option value="${appointment.status}"
@@ -512,11 +501,7 @@
                                                                     <c:if test="${appointment.status != 'CANCELLED'}">
                                                                         <option value="CANCELLED">❌ Đã hủy</option>
                                                                     </c:if>
-                                                                    <c:if
-                                                                        test="${appointment.status != 'WAITING_PAYMENT'}">
-                                                                        <option value="WAITING_PAYMENT">💳 Chờ thanh
-                                                                            toán</option>
-                                                                    </c:if>
+
                                                                 </select>
                                                             </div>
 

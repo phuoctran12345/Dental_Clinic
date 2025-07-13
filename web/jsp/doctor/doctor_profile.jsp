@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
-    <%@ include file="/includes/doctor_header.jsp" %>
-        <%@ include file="/includes/doctor_menu.jsp" %>
+    <%@ include file="/jsp/doctor/doctor_header.jsp" %>
+        <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
             <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
                 <!DOCTYPE html>
                 <html>

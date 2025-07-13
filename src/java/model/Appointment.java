@@ -16,8 +16,12 @@ public class Appointment {
     private String doctorName;
     private String doctorSpecialty;  // ✅ Thêm doctor specialty
     private int previousAppointmentId;  // ✅ Thêm field mới
+    private Integer bookedByUserId; // Ai là người thân đặt lịch
+    
     private String patientName;
     private String patientPhone;
+    private Date patientDateOfBirth;
+    private String patientGender;
     private String serviceName;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -27,14 +31,12 @@ public class Appointment {
     private String timeSlot;
     private String note;
     private Integer relativeId; // Người thân
-    private Integer bookedByUserId; // Ai là người thân đặt lịch
+    
 
     public Appointment() {
     }
 
-    public Appointment(int appointmentId, int patientId, long doctorId, LocalDate workDate, 
-            int slotId, String status, String reason, String doctorName, 
-            LocalTime startTime, LocalTime endTime) {
+     public Appointment(int appointmentId, int patientId, long doctorId, LocalDate workDate, int slotId, String status, String reason, String doctorName, String doctorSpecialty, int previousAppointmentId,Integer bookedByUserId ,String patientName, String patientPhone, Date patientDateOfBirth, String patientGender, String serviceName, LocalTime startTime, LocalTime endTime, int serviceId, java.sql.Date appointmentDate, String timeSlot, String note) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -43,9 +45,39 @@ public class Appointment {
         this.status = status;
         this.reason = reason;
         this.doctorName = doctorName;
+        this.doctorSpecialty = doctorSpecialty;
+        this.previousAppointmentId = previousAppointmentId;
+        this.bookedByUserId = bookedByUserId;
+        this.patientName = patientName;
+        this.patientPhone = patientPhone;
+        this.patientDateOfBirth = patientDateOfBirth;
+        this.patientGender = patientGender;
+        this.serviceName = serviceName;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.serviceId = serviceId;
+        this.appointmentDate = appointmentDate;
+        this.timeSlot = timeSlot;
+        this.note = note;
     }
+
+    public Date getPatientDateOfBirth() {
+        return patientDateOfBirth;
+    }
+
+    public void setPatientDateOfBirth(Date patientDateOfBirth) {
+        this.patientDateOfBirth = patientDateOfBirth;
+    }
+
+    public String getPatientGender() {
+        return patientGender;
+    }
+
+    public void setPatientGender(String patientGender) {
+        this.patientGender = patientGender;
+    }
+     
+     
 
     public String getDoctorName() {
         return doctorName;

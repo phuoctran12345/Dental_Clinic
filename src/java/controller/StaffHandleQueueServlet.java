@@ -89,17 +89,13 @@ public class StaffHandleQueueServlet extends HttpServlet {
             java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
             AppointmentDAO appointmentDAO = new AppointmentDAO();
             
-            // Debug: Lấy TẤT CẢ appointments để test
-            List<Appointment> allAppointments = appointmentDAO.getAll();
-            System.out.println("📅 ALL appointments: Loaded " + allAppointments.size() + " appointments from database");
-            
             // Thử lấy appointments theo ngày
             List<Appointment> todayAppointments = appointmentDAO.getAppointmentsByDate(today);
             System.out.println("📅 Today (" + today + "): Loaded " + todayAppointments.size() + " appointments from getAppointmentsByDate()");
             
-            // Sử dụng tất cả appointments để test (sẽ chuyển về today sau)
-            List<Appointment> appointmentsToUse = !todayAppointments.isEmpty() ? todayAppointments : allAppointments;
-            System.out.println("📅 Using " + appointmentsToUse.size() + " appointments for display");
+            // ĐÚNG LOGIC: Chỉ lấy lịch hẹn của ngày hôm nay
+            List<Appointment> appointmentsToUse = todayAppointments;
+            System.out.println("📅 Using " + appointmentsToUse.size() + " appointments for display (today only)");
             
             // Load thông tin bệnh nhân và bác sĩ thật từ database
             dao.PatientDAO patientDAO = new dao.PatientDAO();
@@ -146,32 +142,30 @@ public class StaffHandleQueueServlet extends HttpServlet {
                 }
             }
             
-            // Tính số lượng theo status THỜI GIAN THỰC sử dụng constants mới (4 trạng thái)
+            // Tính số lượng theo status THỜI GIAN THỰC sử dụng constants mới (3 trạng thái chính)
             int totalAppointments = appointmentsToUse.size();
-            int bookedCount = 0, completedCount = 0, cancelledCount = 0, waitingPaymentCount = 0;
+            int bookedCount = 0, completedCount = 0, cancelledCount = 0;
             
             System.out.println("📊 REALTIME STATUS COUNT for all appointments:");
             for (Appointment apt : appointmentsToUse) {
                 String status = apt.getStatus();
                 System.out.println("  - ID:" + apt.getAppointmentId() + " | Status: '" + status + "' | Patient: " + apt.getPatientName());
                 
-                // Sử dụng constants mới để đếm chính xác (4 trạng thái)
-                if (AppointmentDAO.STATUS_BOOKED.equals(status) || "Đã đặt".equals(status)) {
+                // Sử dụng constants mới để đếm chính xác (3 trạng thái chính)
+                if (AppointmentDAO.STATUS_BOOKED.equals(status) || "Đã đặt".equals(status) || 
+                    AppointmentDAO.STATUS_WAITING_PAYMENT.equals(status) || "Chờ thanh toán".equals(status)) {
                     bookedCount++;
                 } else if (AppointmentDAO.STATUS_COMPLETED.equals(status) || "Hoàn thành".equals(status)) {
                     completedCount++;
                 } else if (AppointmentDAO.STATUS_CANCELLED.equals(status) || "Đã hủy".equals(status)) {
                     cancelledCount++;
-                } else if (AppointmentDAO.STATUS_WAITING_PAYMENT.equals(status) || "Chờ thanh toán".equals(status)) {
-                    waitingPaymentCount++;
                 }
             }
             
             System.out.println("📈 FINAL COUNTS: Total=" + totalAppointments + 
                              " | Booked=" + bookedCount + 
                              " | Completed=" + completedCount + 
-                             " | Cancelled=" + cancelledCount +
-                             " | WaitingPayment=" + waitingPaymentCount);
+                             " | Cancelled=" + cancelledCount);
             
             // DEBUG: Kiểm tra appointments trước khi gửi cho JSP
             System.out.println("🔍 DEBUG - Appointments list before sending to JSP:");
@@ -194,7 +188,6 @@ public class StaffHandleQueueServlet extends HttpServlet {
             request.setAttribute("bookedCount", bookedCount);
             request.setAttribute("completedCount", completedCount);
             request.setAttribute("cancelledCount", cancelledCount);
-            request.setAttribute("waitingPaymentCount", waitingPaymentCount);
             
             System.out.println("✅ Forwarding to JSP with " + appointmentsToUse.size() + " appointments");
             

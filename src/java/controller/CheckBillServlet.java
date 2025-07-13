@@ -203,8 +203,8 @@ public class CheckBillServlet extends HttpServlet {
                     String currentOrderId = bill.getOrderId() != null ? bill.getOrderId() : "N/A";
                     double billAmount = bill.getAmount() != null ? bill.getAmount().doubleValue() : 0.0;
                     
-                    // Gửi email thanh toán thành công với đầy đủ thông tin
-                    N8nWebhookService.sendPaymentSuccessToN8n(
+                    // 🆕 GỬI EMAIL + CALENDAR THÔNG QUA 1 WORKFLOW DUY NHẤT (CheckBill)
+                    N8nWebhookService.sendPaymentSuccessWithCalendar(
                         userEmail,
                         userName,
                         userPhone,
@@ -218,11 +218,14 @@ public class CheckBillServlet extends HttpServlet {
                         billAmount,
                         "Phòng khám Nha khoa DentalClinic",
                         "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
-                        "028-3838-9999"
+                        "028-3838-9999",
+                        "CheckBill - Khám tổng quát"
                     );
                     
                     System.out.println("📧 CHECKBILLSERVLET - ĐÃ GỬI EMAIL THANH TOÁN QUA N8N");
+                    System.out.println("📅 CHECKBILLSERVLET - ĐÃ GỬI YÊU CẦU TẠO GOOGLE CALENDAR");
                     System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
+                    System.out.println("👨‍⚕️ Bác sĩ: " + doctorName + " (" + doctorEmail + ")");
                     System.out.println("💰 Số tiền: " + String.format("%,.0f", bill.getAmount().doubleValue()) + " VNĐ");
                     System.out.println("📄 Hóa đơn: " + currentBillId);
                     

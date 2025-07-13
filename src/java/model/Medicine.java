@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author Home
@@ -15,6 +17,7 @@ public class Medicine {
     private String unit;
     private int quantityInStock;
     private String description;
+    private BigDecimal price;
 
     public Medicine() {
     }
@@ -59,12 +62,20 @@ public class Medicine {
         this.description = description;
     }
 
-    public Medicine(int medicineId, String name, String unit, int quantityInStock, String description) {
+    public BigDecimal getPrice() {
+        return price;
+    }
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Medicine(int medicineId, String name, String unit, int quantityInStock, String description, BigDecimal price) {
         this.medicineId = medicineId;
         this.name = name;
         this.unit = unit;
         this.quantityInStock = quantityInStock;
         this.description = description;
+        this.price = price;
     }
     
     

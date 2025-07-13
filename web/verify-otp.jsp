@@ -11,157 +11,299 @@
         :root {
             --primary-color: #4E80EE;
             --primary-dark: #3A6BD9;
-            --light-bg: #F8FAFF;
+            --light-bg: #F5F7FA;
+            --text-dark: #1A2A44;
+            --text-muted: #6B7280;
+            --shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
         }
         
         body {
             background: var(--light-bg);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             display: flex;
             align-items: center;
-            padding: 15px;
             margin: 0;
+            color: var(--text-dark);
         }
         
         .main-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1150px;
             margin: 0 auto;
             padding: 0;
         }
         
         .card {
             border: none;
-            border-radius: 5px;
-            box-shadow: 0 5px 20px rgba(78, 128, 238, 0.1);
+            border-radius: 8px;
+            background: #FFFFFF;
+            box-shadow: var(--shadow);
             overflow: hidden;
-            height: auto;
         }
         
         .card-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            border-radius: 0 !important;
-            border: none;
+            background: #4E80EE;
             color: white;
             text-align: center;
-            padding: 1.5rem;
+            padding: 17px;
         }
         
         .card-body {
-            padding: 1.5rem;
+            padding: 28px;
         }
         
         .feature-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.2);
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 28px;
-            margin: 0 auto 1rem;
+            font-size: 35px;
+            margin: 0 auto 14px;
+            transition: transform 0.3s ease;
         }
+
         
         .back-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            margin-bottom: 1rem;
-            font-size: 14px;
+            padding: 12px 24px;
+            background: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 32px;
+        }
+        
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 6px 16px rgba(78, 128, 238, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .back-link i {
+            margin-right: 8px;
+            font-size: 18px;
         }
         
         /* Form styles */
         .form-control {
-            border-radius: 10px;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px 24px;
+            border: 2px solid #E5E7EB;
             text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            height: 50px;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            height: 64px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(78, 128, 238, 0.25);
-        }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background: #4E80EE;
             border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 500;
-            font-size: 15px;
+            border-radius: 8px;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 18px;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(78, 128, 238, 0.3);
         }
         
         /* Notification boxes */
         .alert-box {
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 8px solid;
+            background: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
         }
         
         .alert-success {
-            background-color: #E8F5E9;
-            border-left-color: #4CAF50;
+            border-left-color: #22C55E;
         }
         
         .alert-danger {
-            background-color: #FFEBEE;
-            border-left-color: #F44336;
+            border-left-color: #EF4444;
         }
         
         .alert-warning {
-            background-color: #FFF8E1;
-            border-left-color: #FFC107;
+            border-left-color: #F59E0B;
         }
         
         .alert-info {
-            background-color: #E3F2FD;
             border-left-color: var(--primary-color);
+        }
+        
+        .alert-box i {
+            font-size: 24px;
+            margin-right: 16px;
         }
         
         /* Timer */
         .timer-container {
-            background: #FFF3E0;
-            border-radius: 10px;
-            padding: 0.8rem;
-            margin: 1rem 0;
+            background: #FFF7ED;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
             text-align: center;
-            border-left: 4px solid #FFA000;
-            font-size: 14px;
+            border-left: 8px solid #F97316;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         
         .timer {
+            font-size: 24px;
+            font-weight: 600;
+            color: #C2410C;
+        }
+        
+        /* Typography */
+        .card-header h3 {
+            font-size: 27px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .card-header p {
             font-size: 18px;
-            font-weight: bold;
-            color: #E65100;
+            opacity: 0.9;
+        }
+        
+        .form-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 9px;
+        }
+        
+        .form-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        
+        /* Resend OTP and Footer */
+        .resend-section {
+            margin-top: 32px;
+            text-align: center;
+        }
+        
+        .resend-section p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        
+        .btn-outline-primary {
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 6px 16px rgba(78, 128, 238, 0.3);
+        }
+        
+        .security-text {
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
         }
         
         /* Responsive */
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
+            body {
+                padding: 24px;
+            }
+            
             .card-header, .card-body {
-                padding: 1rem;
+                padding: 32px;
             }
             
             .feature-icon {
-                width: 60px;
-                height: 60px;
+                width: 64px;
+                height: 64px;
+                font-size: 28px;
+            }
+            
+            .form-control {
+                font-size: 24px;
+                height: 56px;
+            }
+            
+            .btn-primary {
+                font-size: 16px;
+                padding: 14px;
+            }
+            
+            .alert-box, .timer-container {
+                font-size: 14px;
+                padding: 16px;
+            }
+            
+            .timer {
+                font-size: 20px;
+            }
+            
+            .card-header h3 {
+                font-size: 28px;
+            }
+            
+            .back-link {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-header, .card-body {
+                padding: 24px;
+            }
+            
+            .feature-icon {
+                width: 56px;
+                height: 56px;
                 font-size: 24px;
             }
             
             .form-control {
-                font-size: 18px;
-                height: 45px;
+                font-size: 20px;
+                height: 48px;
+            }
+            
+            .btn-primary {
+                font-size: 14px;
+                padding: 12px;
+            }
+            
+            .back-link {
+                padding: 8px 16px;
+                font-size: 12px;
             }
         }
     </style>
@@ -170,7 +312,7 @@
     <div class="main-container">
         <!-- Back Link -->
         <a href="ResetPasswordServlet?action=forgot-password" class="back-link">
-            <i class="fas fa-arrow-left me-2"></i>Quay lại
+            <i class="fas fa-arrow-left"></i>Quay lại
         </a>
         
         <div class="card">
@@ -178,8 +320,8 @@
                 <div class="feature-icon">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <h3 class="mb-1" style="font-size: 1.5rem;">Xác Thực OTP</h3>
-                <p class="mb-0" style="font-size: 0.9rem;">Nhập mã OTP từ email</p>
+                <h3>Xác Thực OTP</h3>
+                <p>Nhập mã OTP từ email của bạn</p>
             </div>
             
             <div class="card-body">
@@ -188,21 +330,17 @@
                     <% String message = (String) session.getAttribute("otpSentMessage"); %>
                     <% if (message.contains("TEST MODE")) { %>
                         <div class="alert-box alert-warning">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <div>
-                                    <strong>Test Mode:</strong><br>
-                                    <%= message %>
-                                </div>
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <strong>Test Mode:</strong><br>
+                                <%= message %>
                             </div>
                         </div>
                     <% } else { %>
                         <div class="alert-box alert-success">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <div>
-                                    <%= message %>
-                                </div>
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <%= message %>
                             </div>
                         </div>
                     <% } %>
@@ -215,10 +353,10 @@
                 %>
                     <div class="timer-container">
                         <div class="d-flex align-items-center justify-content-center">
-                            <i class="fas fa-clock me-2"></i>
-                            <span>Mã OTP sẽ hết hạn sau: </span>
-                            <span class="timer ms-1" id="countdown"><%= remainingSeconds %></span>
-                            <span class="ms-1">giây</span>
+                            <i class="fas fa-clock"></i>
+                            <span>Mã OTP hết hạn sau:  </span>
+                            <span class="timer" id="countdown"> <%= remainingSeconds %> </span>
+                            <span>  giây</span>
                         </div>
                     </div>
                 <% } %>
@@ -226,11 +364,9 @@
                 <!-- Hiển thị thông báo lỗi -->
                 <% if (request.getAttribute("error") != null) { %>
                     <div class="alert-box alert-danger">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div>
-                                <%= request.getAttribute("error") %>
-                            </div>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <%= request.getAttribute("error") %>
                         </div>
                     </div>
                 <% } %>
@@ -240,42 +376,37 @@
                     <input type="hidden" name="action" value="verify-otp">
                     
                     <div class="mb-3">
-                        <label for="otp" class="form-label fw-bold mb-2" style="font-size: 0.9rem;">
-                            <i class="fas fa-key me-1" style="color: var(--primary-color);"></i>Mã OTP
+                        <label for="otp" class="form-label">
+                            <i class="fas fa-key" style=" color: var(--primary-color);" ></i> Mã OTP
                         </label>
                         <input type="text" class="form-control" id="otp" name="otp" 
                                placeholder="000000" maxlength="6" 
                                pattern="[0-9]{6}" title="Vui lòng nhập 6 chữ số"
                                required autocomplete="off">
-                        <div class="form-text mt-1" style="font-size: 0.8rem;">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Nhập mã OTP gồm 6 chữ số từ email
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i> Nhập mã OTP 6 chữ số từ email
                         </div>
                     </div>
                     
-                    <div class="d-grid gap-2 mt-3">
+                    <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-check-circle me-1"></i>Xác Thực
+                            <i class="fas fa-check-circle"></i> Xác Thực
                         </button>
                     </div>
                 </form>
                 
                 <!-- Resend OTP -->
-                <div class="text-center mt-3">
-                    <p class="mb-2 text-muted" style="font-size: 0.9rem;">
-                        <i class="fas fa-question-circle me-1"></i>
-                        Không nhận được mã OTP?
+                <div class="resend-section">
+                    <p>
+                        <i class="fas fa-question-circle"></i> Không nhận được mã OTP?
                     </p>
-                    <a href="ResetPasswordServlet?action=forgot-password" class="btn btn-outline-primary btn-sm">
-                        <i class="fas fa-redo me-1"></i>Gửi lại mã
+                    <a href="ResetPasswordServlet?action=forgot-password" class="btn btn-outline-primary">
+                        <i class="fas fa-redo"></i> Gửi lại mã
                     </a>
                 </div>
                 
-                <div class="text-center mt-3">
-                    <small class="text-muted" style="font-size: 0.8rem;">
-                        <i class="fas fa-lock me-1"></i>
-                        Kết nối được mã hóa và bảo mật
-                    </small>
+                <div class="security-text">
+                    <i class="fas fa-lock"></i> Kết nối được mã hóa và bảo mật
                 </div>
             </div>
         </div>

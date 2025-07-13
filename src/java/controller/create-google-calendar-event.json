@@ -1,0 +1,129 @@
+{
+  "name": "create-google-calendar-event",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-google-calendar-event",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        0
+      ],
+      "id": "calendar-webhook",
+      "name": "Calendar Webhook",
+      "webhookId": "calendar-webhook-id"
+    },
+    {
+      "parameters": {
+        "jsCode": "// LẤY DỮ LIỆU TỪ WEBHOOK\nconst data = $json.body;\n\nconsole.log('📅 === GOOGLE CALENDAR WEBHOOK ===');\nconsole.log('📥 Raw Data:', JSON.stringify(data, null, 2));\nconsole.log('🕐 Start DateTime:', data.startDateTime);\nconsole.log('🕐 End DateTime:', data.endDateTime);\nconsole.log('📧 User Email:', data.userEmail);\nconsole.log('📧 Doctor Email:', data.doctorEmail);\n\n// KIỂM TRA DỮ LIỆU BẮT BUỘC\nif (!data.startDateTime || !data.endDateTime) {\n  console.error('❌ THIẾU DATETIME:', {\n    startDateTime: data.startDateTime,\n    endDateTime: data.endDateTime\n  });\n  throw new Error('Missing startDateTime or endDateTime from Java backend');\n}\n\nif (!data.userEmail || !data.doctorEmail) {\n  console.error('❌ THIẾU EMAIL:', {\n    userEmail: data.userEmail,\n    doctorEmail: data.doctorEmail\n  });\n  throw new Error('Missing email addresses');\n}\n\n// TẠO CALENDAR EVENT OBJECT\nconst calendarEvent = {\n  summary: data.eventTitle || `🦷 ${data.serviceName || 'Dịch vụ nha khoa'} - ${data.userName || 'Bệnh nhân'}`,\n  description: `🏥 THÔNG TIN CUỘC HẸN CHI TIẾT\\n\\n📋 Dịch vụ: ${data.serviceName || 'N/A'}\\n👤 Bệnh nhân: ${data.userName || 'N/A'}\\n📞 Số điện thoại: ${data.userPhone || 'N/A'}\\n👨‍⚕️ Bác sĩ phụ trách: ${data.doctorName || 'N/A'}\\n\\n📅 Ngày khám: ${data.appointmentDate || 'N/A'}\\n⏰ Giờ khám: ${data.appointmentTime || 'N/A'}\\n📍 Địa điểm: ${data.location || 'FPT University Đà Nẵng'}\\n\\n💰 THÔNG TIN THANH TOÁN\\n💵 Số tiền: ${data.formattedAmount || 'N/A'}\\n🧾 Mã hóa đơn: ${data.billId || 'N/A'}\\n\\n🏥 THÔNG TIN PHÒNG KHÁM\\n🏢 Tên: Phòng khám Nha khoa DentalClinic\\n📍 Địa chỉ: ${data.location || 'FPT University Đà Nẵng'}\\n📞 Hotline: 0936929382\\n\\n📝 LƯU Ý QUAN TRỌNG:\\n• Vui lòng đến trước giờ hẹn 15 phút\\n• Mang theo CCCD/CMND và sổ khám bệnh (nếu có)\\n• Liên hệ hotline nếu cần thay đổi lịch hẹn\\n\\n✅ Lịch hẹn này đã được xác nhận và thanh toán thành công!`,\n  start: {\n    dateTime: data.startDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  end: {\n    dateTime: data.endDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  location: data.location || 'FPT University Đà Nẵng',\n  attendees: data.attendees || [\n    { email: data.userEmail, displayName: data.userName },\n    { email: data.doctorEmail, displayName: data.doctorName }\n  ],\n  reminders: {\n    useDefault: false,\n    overrides: [\n      { method: 'email', minutes: 1440 }, // 1 day before\n      { method: 'popup', minutes: 30 }    // 30 minutes before\n    ]\n  }\n};\n\nconsole.log('📅 === FINAL CALENDAR EVENT ===');\nconsole.log('📝 Summary:', calendarEvent.summary);\nconsole.log('🕐 Start:', calendarEvent.start.dateTime);\nconsole.log('🕐 End:', calendarEvent.end.dateTime);\nconsole.log('📍 Location:', calendarEvent.location);\nconsole.log('👥 Attendees:', JSON.stringify(calendarEvent.attendees));\nconsole.log('📋 Description length:', calendarEvent.description.length, 'characters');\nconsole.log('🔔 Reminders:', JSON.stringify(calendarEvent.reminders));\n\n// RETURN CALENDAR EVENT\nreturn [{ json: calendarEvent }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "process-calendar-data",
+      "name": "Process Calendar Data"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "de180577tranhongphuoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "de180577tranhongphuoc@gmail.com"
+        },
+        "start": "={{$json.start}}",
+        "end": "={{$json.end}}",
+        "additionalFields": {
+          "attendees": "={{$json.attendees}}",
+          "description": "={{$json.description}}",
+          "location": "={{$json.location}}",
+          "summary": "={{$json.summary}}",
+          "reminders": "={{$json.reminders}}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        220,
+        0
+      ],
+      "id": "create-calendar-event",
+      "name": "Create Calendar Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "V5ACSjdT1n29E2kl",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Google Calendar event created successfully\", \"eventId\": $json.id, \"eventLink\": $json.htmlLink, \"summary\": $json.summary, \"start\": $json.start.dateTime, \"end\": $json.end.dateTime, \"attendees\": $json.attendees?.map(a => a.email) || [], \"timestamp\": new Date().toISOString() }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        440,
+        0
+      ],
+      "id": "calendar-response",
+      "name": "Calendar Response"
+    }
+  ],
+  "connections": {
+    "Calendar Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Calendar Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Calendar Data": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "calendar-workflow-new",
+  "tags": ["calendar", "google", "dental-clinic"]
+} 

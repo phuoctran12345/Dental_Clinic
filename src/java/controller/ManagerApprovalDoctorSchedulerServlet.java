@@ -46,14 +46,13 @@ public class ManagerApprovalDoctorSchedulerServlet extends HttpServlet {
         }
         
         try {
-            // Lấy danh sách doctor schedules chờ phê duyệt
+            // Lấy danh sách doctor schedules chờ phê duyệt (chỉ lấy status 'pending')
             List<DoctorSchedule> pendingDoctorSchedules = new ArrayList<>();
             try {
-                // Sử dụng method đúng có trong DoctorScheduleDAO
-                pendingDoctorSchedules = doctorScheduleDAO.getAllPendingSchedules();
+                // Chỉ lấy các lịch có status = 'pending'
+                pendingDoctorSchedules = doctorScheduleDAO.getDoctorSchedulesByStatus("pending");
             } catch (Exception e) {
-                // Method might not be implemented yet
-                System.out.println("DoctorScheduleDAO.getAllPendingSchedules() error: " + e.getMessage());
+                System.out.println("DoctorScheduleDAO.getDoctorSchedulesByStatus('pending') error: " + e.getMessage());
                 pendingDoctorSchedules = new ArrayList<>();
             }
             

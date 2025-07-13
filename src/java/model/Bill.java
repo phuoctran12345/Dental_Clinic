@@ -66,6 +66,9 @@ public class Bill {
     private String patientName;
     private String patientPhone;
     
+    // Thông tin bill cha (nếu là bill con của trả góp)
+    private String parentBillId;
+    
     // thêm vào để manage cái trả góp 
     // Installment Information
     private PaymentInstallment installmentSummary;
@@ -397,6 +400,13 @@ public class Bill {
     
     public void setTotalRemaining(double totalRemaining) {
         this.totalRemaining = totalRemaining;
+    }
+    
+    public String getParentBillId() {
+        return parentBillId;
+    }
+    public void setParentBillId(String parentBillId) {
+        this.parentBillId = parentBillId;
     }
     
     /**

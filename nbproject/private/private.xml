@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/dao/AppointmentDAO.java</file>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/CheckBillServlet.java</file>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/BookingPageServlet.java</file>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/patient/user_datlich.jsp</file>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/StaffBookingServlet.java</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/payment.jsp</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/staff/staff_thanhtoan.jsp</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/PayOSServlet.java</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/StaffPaymentServlet.java</file>
         </group>
     </open-files>
 </project-private>

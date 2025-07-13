@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import model.Appointment;
 import model.DoctorSchedule;
+import model.MedicalReport;
+import model.PrescriptionDetail;
 import model.TimeSlot;
 import utils.DBContext;
 
@@ -1784,5 +1786,261 @@ public class DoctorDAO {
             return false;
         }
     }
+    
+    //==============================================================================================
+    // code của TOÀN 
+    
+         public static boolean updateDoctor(Doctors doctor) throws SQLException {
+        String sql = """
+            UPDATE Doctors
+            SET full_name = ?, phone = ?, address = ?, date_of_birth = ?, 
+                gender = ?, specialty = ?, license_number = ?, status = ?, avatar = ?
+            WHERE user_id = ?
+        """;
+
+        try (Connection conn = getConnect(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Thiết lập các tham số cho truy vấn
+            ps.setString(1, doctor.getFull_name());
+            ps.setString(2, doctor.getPhone());
+            ps.setString(3, doctor.getAddress());
+            ps.setDate(4, (Date) doctor.getDate_of_birth());
+            ps.setString(5, doctor.getGender());
+            ps.setString(6, doctor.getSpecialty());
+            ps.setString(7, doctor.getLicense_number());
+            ps.setString(8, doctor.getStatus());
+            ps.setString(9, doctor.getAvatar());
+            ps.setLong(10, doctor.getUser_id());
+
+            // Thực thi cập nhật
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Database error in updateDoctor: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+         
+         public static boolean updateDoctorStatus(long doctorId, String status) throws SQLException {
+        String sql = "UPDATE Doctors SET status = ? WHERE doctor_id = ?";
+        
+        try (Connection conn = getConnect(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, status);
+            ps.setLong(2, doctorId);
+            
+            int rowsAffected = ps.executeUpdate();
+            
+            System.out.println("DEBUG: updateDoctorStatus - Rows affected: " + rowsAffected);
+            System.out.println("DEBUG: updateDoctorStatus - Doctor ID: " + doctorId + ", Status: " + status);
+            
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Database error in updateDoctorStatus: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+         
+         public static MedicalReport getPrescriptionsByReportId(int reportId) throws SQLException {
+        String sql = "SELECT * FROM MedicalReport WHERE report_id = ?";
+        
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, reportId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                return report;
+            }
+        }
+        return null;
+    }
+         
+             public static MedicalReport getMedicalReportById(int reportId) throws SQLException {
+      String sql = "SELECT * FROM MedicalReport WHERE report_id = ?";
+        
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, reportId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                return report;
+            }
+        }
+        return null;
+    }
+             
+              /**
+     * Lấy Medical Report theo Appointment ID
+     */
+    public static MedicalReport getMedicalReportByAppointmentId(int appointmentId) throws SQLException {
+        String sql = "SELECT * FROM MedicalReport WHERE appointment_id = ?";
+        
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MedicalReport report = new MedicalReport();
+                report.setReportId(rs.getInt("report_id"));
+                report.setAppointmentId(rs.getInt("appointment_id"));
+                report.setDoctorId(rs.getInt("doctor_id"));
+                report.setPatientId(rs.getInt("patient_id"));
+                report.setDiagnosis(rs.getString("diagnosis"));
+                report.setTreatmentPlan(rs.getString("treatment_plan"));
+                report.setNote(rs.getString("note"));
+                report.setCreatedAt(rs.getTimestamp("created_at"));
+                report.setSign(rs.getString("sign"));
+                return report;
+            }
+        }
+        return null;
+    }
+    
+     /**
+     * Lấy thông tin TimeSlot từ Appointment ID
+     */
+    public static String getTimeSlotByAppointmentId(int appointmentId) throws SQLException {
+        String sql = """
+            SELECT ts.start_time, ts.end_time
+            FROM Appointment a
+            JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+            WHERE a.appointment_id = ?
+        """;
+        
+        try (Connection conn = getConnect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getTime("start_time") + " - " + rs.getTime("end_time");
+            }
+        }
+        return "N/A";
+    }
+    
+    
+    public static int insertMedicalReport(int appointmentId, long doctorId, int patientId,
+            String diagnosis, String treatmentPlan, String note, String sign) throws SQLException {
+        String sql = "INSERT INTO MedicalReport (appointment_id, doctor_id, patient_id, diagnosis, treatment_plan, note, sign) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = getConnect(); 
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setInt(1, appointmentId);
+            ps.setLong(2, doctorId);
+            ps.setInt(3, patientId);
+            ps.setString(4, diagnosis);
+            ps.setString(5, treatmentPlan);
+            ps.setString(6, note);
+            ps.setString(7, sign);
+
+            ps.executeUpdate();
+
+            // Lấy report_id vừa insert
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return -1; // lỗi
+    }
+    
+    /**
+     * Thêm đơn thuốc gắn với báo cáo
+     */
+    public static void insertPrescription(int reportId, int medicineId, int quantity, String usage) throws SQLException {
+        String sql = "INSERT INTO Prescription (report_id, medicine_id, quantity, usage) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnect(); 
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, reportId);
+            ps.setInt(2, medicineId);
+            ps.setInt(3, quantity);
+            ps.setString(4, usage);
+            ps.executeUpdate();
+        }
+    }
+
+    public static List<Appointment> getAppointmentsWithPatientInfoByUserId(Integer userId) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason,
+                   p.full_name as patient_name, p.phone as patient_phone,
+                   p.date_of_birth as patient_dob, p.gender as patient_gender,
+                   ts.start_time, ts.end_time
+            FROM Appointment a
+            INNER JOIN Doctors d ON a.doctor_id = d.doctor_id
+            LEFT JOIN Patients p ON a.patient_id = p.patient_id
+            LEFT JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+            WHERE d.user_id = ?
+            ORDER BY a.work_date DESC, a.slot_id ASC
+        """;
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Appointment appointment = new Appointment();
+                    appointment.setAppointmentId(rs.getInt("appointment_id"));
+                    appointment.setPatientId(rs.getInt("patient_id"));
+                    appointment.setDoctorId(rs.getInt("doctor_id"));
+                    appointment.setWorkDate(rs.getDate("work_date"));
+                    appointment.setSlotId(rs.getInt("slot_id"));
+                    appointment.setStatus(rs.getString("status"));
+                    appointment.setReason(rs.getString("reason"));
+                    // Lấy thông tin bệnh nhân
+                    appointment.setPatientName(rs.getString("patient_name"));
+                    appointment.setPatientPhone(rs.getString("patient_phone"));
+                    appointment.setPatientDateOfBirth(rs.getDate("patient_dob"));
+                    appointment.setPatientGender(rs.getString("patient_gender"));
+                    // Lấy thông tin time slot
+                    java.sql.Time startTime = rs.getTime("start_time");
+                    java.sql.Time endTime = rs.getTime("end_time");
+                    if (startTime != null) appointment.setStartTime(startTime.toLocalTime());
+                    if (endTime != null) appointment.setEndTime(endTime.toLocalTime());
+                    appointments.add(appointment);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
   
 }

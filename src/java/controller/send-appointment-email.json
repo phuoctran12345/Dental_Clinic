@@ -1,0 +1,160 @@
+{
+  "name": "send-appointment-email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-appointment-email",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        0
+      ],
+      "id": "ef683a24-2597-4532-b3a6-fb566b566aee",
+      "name": "Webhook",
+      "webhookId": "3da3ed37-73ed-4386-8438-524842f92fb0"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.body.userEmail}}",
+        "subject": "=Xác nhận thanh toán - {{ $json.body.billId }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Xác nhận Lịch hẹn và Thanh toán</title>\n    <style>\n        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }\n        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }\n        .header { background-color: #28a745; color: white; padding: 20px; text-align: center; }\n        .content { padding: 30px; }\n        .info-box { padding: 15px; border-radius: 5px; margin-bottom: 20px; }\n        .payment-info { background-color: #d4edda; border-left: 5px solid #28a745; }\n        .appointment-info { background-color: #e7f3ff; border-left: 5px solid #007bff; }\n        h2 { color: #333333; }\n        p { line-height: 1.6; color: #555555; }\n        strong { color: #333333; }\n        .footer { text-align: center; padding: 20px; font-size: 0.9em; color: #888888; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1>✅ Thanh toán thành công!</h1>\n            <p>Cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi.</p>\n        </div>\n        <div class=\"content\">\n            <h2>Chào <strong>{{ $json.body.userName }}</strong>,</h2>\n            <p>Phòng khám đã nhận được thanh toán và xác nhận lịch hẹn của bạn thành công. Vui lòng kiểm tra lại các thông tin dưới đây:</p>\n\n            <div class=\"info-box payment-info\">\n                <h3 style=\"margin-top:0; color:#155724;\">💰 Chi tiết thanh toán</h3>\n                <p><strong>Mã hóa đơn:</strong> <code>{{ $json.body.billId }}</code></p>\n                <p><strong>Số tiền:</strong> <strong style=\"color:#155724;\">{{ $json.body.formattedAmount }}</strong></p>\n                <p><strong>Dịch vụ:</strong> {{ $json.body.serviceName }}</p>\n            </div>\n\n            <div class=\"info-box appointment-info\">\n                <h3 style=\"margin-top:0; color:#004085;\">📅 Thông tin cuộc hẹn</h3>\n                <p><strong>Bệnh nhân:</strong> {{ $json.body.userName }}</p>\n                <p><strong>Số điện thoại:</strong> {{ $json.body.userPhone }}</p>\n                <p><strong>Bác sĩ phụ trách:</strong> {{ $json.body.doctorName }}</p>\n                <p><strong>Ngày khám:</strong> <strong>{{ $json.body.appointmentDate }}</strong></p>\n                <p><strong>Giờ khám:</strong> <strong>{{ $json.body.appointmentTime }}</strong></p>\n                <p><strong>Địa điểm:</strong> {{ $json.body.clinicAddress }}</p>\n            </div>\n\n            <p>📅 <strong>Lịch hẹn đã được tự động thêm vào Google Calendar của bạn!</strong></p>\n            <p>Vui lòng đến trước giờ hẹn 15 phút để làm thủ tục. Cảm ơn bạn rất nhiều!</p>\n        </div>\n        <div class=\"footer\">\n            <p><strong>{{ $json.body.clinicName }}</strong></p>\n            <p>{{ $json.body.clinicAddress }}<br>Hotline: {{ $json.body.clinicPhone }}</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        260,
+        0
+      ],
+      "id": "4c7721fe-d695-41ed-a5b6-1bc9a41abdaf",
+      "name": "Send a message",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vmipyVUkATcNUeD9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// TRUY CẬP DATA TỪ WEBHOOK NODE TRỰC TIẾP\nconst webhookData = $('Webhook').first().json.body;\n\n// Log chi tiết để debug\nconsole.log('📥 RAW WEBHOOK DATA:', JSON.stringify(webhookData, null, 2));\nconsole.log('🔍 startDateTime from webhook:', webhookData.startDateTime);\nconsole.log('🔍 endDateTime from webhook:', webhookData.endDateTime);\n\n// KIỂM TRA và SỬ DỤNG TRỰC TIẾP startDateTime/endDateTime từ Java\nif (!webhookData.startDateTime || !webhookData.endDateTime) {\n  console.error('❌ MISSING DATETIME:', {\n    startDateTime: webhookData.startDateTime,\n    endDateTime: webhookData.endDateTime\n  });\n  throw new Error('Missing startDateTime or endDateTime from Java backend');\n}\n\n// SỬ DỤNG TRỰC TIẾP datetime từ Java (đã có timezone +07:00)\nlet startDateTime = webhookData.startDateTime;\nlet endDateTime = webhookData.endDateTime;\n\nconsole.log('✅ USING JAVA DATETIME DIRECTLY:');\nconsole.log('   Start:', startDateTime);\nconsole.log('   End:', endDateTime);\n\n// Tạo calendar event với datetime từ Java\nconst calendarEvent = {\n  summary: webhookData.eventTitle || `🦷 ${webhookData.serviceName} - ${webhookData.userName}`,\n  description: `🏥 THÔNG TIN CUỘC HẸN CHI TIẾT\\n\\n📋 Dịch vụ: ${webhookData.serviceName || 'N/A'}\\n👤 Bệnh nhân: ${webhookData.userName || 'N/A'}\\n📞 Số điện thoại: ${webhookData.userPhone || 'N/A'}\\n👨‍⚕️ Bác sĩ phụ trách: ${webhookData.doctorName || 'N/A'}\\n\\n📅 Ngày khám: ${webhookData.appointmentDate || 'N/A'}\\n⏰ Giờ khám: ${webhookData.appointmentTime || 'N/A'}\\n📍 Địa điểm: ${webhookData.location || 'FPT University Đà Nẵng'}\\n\\n💰 THÔNG TIN THANH TOÁN\\n💵 Số tiền: ${webhookData.formattedAmount || webhookData.billAmount || 'N/A'}\\n🧾 Mã hóa đơn: ${webhookData.billId || 'N/A'}\\n📦 Mã đơn hàng: ${webhookData.orderId || 'N/A'}\\n\\n🏥 THÔNG TIN PHÒNG KHÁM\\n🏢 Tên: ${webhookData.clinicName || 'Phòng khám Nha khoa'}\\n📍 Địa chỉ: ${webhookData.clinicAddress || 'FPT University Đà Nẵng'}\\n📞 Hotline: ${webhookData.clinicPhone || '0936929382'}\\n\\n📝 LƯU Ý QUAN TRỌNG:\\n• Vui lòng đến trước giờ hẹn 15 phút\\n• Mang theo CCCD/CMND và sổ khám bệnh (nếu có)\\n• Liên hệ hotline nếu cần thay đổi lịch hẹn\\n\\n✅ Lịch hẹn này đã được xác nhận và thanh toán thành công!`,\n  start: {\n    dateTime: startDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  end: {\n    dateTime: endDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  location: webhookData.location || webhookData.clinicAddress || 'FPT University Đà Nẵng',\n  attendees: webhookData.attendees || [\n    { email: webhookData.userEmail },\n    { email: webhookData.doctorEmail }\n  ]\n};\n\nconsole.log('📅 FINAL CALENDAR EVENT:', JSON.stringify(calendarEvent, null, 2));\nconsole.log('🎯 DATETIME VERIFICATION:');\nconsole.log('   📅 Java sent startDateTime:', webhookData.startDateTime);\nconsole.log('   📅 Calendar will use startDateTime:', calendarEvent.start.dateTime);\nconsole.log('   📅 Java sent endDateTime:', webhookData.endDateTime);\nconsole.log('   📅 Calendar will use endDateTime:', calendarEvent.end.dateTime);\n\nreturn [{ json: calendarEvent }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        0
+      ],
+      "id": "prepare-calendar-data",
+      "name": "Prepare Calendar Data"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "de180577tranhongphuoc@gmail.com",
+          "mode": "list",
+          "cachedResultName": "de180577tranhongphuoc@gmail.com"
+        },
+        "start": "={{$json.start}}",
+        "end": "={{$json.end}}",
+        "additionalFields": {
+          "attendees": "={{$json.attendees}}",
+          "description": "={{$json.description}}",
+          "location": "={{$json.location}}",
+          "summary": "={{$json.summary}}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        580,
+        0
+      ],
+      "id": "46c739b4-f2cb-4ed6-84ab-1a93119aa137",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "V5ACSjdT1n29E2kl",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "58593914-41c2-4a33-864b-c2edc8b3af81",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Calendar Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Prepare Calendar Data": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "5IGfp4qZ5uF7WaN0",
+  "tags": []
+}

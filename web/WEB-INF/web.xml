@@ -9,10 +9,6 @@
         <servlet-class>controller.ServiceServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DoctorAppointmentsToanServlet</servlet-name>
-        <servlet-class>controller.DoctorAppointmentsToanServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DoctorHomePageServlet</servlet-name>
         <servlet-class>controller.DoctorHomePageServlet</servlet-class>
     </servlet>
@@ -228,6 +224,14 @@
         <url-pattern>/ExportMedicalReportServlet</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>MedicalReportServlet</servlet-name>
+        <servlet-class>controller.MedicalReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MedicalReportServlet</servlet-name>
+        <url-pattern>/MedicalReportServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>MedicalReportDetailServlet</servlet-name>
         <servlet-class>controller.MedicalReportDetailServlet</servlet-class>
     </servlet>
@@ -306,10 +310,6 @@
     <!-- 🔧 SESSION CONFIGURATION -->
     <!-- ========================================= -->
     <servlet-mapping>
-        <servlet-name>DoctorAppointmentsToanServlet</servlet-name>
-        <url-pattern>/DoctorAppointmentsToanServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DoctorHomePageServlet</servlet-name>
         <url-pattern>/DoctorHomePageServlet</url-pattern>
     </servlet-mapping>
@@ -359,13 +359,12 @@
         <servlet-name>LandingPageServlet</servlet-name>
         <url-pattern>/LandingPageServlet</url-pattern>
     </servlet-mapping>
-
-      <servlet>
-      <servlet-name>StaffProfileServlet</servlet-name>
-      <servlet-class>controller.StaffProfileServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-      <servlet-name>StaffProfileServlet</servlet-name>
-      <url-pattern>/StaffProfileServlet</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>StaffProfileServlet</servlet-name>
+        <servlet-class>controller.StaffProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StaffProfileServlet</servlet-name>
+        <url-pattern>/StaffProfileServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

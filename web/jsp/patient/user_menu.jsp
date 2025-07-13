@@ -260,29 +260,10 @@
                         <span>Dịch Vụ Nha Khoa</span>
                     </a>
 
-
-                    <div class="dropdown-menu-custom">
-                        <a href="#" class="menu_item dropdown-toggle">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span>Đăng Kí Dịch Vụ</span>
-                            <i class="fa-solid fa-caret-down" style="margin-left:auto;"></i>
-                        </a>
-                        <ul class="dropdown-list">
-                            <li>
-                                <a href="${pageContext.request.contextPath}/BookingPageServlet" class="dropdown-item">
-                                    <i class="fa-solid fa-calendar-plus"></i>
-                                    <span>Đặt lịch cho mình</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="${pageContext.request.contextPath}/BookingPageServlet?bookingFor=relative"
-                                    class="dropdown-item">
-                                    <i class="fa-solid fa-users"></i>
-                                    <span>Đặt lịch cho người thân</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/BookingPageServlet" class="menu_item">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Đặt lịch dịch vụ</span>
+                    </a>
 
                     <a href="${pageContext.request.contextPath}/PatientAppointments" class="menu_item">
                         <i class="fa-solid fa-calendar-check"></i>
@@ -316,8 +297,6 @@
                         <i class="fa-solid fa-circle-user"></i>
                         <span>Tài Khoản</span>
                     </a>
-
-
                 </div>
 
 

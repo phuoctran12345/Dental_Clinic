@@ -9,7 +9,6 @@ import model.Patients;
 import model.User;
 import model.Bill;
 import model.SlotReservation;
-import com.google.gson.Gson;
 import dao.DoctorDAO;
 import dao.TimeSlotDAO;
 import utils.DBContext;
@@ -22,6 +21,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -440,13 +440,14 @@ public class PayOSServlet extends HttpServlet {
                         activeReservation.getAppointmentId());
                     
                     if (reservationCompleted) {
+                        // completeReservation đã cập nhật status thành COMPLETED rồi, không cần gọi lại
                         appointmentCreated = true;
                         System.out.println("🎉 TẠO LỊCH HẸN THÀNH CÔNG: " + activeReservation.getAppointmentId());
                         System.out.println("👨‍⚕️ Bác sĩ: " + activeReservation.getDoctorId());
                         System.out.println("📅 Ngày khám: " + activeReservation.getWorkDate());
                         System.out.println("⏰ Ca khám: Slot " + activeReservation.getSlotId());
                         System.out.println("👤 Bệnh nhân: " + activeReservation.getPatientId());
-                        System.out.println("📝 Trạng thái: ĐÃ ĐẶT");
+                        System.out.println("📝 Trạng thái: COMPLETED");
 
                         //=================================================================================================================================================
                         // N8N API -gửi thông báo cho người thân
@@ -479,8 +480,8 @@ public class PayOSServlet extends HttpServlet {
                             String billId = currentBill != null ? currentBill.getBillId() : "N/A";
                             String orderId = currentBill != null ? currentBill.getOrderId() : "N/A";
 
-                            // 🎯 GỬI EMAIL THANH TOÁN THÀNH CÔNG với đầy đủ thông tin
-                            N8nWebhookService.sendPaymentSuccessToN8n(
+                            // 🚀 GỬI EMAIL + CALENDAR CÙNG LÚC THÔNG QUA N8N WORKFLOW
+                            N8nWebhookService.sendPaymentSuccessWithCalendar(
                                 userEmail,
                                 userName,
                                 userPhone,
@@ -494,11 +495,15 @@ public class PayOSServlet extends HttpServlet {
                                 billAmount,
                                 "Phòng khám Nha khoa DentalClinic",
                                 "FPT University Đà Nẵng",
-                                "028-3838-9999"
+                                "0936929382",
+                                activeReservation.getReason() != null ? activeReservation.getReason() : "Khám tổng quát"
                             );
 
-                            System.out.println("📧 ĐÃ GỬI EMAIL THANH TOÁN THÀNH CÔNG QUA N8N");
+                            System.out.println("🚀 ĐÃ GỬI YÊU CẦU EMAIL + GOOGLE CALENDAR QUA N8N WORKFLOW!");
+                            System.out.println("📧 Email xác nhận sẽ được gửi đến: " + userEmail);
+                            System.out.println("📅 Calendar event sẽ được tạo cho cả bệnh nhân và bác sĩ!");
                             System.out.println("👤 Khách hàng: " + userName + " (" + userEmail + ")");
+                            System.out.println("👨‍⚕️ Bác sĩ: " + doctorName + " (" + doctorEmail + ")");
                             System.out.println("💰 Số tiền: " + String.format("%,.0f", billAmount) + " VNĐ");
                             System.out.println("📄 Hóa đơn: " + billId);
                             
@@ -609,6 +614,9 @@ public class PayOSServlet extends HttpServlet {
                                 );
                                 
                                 if (relativeAppointment) {
+                                    // Cập nhật status thành COMPLETED
+                                    int lastAppointmentId = AppointmentDAO.getLastInsertedAppointmentId();
+                                    AppointmentDAO.updateAppointmentStatusStatic(lastAppointmentId, "BOOKED");
                                     appointmentCreated = true;
                                     System.out.println("✅ TẠO APPOINTMENT CHO NGƯỜI THÂN THÀNH CÔNG!");
                                     System.out.println("   🆔 Relative ID: " + relativeId);
@@ -640,6 +648,9 @@ public class PayOSServlet extends HttpServlet {
                             );
                             
                             if (directAppointment) {
+                                // Cập nhật status thành COMPLETED
+                                int lastAppointmentId = AppointmentDAO.getLastInsertedAppointmentId();
+                                AppointmentDAO.updateAppointmentStatusStatic(lastAppointmentId, "BOOKED");
                                 appointmentCreated = true;
                                 System.out.println("🎯 TẠO LỊCH HẸN TRỰC TIẾP THÀNH CÔNG");
                             }
@@ -661,13 +672,15 @@ public class PayOSServlet extends HttpServlet {
             // Chuyển tới trang thành công
             request.setAttribute("paymentInfo", paymentInfo);
             request.setAttribute("appointmentCreated", appointmentCreated);
+            
+            // 🔧 GIỮ SESSION DATA cho JSP page, chỉ xóa sau khi render
             request.getRequestDispatcher("/payment-success.jsp").forward(request, response);
             
-            // Xóa session
-            session.removeAttribute("paymentInfo");
-            session.removeAttribute("serviceInfo");
-            session.removeAttribute("currentBill");
-            session.removeAttribute("activeReservation");
+            // ✅ Xóa session KHÔNG CẦN THIẾT vì user có thể F5 trang success
+            // session.removeAttribute("paymentInfo");
+            // session.removeAttribute("serviceInfo"); 
+            // session.removeAttribute("currentBill");
+            // session.removeAttribute("activeReservation");
             
         } catch (SQLException e) {
             System.err.println("❌ LỖI CƠ SỞ DỮ LIỆU khi xử lý thanh toán thành công: " + e.getMessage());
@@ -866,7 +879,7 @@ public class PayOSServlet extends HttpServlet {
             
             // PHASE 2: 🔄 REGULAR CHECK (30+ giây - kiểm tra thường xuyên)
             else if (timeSeconds >= 30.0) {
-                System.out.println("🔄 REGULAR BANK SCAN: Quét giao dịch thường xuyên...");
+                System.out.println("�� REGULAR BANK SCAN: Quét giao dịch thường xuyên...");
                 
                 // Check database/API first (fastest)
                 if (!paymentDetected) {
@@ -960,8 +973,18 @@ public class PayOSServlet extends HttpServlet {
                         String userName = patient != null ? patient.getFullName() : autoUser.getUsername();
                         String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
                         
-                        // Gửi email thanh toán thành công với đầy đủ thông tin
-                        N8nWebhookService.sendPaymentSuccessToN8n(
+                        // 🚀 GỬI EMAIL + CALENDAR THÔNG QUA N8N (AUTO-DETECTION)
+                        // Lấy reason từ bill notes nếu có
+                        String reason = "Khám tổng quát - Thanh toán tự động";
+                        if (bill.getAppointmentNotes() != null && !bill.getAppointmentNotes().trim().isEmpty()) {
+                            String[] noteParts = bill.getAppointmentNotes().split("\\|");
+                            if (noteParts.length > 0) {
+                                reason = noteParts[0].trim() + " - Thanh toán tự động";
+                            }
+                        }
+                        
+                        // Gửi cả email + calendar trong một lần call
+                        N8nWebhookService.sendPaymentSuccessWithCalendar(
                             userEmail,
                             userName,
                             userPhone,
@@ -973,14 +996,17 @@ public class PayOSServlet extends HttpServlet {
                             bill.getBillId(),
                             bill.getOrderId(),
                             amount,
-                            "Phòng khám Nha khoa DentalClinic",
-                            "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
-                            "028-3838-9999"
+                            "Phòng khám Nha khoa Happy SimlePhòng khám Nha khoa DentalClinic",
+                            "FPT University Đà Nẵng",
+                            "0936929382",
+                            reason
                         );
                         
-                        System.out.println("📧 ĐÃ GỬI EMAIL THANH TOÁN THẬT QUA N8N (AUTO-DETECTED)");
+                        System.out.println("🚀 ĐÃ GỬI EMAIL + CALENDAR THÔNG QUA N8N (AUTO-DETECTION)!");
+                        System.out.println("📧 Email xác nhận đã gửi đến: " + userEmail);
+                        System.out.println("📅 Calendar event đã tạo cho cả bệnh nhân và bác sĩ!");
                         System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
-                        System.out.println("👨‍⚕️ Bác sĩ: " + doctorName);
+                        System.out.println("👨‍⚕️ Bác sĩ: " + doctorName + " (" + doctorEmail + ")");
                         System.out.println("💰 Số tiền: " + String.format("%,.0f", (double)amount) + " VNĐ");
                         System.out.println("📄 Hóa đơn: " + bill.getBillId());
                         
@@ -1455,6 +1481,9 @@ public class PayOSServlet extends HttpServlet {
                                         testUser.getId()
                                     );
                                     if (relativeAppointment) {
+                                        // Cập nhật status thành COMPLETED
+                                        int lastAppointmentId = AppointmentDAO.getLastInsertedAppointmentId();
+                                        AppointmentDAO.updateAppointmentStatusStatic(lastAppointmentId, "BOOKED");
                                         appointmentCreated = true;
                                         System.out.println("🎯 TẠO LỊCH HẸN CHO NGƯỜI THÂN TRONG TEST - RelativeId: " + relativeId);
                                     }
@@ -1473,6 +1502,9 @@ public class PayOSServlet extends HttpServlet {
                                 );
                                 
                                 if (directAppointment) {
+                                    // Cập nhật status thành COMPLETED
+                                    int lastAppointmentId = AppointmentDAO.getLastInsertedAppointmentId();
+                                    AppointmentDAO.updateAppointmentStatusStatic(lastAppointmentId, "BOOKED");
                                     appointmentCreated = true;
                                 }
                             }
@@ -1517,27 +1549,58 @@ public class PayOSServlet extends HttpServlet {
                     String userName = patient != null ? patient.getFullName() : user.getUsername();
                     String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
                     
-                    // Gửi email thanh toán test với thông tin đầy đủ
-                    N8nWebhookService.sendPaymentSuccessToN8n(
-                        userEmail,
-                        userName,
-                        userPhone,
-                        doctorEmail,
-                        doctorName,
-                        appointmentDate,
-                        appointmentTime,
-                        serviceName,
-                        bill.getBillId(),
-                        bill.getOrderId(),
-                        bill.getAmount().doubleValue(),
-                        "Phòng khám Nha khoa DentalClinic",
-                        "123 Nguyễn Văn Cừ, Quận 1, TP.HCM",
-                        "028-3838-9999"
-                    );
+                    // 📧 GỬI EMAIL QUA N8N WORKFLOW CŨ
+                    try {
+                        N8nWebhookService.sendPaymentSuccessWithCalendar(
+                            userEmail,
+                            userName,
+                            userPhone,
+                            doctorEmail,
+                            doctorName,
+                            appointmentDate,
+                            appointmentTime,
+                            serviceName,
+                            bill.getBillId(),
+                            bill.getOrderId(),
+                            bill.getAmount().doubleValue(),
+                            "Phòng khám Nha khoa DentalClinic",
+                            "FPT University Đà Nẵng",
+                            "028-3838-9999",
+                            "Test thanh toán - Khám tổng quát"
+                        );
+                        
+                        System.out.println("📧 ĐÃ GỬI EMAIL XÁC NHẬN QUA N8N");
+                    } catch (Exception emailError) {
+                        System.err.println("❌ LỖI GỬI EMAIL: " + emailError.getMessage());
+                        emailError.printStackTrace();
+                    }
+                    
+                    // 📅 TẠO GOOGLE CALENDAR QUA WORKFLOW RIÊNG BIỆT
+                    try {
+                        N8nWebhookService.createGoogleCalendarEventDirect(
+                            userEmail,
+                            userName,
+                            userPhone,
+                            doctorEmail,
+                            doctorName,
+                            appointmentDate,
+                            appointmentTime,
+                            serviceName,
+                            bill.getBillId(),
+                            bill.getAmount().doubleValue(),
+                            "FPT University Đà Nẵng"
+                        );
+                        
+                        System.out.println("📅 ĐÃ GỬI YÊU CẦU TẠO CALENDAR QUA WORKFLOW RIÊNG");
+                    } catch (Exception calendarError) {
+                        System.err.println("❌ LỖI TẠO CALENDAR: " + calendarError.getMessage());
+                        calendarError.printStackTrace();
+                    }
                     
                     System.out.println("📧 ĐÃ GỬI EMAIL TEST THANH TOÁN QUA N8N");
+                    System.out.println("📅 ĐÃ GỬI YÊU CẦU TẠO GOOGLE CALENDAR (TEST)");
                     System.out.println("📩 Gửi tới: " + userEmail + " (" + userName + ")");
-                    System.out.println("👨‍⚕️ Bác sĩ: " + doctorName);
+                    System.out.println("👨‍⚕️ Bác sĩ: " + doctorName + " (" + doctorEmail + ")");
                     System.out.println("🏥 Dịch vụ: " + serviceName);
                     System.out.println("💰 Số tiền: " + String.format("%,.0f", bill.getAmount().doubleValue()) + " VNĐ");
                     System.out.println("📄 Hóa đơn: " + bill.getBillId());

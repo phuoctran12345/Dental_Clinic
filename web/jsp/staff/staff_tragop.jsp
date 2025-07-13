@@ -218,8 +218,14 @@
                                             })
                                         }).then(res => res.json()).then(data => {
                                             if (data.success) {
-                                                alert('Thanh toán thành công!');
-                                                window.location.reload();
+                                                // Đóng modal và show toast
+                                                var modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                                                if (modal) modal.hide();
+                                                showToast('Thanh toán thành công!', 'success');
+                                                // Reload lại phần danh sách hóa đơn trả góp bằng AJAX
+                                                reloadInstallmentList();
+                                                // KHÔNG reload toàn trang nữa
+                                                // setTimeout(() => window.location.reload(), 1000);
                                             } else {
                                                 alert('Lỗi: ' + (data.message || 'Thanh toán thất bại.'));
                                                 btn.disabled = false;
@@ -233,10 +239,43 @@
                                         });
                                     }
                                 </script>
+                                <script>
+                                    function showToast(message, type) {
+                                        let toast = document.createElement('div');
+                                        toast.className = 'custom-toast ' + (type === 'success' ? 'toast-success' : 'toast-error');
+                                        toast.innerText = message;
+                                        toast.style.position = 'fixed';
+                                        toast.style.top = '24px';
+                                        toast.style.right = '24px';
+                                        toast.style.zIndex = 9999;
+                                        toast.style.background = type === 'success' ? '#4caf50' : '#f44336';
+                                        toast.style.color = 'white';
+                                        toast.style.padding = '12px 24px';
+                                        toast.style.borderRadius = '8px';
+                                        toast.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                                        document.body.appendChild(toast);
+                                        setTimeout(() => { toast.remove(); }, 2000);
+                                    }
+                                </script>
+                                <script>
+                                    function reloadInstallmentList() {
+                                        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                                            .then(res => res.text())
+                                            .then(html => {
+                                                // Tạo DOM ảo để lấy lại phần accordion
+                                                const parser = new DOMParser();
+                                                const doc = parser.parseFromString(html, 'text/html');
+                                                const newAccordion = doc.querySelector('#installmentsAccordion');
+                                                if (newAccordion) {
+                                                    document.querySelector('#installmentsAccordion').innerHTML = newAccordion.innerHTML;
+                                                }
+                                            })
+                                            .catch(err => {
+                                                console.error('❌ Lỗi reload danh sách trả góp:', err);
+                                                showToast('Lỗi reload danh sách trả góp!', 'error');
+                                            });
+                                    }
+                                </script>
                         </body>
 
                         </html>
-
-
-
-                        

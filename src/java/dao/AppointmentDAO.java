@@ -803,13 +803,13 @@ public class AppointmentDAO {
             String sql = "UPDATE Appointment SET status = ? WHERE appointment_id = ?";
 
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, STATUS_COMPLETED); // "ĐÃ ĐẶT"
+            ps.setString(1, STATUS_BOOKED); // ĐÃ ĐẶT → BOOKED
             ps.setInt(2, appointmentId);
 
             int result = ps.executeUpdate();
             conn.close();
 
-            System.out.println("✅ HOÀN THÀNH RESERVATION: Appointment " + appointmentId + " → " + STATUS_COMPLETED);
+            System.out.println("✅ HOÀN THÀNH RESERVATION: Appointment " + appointmentId + " → " + STATUS_BOOKED);
             return result > 0;
         } catch (Exception e) {
             System.err.println("❌ LỖI HOÀN THÀNH RESERVATION: " + e.getMessage());
@@ -1637,5 +1637,280 @@ public class AppointmentDAO {
         
         return price;
     }
+    
 
+
+    // Phục vụ cho gửi calender n8n
+    /**
+     * Lấy email của bác sĩ và bệnh nhân từ appointment_id
+     * @param appointmentId ID của cuộc hẹn
+     * @return Mảng 2 phần tử [email bệnh nhân, email bác sĩ]
+     */
+    public static String[] getEmailsFromAppointment(int appointmentId) {
+        String[] emails = new String[2];
+        String sql = """
+            SELECT u1.email as patient_email, u2.email as doctor_email
+            FROM Appointment a
+            JOIN Patients p ON a.patient_id = p.patient_id
+            JOIN users u1 ON p.user_id = u1.user_id
+            JOIN Doctors d ON a.doctor_id = d.doctor_id
+            JOIN users u2 ON d.user_id = u2.user_id
+            WHERE a.appointment_id = ?
+        """;
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, appointmentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    emails[0] = rs.getString("patient_email");
+                    emails[1] = rs.getString("doctor_email");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting emails from appointment: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return emails;
+    }
+    
+    //=======================================================================================================================
+        // code của TOÀN
+    
+     public static List<Appointment> getTodayWaitingAppointmentsByDoctorId(long doctorId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.doctor_id = ? 
+            AND CAST(a.work_date AS DATE) = CAST(GETDATE() AS DATE)
+            AND a.status = N'booked'
+            ORDER BY t.start_time ASC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+                
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time").toLocalTime());
+                appointment.setEndTime(rs.getTime("end_time").toLocalTime());
+                
+                appointments.add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
+     
+     public static List<Appointment> getAllAppointmentsByDoctorId(long doctorId) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   a.booked_by_user_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.doctor_id = ?
+            ORDER BY a.work_date DESC, t.start_time ASC
+        """;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getInt("doctor_id"));
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+                
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+                
+                // Handle null booked_by_user_id
+                int bookedByUserId = rs.getInt("booked_by_user_id");
+                if (!rs.wasNull()) {
+                    appointment.setBookedByUserId(bookedByUserId);
+                } else {
+                    appointment.setBookedByUserId(null);
+                }
+                
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+                appointment.setStartTime(rs.getTime("start_time").toLocalTime());
+                appointment.setEndTime(rs.getTime("end_time").toLocalTime());
+                
+                appointments.add(appointment);
+            }
+        }
+        
+        return appointments;
+    }
+
+/**
+     * Lấy thông tin chi tiết của một cuộc hẹn (bao gồm thông tin bệnh nhân)
+     */
+    public static Appointment getAppointmentWithPatientInfo(int appointmentId) throws SQLException {
+        String sql = """
+            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, 
+                   a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                   p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
+                   t.start_time, t.end_time
+            FROM Appointment a
+            INNER JOIN Patients p ON a.patient_id = p.patient_id
+            INNER JOIN TimeSlot t ON a.slot_id = t.slot_id
+            WHERE a.appointment_id = ?
+        """;
+
+        System.out.println("DEBUG - getAppointmentWithPatientInfo for appointmentId: " + appointmentId);
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, appointmentId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment_id"));
+                appointment.setPatientId(rs.getInt("patient_id"));
+                appointment.setDoctorId(rs.getLong("doctor_id"));  // ✅ Sửa thành getLong
+                appointment.setWorkDate(rs.getDate("work_date"));
+                appointment.setSlotId(rs.getInt("slot_id"));
+                appointment.setStatus(rs.getString("status"));
+                appointment.setReason(rs.getString("reason"));
+
+                // Handle null previous_appointment_id
+                int prevAppId = rs.getInt("previous_appointment_id");
+                if (!rs.wasNull()) {
+                    appointment.setPreviousAppointmentId(prevAppId);
+                }
+
+                // Thông tin bệnh nhân
+                appointment.setPatientName(rs.getString("patient_name"));
+                appointment.setPatientPhone(rs.getString("phone"));
+                appointment.setPatientDateOfBirth(rs.getDate("date_of_birth"));
+                appointment.setPatientGender(rs.getString("gender"));
+
+                // ✅ FIX: Xử lý time slot đúng cách - convert từ Time sang LocalTime
+                try {
+                    // First try as TIME
+                    Time startTime = rs.getTime("start_time");
+                    if (startTime != null) {
+                        appointment.setStartTime(startTime.toLocalTime());
+                    }
+                } catch (Exception e1) {
+                    try {
+                        // Try as TIMESTAMP/DATETIME  
+                        Timestamp startTimestamp = rs.getTimestamp("start_time");
+                        if (startTimestamp != null) {
+                            appointment.setStartTime(startTimestamp.toLocalDateTime().toLocalTime());
+                        }
+                    } catch (Exception e2) {
+                        System.err.println("Warning: Could not set start time for appointment " + appointmentId + ": " + e2.getMessage());
+                        appointment.setStartTime(java.time.LocalTime.of(9, 0)); // Default 9:00 AM
+                    }
+                }
+
+                try {
+                    // First try as TIME
+                    Time endTime = rs.getTime("end_time");
+                    if (endTime != null) {
+                        appointment.setEndTime(endTime.toLocalTime());
+                    }
+                } catch (Exception e1) {
+                    try {
+                        // Try as TIMESTAMP/DATETIME
+                        Timestamp endTimestamp = rs.getTimestamp("end_time");
+                        if (endTimestamp != null) {
+                            appointment.setEndTime(endTimestamp.toLocalDateTime().toLocalTime());
+                        }
+                    } catch (Exception e2) {
+                        System.err.println("Warning: Could not set end time for appointment " + appointmentId + ": " + e2.getMessage());
+                        appointment.setEndTime(java.time.LocalTime.of(10, 0)); // Default 10:00 AM
+                    }
+                }
+
+                System.out.println("DEBUG - Found appointment: patient_id=" + appointment.getPatientId()
+                        + ", patient_name=" + appointment.getPatientName());
+
+                return appointment;
+            } else {
+                System.out.println("DEBUG - No appointment found with ID: " + appointmentId);
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error in getAppointmentWithPatientInfo: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("Error in getAppointmentWithPatientInfo: " + e.getMessage());
+            throw new SQLException("Error getting appointment info", e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Lấy ID của appointment vừa được thêm vào
+     * @return ID của appointment vừa thêm, hoặc -1 nếu thêm thất bại
+     */
+    public static int getLastInsertedAppointmentId() {
+        int lastId = -1;
+        try {
+            Connection conn = DBContext.getConnection();
+            String sql = "SELECT SCOPE_IDENTITY()"; // SQL Server function to get last inserted ID
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                lastId = rs.getInt(1);
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lastId;
+    }
 }

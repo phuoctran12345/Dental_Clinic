@@ -139,7 +139,7 @@ public class BookingPageServlet extends HttpServlet {
             List<Doctors> doctors = DoctorDAO.getAllDoctors();
             if (doctors != null) {
                 for (Doctors doctor : doctors) {
-                    // ✅ LOGIC MỚI: Lấy ngày làm việc bằng cách loại bỏ ngày nghỉ
+                    // ✅ LOGIC MỚI: Tự động tạo 14 ngày tiếp theo và loại bỏ ngày nghỉ
                     List<String> workDates = DoctorScheduleDAO.getWorkDatesExcludingLeaves((int) doctor.getDoctor_id(), 14); // 14 ngày tới
                     doctor.setWorkDates(workDates);
                     
@@ -148,7 +148,7 @@ public class BookingPageServlet extends HttpServlet {
                     List<DoctorSchedule> schedules = dsDAO.getSchedulesByDoctorId((long) doctor.getDoctor_id());
                     doctor.setSchedules(schedules);
                     
-                    System.out.println("👨‍⚕️ Bác sĩ " + doctor.getFull_name() + " có " + workDates.size() + " ngày làm việc");
+                    System.out.println("👨‍⚕️ Bác sĩ " + doctor.getFull_name() + " có " + workDates.size() + " ngày làm việc trong 14 ngày tới");
                 }
             }
             request.setAttribute("doctors", doctors);
@@ -311,36 +311,36 @@ public class BookingPageServlet extends HttpServlet {
                 }
             } else {
                 // Nếu form thiếu thông tin, tạo thông tin mặc định
-                String defaultName = "Người thân của " + patient.getUsername();
-                String defaultPhone = patient.getPhone() != null ? patient.getPhone() : "0000000000";
+            String defaultName = "Người thân của " + patient.getUsername();
+            String defaultPhone = patient.getPhone() != null ? patient.getPhone() : "0000000000";
                 String defaultDob = "1990-01-01";
-                String defaultGender = "Khác";
-                String defaultRelationship = "Khác";
+            String defaultGender = "Khác";
+            String defaultRelationship = "Khác";
+            
+            try {
+                RelativesDAO relativesDAO = new RelativesDAO();
+                int relativeId = relativesDAO.getOrCreateRelative(
+                    patient.getId(),
+                    defaultName,
+                    defaultPhone,
+                    defaultDob,
+                    defaultGender,
+                    defaultRelationship
+                );
                 
-                try {
-                    RelativesDAO relativesDAO = new RelativesDAO();
-                    int relativeId = relativesDAO.getOrCreateRelative(
-                        patient.getId(),
-                        defaultName,
-                        defaultPhone,
-                        defaultDob,
-                        defaultGender,
-                        defaultRelationship
-                    );
-                    
-                    if (relativeId > 0) {
-                        relativeIdStr = String.valueOf(relativeId);
+                if (relativeId > 0) {
+                    relativeIdStr = String.valueOf(relativeId);
                         System.out.println("✅ Tạo relative_id mặc định: " + relativeId + " cho user_id: " + patient.getId());
-                    } else {
-                        request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
-                        doGet(request, response);
-                        return;
-                    }
-                } catch (Exception e) {
-                    System.err.println("❌ Lỗi tạo relative_id mặc định: " + e.getMessage());
-                    request.setAttribute("error", "Có lỗi khi tạo thông tin người thân!");
+                } else {
+                    request.setAttribute("error", "Không thể tạo thông tin người thân! Vui lòng thử lại.");
                     doGet(request, response);
                     return;
+                }
+            } catch (Exception e) {
+                    System.err.println("❌ Lỗi tạo relative_id mặc định: " + e.getMessage());
+                request.setAttribute("error", "Có lỗi khi tạo thông tin người thân!");
+                doGet(request, response);
+                return;
                 }
             }
         }
