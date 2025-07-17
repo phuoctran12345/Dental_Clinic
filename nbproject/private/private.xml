@@ -3,8 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/utils/DBContext.java</file>
-            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/BookingPageServlet.java</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/src/java/controller/CancelAppointmentServlet.java</file>
+            <file>file:/Users/tranhongphuoc/NetBeansProjects/PM/TestFull/web/jsp/staff/staff_quanlylichhen.jsp</file>
         </group>
     </open-files>
 </project-private>

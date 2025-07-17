@@ -2150,21 +2150,18 @@ public class AppointmentDAO {
     }
 
     /**
-     * Đổi lịch hẹn: cập nhật doctor_id, service_id, slot_id, work_date, reason cho appointmentId
+và     * Đổi lịch hẹn: chỉ cập nhật work_date và slot_id cho appointmentId
      */
-    public static boolean updateAppointmentForReschedule(int appointmentId, int doctorId, int serviceId, int slotId, String workDate, String reason) {
+    public static boolean updateAppointmentForReschedule(int appointmentId, String workDate, int slotId) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = DBContext.getConnection();
-            String sql = "UPDATE Appointment SET doctor_id = ?, service_id = ?, slot_id = ?, work_date = ?, reason = ? WHERE appointment_id = ?";
+            String sql = "UPDATE Appointment SET work_date = ?, slot_id = ? WHERE appointment_id = ?";
             ps = conn.prepareStatement(sql);
-            ps.setInt(1, doctorId);
-            ps.setInt(2, serviceId);
-            ps.setInt(3, slotId);
-            ps.setString(4, workDate);
-            ps.setString(5, reason);
-            ps.setInt(6, appointmentId);
+            ps.setString(1, workDate);
+            ps.setInt(2, slotId);
+            ps.setInt(3, appointmentId);
             int rows = ps.executeUpdate();
             return rows > 0;
         } catch (Exception e) {
@@ -2209,5 +2206,28 @@ public static List<TimeSlot> getAvailableSlots(int doctorId, String date, int ap
     return availableSlots;
 }
 
+    /**
+     * Đổi lịch hẹn: chỉ cập nhật work_date và slot_id cho appointmentId (không đổi bác sĩ, dịch vụ)
+     */
+    public static boolean rescheduleAppointmentDateTime(int appointmentId, String newDate, int newSlotId) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "UPDATE Appointment SET work_date = ?, slot_id = ? WHERE appointment_id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, newDate);
+            ps.setInt(2, newSlotId);
+            ps.setInt(3, appointmentId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+    }
 
 }

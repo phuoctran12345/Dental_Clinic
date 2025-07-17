@@ -5,23 +5,16 @@
             <%@page import="model.Appointment" %>
                 <%@page import="java.util.List" %>
                     <%@page import="com.google.gson.Gson" %>
-                        <textarea name="reason" class="form-control" rows="3" placeholder="Nhập lý do khám..."
-                            required></textarea>
-                        </div>
 
-                        <!-- Thông báo tự động -->
-                        <div class="alert alert-success">
-                            <i class="fas fa-bell"></i>
-                            Thông báo tự động sẽ được gửi tới email của khách hàng
-                            khi xác nhận đổi lịch.
-                        </div>
+
                         </div>
                         <% List<Appointment> appointments = (List<Appointment>) request.getAttribute("appointments");
                                 if (appointments == null) appointments = new java.util.ArrayList<>();
                                     %>
-                                    <%! // Hàm escape chuỗi cho JS (toàn cục)
-                                        public String escapeJsString(String s) {
-                                        if (s==null) return "" ; return s.replace("\\", "\\\\" ).replace("'", "\\'").replace("\"", "\\\"");
+                                    <%! // HÃ m escape chuá»i cho JS (toÃ n cá»¥c)
+                                        public String escapeJsString(String
+                                        s) { if (s==null) return "" ; return s.replace("\\", "\\\\" ).replace("'", "\\'"
+                                        ).replace("\"", "\\\"");
 }
 %>
                                     <!DOCTYPE html>
@@ -30,6 +23,9 @@
                                     <head>
                                         <meta charset=" UTF-8">
                                         <title>Quản lý lịch hẹn - Huỷ & Đổi lịch</title>
+                                        <link
+                                            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+                                            rel="stylesheet">
                                         <style>
                                             body {
                                                 background: #f4f6fb;
@@ -196,7 +192,7 @@
                                             }
 
                                             .time-slot.booked::after {
-                                                content: '🚫';
+                                                content: 'ð«';
                                                 position: absolute;
                                                 top: 2px;
                                                 right: 5px;
@@ -212,7 +208,7 @@
                                             }
 
                                             .time-slot.expired::after {
-                                                content: '⏰';
+                                                content: 'â°';
                                                 position: absolute;
                                                 top: 2px;
                                                 right: 5px;
@@ -320,285 +316,371 @@
                                                 color: #15803d;
                                                 border-radius: 8px;
                                             }
+
+                                            .time-slot.past {
+                                                background: #cfd2d6;
+                                                color: #555;
+                                                border-color: #bbb;
+                                                cursor: not-allowed;
+                                                opacity: 0.85;
+                                                position: relative;
+                                                font-weight: 500;
+                                            }
+
+                                            .time-slot.past:hover {
+                                                background: #cfd2d6;
+                                                color: #555;
+                                                border-color: #bbb;
+                                                transform: none;
+                                            }
                                         </style>
                                         </head>
 
                                         <body>
-                                            <div class="container">
-                                                <div class="header">📅 Quản lý lịch hẹn – Huỷ & Đổi lịch</div>
-                                                <div class="search-bar">
-                                                    <input type="text" placeholder="Tìm theo tên hoặc SĐT..." />
-                                                    <select>
-                                                        <option>Tất cả trạng thái</option>
-                                                        <option>Đã xác nhận</option>
-                                                        <option>Chờ xác nhận</option>
-                                                        <option>Đã huỷ</option>
-                                                    </select>
-                                                    <input type="date" />
-                                                    <button>Xóa bộ lọc</button>
-                                                </div>
-
-                                                <% for (Appointment ap : appointments) { %>
-                                                    <div class="card">
-                                                        <%-- Trạng thái --%>
-                                                            <% String status=ap.getStatus(); String statusText="" ;
-                                                                String statusClass="" ; if ("BOOKED".equals(status)) {
-                                                                statusText="Đã xác nhận" ;
-                                                                statusClass="status-confirmed" ; } else if
-                                                                ("WAITING".equals(status) || "WAITING_PAYMENT"
-                                                                .equals(status)) { statusText="Chờ xác nhận" ;
-                                                                statusClass="status-pending" ; } else if
-                                                                ("CANCELLED".equals(status)) { statusText="Đã huỷ" ;
-                                                                statusClass="status-cancelled" ; } else {
-                                                                statusText=status; statusClass="" ; } %>
-                                                                <div class="status <%= statusClass %>">
-                                                                    <%= statusText %>
-                                                                </div>
-                                                                <div class="info"><b>
-                                                                        <%= ap.getPatientName() !=null ?
-                                                                            ap.getPatientName() : "Không rõ" %>
-                                                                    </b></div>
-                                                                <div class="info"><span class="label">📞</span>
-                                                                    <%= ap.getPatientPhone() !=null ?
-                                                                        ap.getPatientPhone() : "" %>
-                                                                </div>
-                                                                <div class="info"><span class="label">📅</span>
-                                                                    <%= ap.getWorkDate() !=null ? ap.getWorkDate() : ""
-                                                                        %>
-                                                                </div>
-                                                                <div class="info"><span class="label">⏰</span>
-                                                                    <%= ap.getStartTime() !=null ? ap.getStartTime()
-                                                                        : "" %>
-                                                                </div>
-                                                                <div class="info"><span class="label">Dịch vụ:</span>
-                                                                    <%= ap.getServiceName() !=null ? ap.getServiceName()
-                                                                        : "Chưa có dịch vụ" %>
-                                                                </div>
-                                                                <div class="info"><span class="label">Bác sĩ:</span>
-                                                                    <%= ap.getDoctorName() !=null ? ap.getDoctorName()
-                                                                        : "" %>
-                                                                </div>
-                                                                <% if (ap.getNote() !=null && !ap.getNote().isEmpty()) {
-                                                                    %>
-                                                                    <div class="note">Ghi chú: <%= ap.getNote() %>
-                                                                    </div>
-                                                                    <% } %>
-                                                                        <div class="actions">
-                                                                            <% if (!"CANCELLED".equals(status)) { %>
-                                                                                <button type="button"
-                                                                                    class="btn btn-cancel"
-                                                                                    onclick="openCancelModal('<%= ap.getAppointmentId() %>', '<%= ap.getPatientName() %>', '<%= ap.getWorkDate() %>', '<%= ap.getStartTime() %>', '<%= ap.getServiceName() %>')">
-                                                                                    Huỷ lịch
-                                                                                </button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-reschedule"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#rescheduleModal_<%= ap.getAppointmentId() %>"
-                                                                                    onclick="initRescheduleModal('<%= ap.getAppointmentId() %>', '<%= escapeJsString(ap.getPatientName()) %>', '<%= ap.getWorkDate() %>', '<%= ap.getStartTime() %>', '<%= escapeJsString(ap.getServiceName()) %>')">
-                                                                                    Đổi lịch
-                                                                                </button>
-                                                                                <% } %>
-                                                                        </div>
-                                                    </div>
-                                                    <!-- Modal đổi lịch cho từng appointment (UI hiện đại, giữ nguyên logic backend) -->
-                                                    <div class="modal fade"
-                                                        id="rescheduleModal_<%= ap.getAppointmentId() %>" tabindex="-1"
-                                                        aria-labelledby="rescheduleModalLabel_<%= ap.getAppointmentId() %>"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header border-0">
-                                                                    <h5 class="modal-title"><i
-                                                                            class="fas fa-calendar-alt me-2"></i>Đổi
-                                                                        lịch hẹn</h5>
-                                                                    <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                                <form id="rescheduleForm_<%= ap.getAppointmentId() %>"
-                                                                    method="post"
-                                                                    action="<%=request.getContextPath()%>/CancelAppointmentServlet">
-                                                                    <input type="hidden" name="reschedule" value="1" />
-                                                                    <input type="hidden" name="appointmentId"
-                                                                        value="<%= ap.getAppointmentId() %>" />
-                                                                    <input type="hidden" name="doctorId"
-                                                                        value="<%= ap.getDoctorId() %>" />
-                                                                    <input type="hidden" name="serviceId"
-                                                                        id="rescheduleServiceId_<%= ap.getAppointmentId() %>">
-                                                                    <input type="hidden" name="slotId"
-                                                                        id="rescheduleSlotId_<%= ap.getAppointmentId() %>">
-                                                                    <input type="hidden" name="workDate"
-                                                                        id="rescheduleWorkDate_<%= ap.getAppointmentId() %>">
-                                                                    <div class="modal-body px-4">
-                                                                        <div class="bg-light p-3 rounded mb-3">
-                                                                            <p><b>Bệnh nhân:</b> <span
-                                                                                    id="reschedulePatient_<%= ap.getAppointmentId() %>"></span>
-                                                                            </p>
-                                                                            <p><b>Lịch cũ:</b> <span
-                                                                                    id="rescheduleCurrentDateTime_<%= ap.getAppointmentId() %>"></span>
-                                                                            </p>
-                                                                            <p><b>Dịch vụ:</b> <span
-                                                                                    id="rescheduleServiceName_<%= ap.getAppointmentId() %>"></span>
-                                                                            </p>
-                                                                        </div>
-                                                                        <!-- Tabs -->
-                                                                        <ul class="nav nav-tabs"
-                                                                            id="rescheduleTab_<%= ap.getAppointmentId() %>"
-                                                                            role="tablist">
-                                                                            <li class="nav-item" role="presentation">
-                                                                                <button class="nav-link active"
-                                                                                    id="date-tab-<%= ap.getAppointmentId() %>"
-                                                                                    data-bs-toggle="tab"
-                                                                                    data-bs-target="#dateTabContent_<%= ap.getAppointmentId() %>"
-                                                                                    type="button" role="tab">Chọn ngày
-                                                                                    mới</button>
-                                                                            </li>
-                                                                            <li class="nav-item" role="presentation">
-                                                                                <button class="nav-link"
-                                                                                    id="time-tab-<%= ap.getAppointmentId() %>"
-                                                                                    data-bs-toggle="tab"
-                                                                                    data-bs-target="#timeTabContent_<%= ap.getAppointmentId() %>"
-                                                                                    type="button" role="tab">Chọn giờ &
-                                                                                    bác sĩ</button>
-                                                                            </li>
-                                                                        </ul>
-                                                                        <div class="tab-content mt-3">
-                                                                            <div class="tab-pane fade show active"
-                                                                                id="dateTabContent_<%= ap.getAppointmentId() %>"
-                                                                                role="tabpanel">
-                                                                                <input type="date" class="form-control"
-                                                                                    id="rescheduleDatePicker_<%= ap.getAppointmentId() %>"
-                                                                                    required>
-                                                                            </div>
-                                                                            <div class="tab-pane fade"
-                                                                                id="timeTabContent_<%= ap.getAppointmentId() %>"
-                                                                                role="tabpanel">
-                                                                                <div class="time-slot-grid"
-                                                                                    id="rescheduleSlotGrid_<%= ap.getAppointmentId() %>">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="mb-3 mt-3">
-                                                                            <label class="form-label">Lý do đổi
-                                                                                lịch:</label>
-                                                                            <textarea name="reason" class="form-control"
-                                                                                rows="3"
-                                                                                placeholder="Nhập lý do đổi lịch..."
-                                                                                required></textarea>
-                                                                        </div>
-                                                                        <div class="alert alert-success mt-4 mb-0">
-                                                                            <i class="fas fa-bell me-2"></i>
-                                                                            SMS sẽ được gửi tự động đến khách hàng thông
-                                                                            báo về lịch hẹn mới.
-                                                                        </div>
-                                                                    </div>
-                                                                    <div
-                                                                        class="modal-footer border-0 justify-content-center gap-2">
-                                                                        <button type="button" class="btn btn-light px-4"
-                                                                            data-bs-dismiss="modal">Huỷ bỏ</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn-primary px-4"
-                                                                            id="rescheduleSubmitBtn_<%= ap.getAppointmentId() %>"
-                                                                            disabled>
-                                                                            Xác nhận đổi lịch
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <% } %>
-                                                        <div class="footer-stats">
-                                                            <div class="stat">Đã xác nhận:
-                                                                <%=appointments.stream().filter(a ->
-                                                                    "BOOKED".equals(a.getStatus())).count() %>
-                                                            </div>
-                                                            <div class="stat">Chờ xác nhận:
-                                                                <%=appointments.stream().filter(a ->
-                                                                    "WAITING".equals(a.getStatus()) ||
-                                                                    "WAITING_PAYMENT".equals(a.getStatus())).count() %>
-                                                            </div>
-                                                            <div class="stat">Đã huỷ: <%= appointments.stream().filter(a
-                                                                    ->
-                                                                    "CANCELLED".equals(a.getStatus())).count() %></div>
-                                                            <div class="stat">Hoàn thành: <%=
-                                                                    appointments.stream().filter(a ->
-                                                                    "COMPLETED".equals(a.getStatus())).count() %></div>
-                                                        </div>
-                                                        <div style="margin-top: 24px;">
-                                                            <a href="<%=request.getContextPath()%>/home.jsp">&larr; Quay
-                                                                lại
-                                                                trang
-                                                                chủ</a>
-                                                        </div>
-                                            </div>
-                                            <!-- Modal Huỷ lịch -->
-                                            <div id="cancelModal"
-                                                style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
-                                                <div
-                                                    style="background:#fff; border-radius:16px; padding:32px 28px; max-width:420px; margin:auto; position:relative; box-shadow:0 8px 32px #0002;">
-                                                    <div
-                                                        style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
-                                                        <span style="font-size:2.2em; color:#ef4444;">&#9888;</span>
-                                                        <h2 style="color:#ef4444; font-size:1.3em; margin:0;">Huỷ lịch
-                                                            hẹn
-                                                        </h2>
-                                                    </div>
-                                                    <form id="cancelForm" method="post"
-                                                        action="<%=request.getContextPath()%>/CancelAppointmentServlet">
-                                                        <div
-                                                            style="background:#f3f4f6; border-radius:8px; padding:12px 16px; margin-bottom:18px;">
-                                                            <div style="margin-bottom:4px;"><b>Bệnh nhân:</b> <span
-                                                                    id="cancelPatient"></span></div>
-                                                            <div style="margin-bottom:4px;"><b>Ngày:</b> <span
-                                                                    id="cancelDate"></span> <b>Giờ:</b> <span
-                                                                    id="cancelTime"></span></div>
-                                                            <div><b>Dịch vụ:</b> <span id="cancelService"></span></div>
-                                                        </div>
-                                                        <input type="hidden" name="appointmentId"
-                                                            id="cancelAppointmentId" />
-                                                        <div style="margin-bottom:10px;">
-                                                            <label
-                                                                style="font-weight:500; display:block; margin-bottom:4px;">Lý
-                                                                do
-                                                                huỷ lịch <span style="color:red">*</span></label>
-                                                            <select name="cancelReason" required
-                                                                style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                                                                <option value="">Chọn lý do huỷ</option>
-                                                                <option value="Bận việc">Bận việc</option>
-                                                                <option value="Không còn nhu cầu">Không còn nhu cầu
-                                                                </option>
-                                                                <option value="Khác">Khác</option>
+                                            <div class="container py-4">
+                                                <h2 class="mb-4">📅 Quản lý lịch hẹn</h2>
+                                                <ul class="nav nav-tabs mb-3" id="manageTabs" role="tablist">
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active" id="list-tab"
+                                                            data-bs-toggle="tab" data-bs-target="#listTabContent"
+                                                            type="button" role="tab">Danh sách lịch hẹn</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="reschedule-tab"
+                                                            data-bs-toggle="tab" data-bs-target="#rescheduleTabContent"
+                                                            type="button" role="tab">Đổi lịch</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="cancel-tab" data-bs-toggle="tab"
+                                                            data-bs-target="#cancelTabContent" type="button"
+                                                            role="tab">Huỷ lịch</button>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content" id="manageTabsContent">
+                                                    <!-- Tab 1: Danh sÃ¡ch lá»ch háº¹n -->
+                                                    <div class="tab-pane fade show active" id="listTabContent"
+                                                        role="tabpanel">
+                                                        <div class="mb-3 d-flex justify-content-between">
+                                                            <input type="text" class="form-control w-25"
+                                                                placeholder="Tìm kiếm tên, SĐT...">
+                                                            <select class="form-select w-25">
+                                                                <option value="">Tất cả trạng thái</option>
+                                                                <option value="BOOKED">Đã xác nhận</option>
+                                                                <option value="WAITING">Chờ xác nhận</option>
+                                                                <option value="CANCELLED">Đã huỷ</option>
                                                             </select>
                                                         </div>
-                                                        <div style="margin-bottom:10px;">
-                                                            <label
-                                                                style="font-weight:500; display:block; margin-bottom:4px;">Ghi
-                                                                chú thêm</label>
-                                                            <textarea name="cancelNote"
-                                                                style="width:100%; min-height:60px; border-radius:6px; border:1px solid #ccc;"
-                                                                placeholder="Thêm ghi chú nếu cần..."></textarea>
-                                                        </div>
-                                                        <div
-                                                            style="background:#fef9c3; color:#b45309; border-radius:6px; padding:8px; margin:12px 0; font-size:0.97em;">
-                                                            <b>&#9888; Thông báo tự động:</b> Email sẽ gửi tới khách
-                                                            hàng
-                                                            khi
-                                                            huỷ
-                                                            lịch.
-                                                        </div>
-                                                        <div style="display:flex; gap:10px; margin-top:12px;">
-                                                            <button type="button" onclick="closeCancelModal()"
-                                                                style="flex:1; border:1px solid #ccc; background:#fff; border-radius:6px;">Huỷ
-                                                                bỏ</button>
-                                                            <button type="submit"
-                                                                style="flex:1; background:#ef4444; color:#fff; border:none; border-radius:6px; font-weight:600;">Xác
-                                                                nhận huỷ lịch</button>
-                                                        </div>
-                                                    </form>
-                                                    <span onclick="closeCancelModal()"
-                                                        style="position:absolute; top:10px; right:18px; cursor:pointer; font-size:1.7em; color:#888;">&times;</span>
+                                                        <table class="table table-bordered table-hover align-middle">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Bệnh nhân</th>
+                                                                    <th>Ngày</th>
+                                                                    <th>Giờ</th>
+                                                                    <th>Dịch vụ</th>
+                                                                    <th>Bác sĩ</th>
+                                                                    <th>Trạng thái</th>
+                                                                    <th>Thao tác</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <% for (Appointment ap : appointments) { %>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <%= ap.getPatientName() %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= ap.getWorkDate() %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= ap.getStartTime() %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= ap.getServiceName() %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= ap.getDoctorName() %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <% if ("BOOKED".equals(ap.getStatus())) { %>
+                                                                                <span class="badge bg-success">Đã xác
+                                                                                    nhận</span>
+                                                                                <% } else if
+                                                                                    ("WAITING".equals(ap.getStatus())
+                                                                                    || "WAITING_PAYMENT"
+                                                                                    .equals(ap.getStatus())) { %>
+                                                                                    <span
+                                                                                        class="badge bg-warning text-dark">Chờ
+                                                                                        xác nhận</span>
+                                                                                    <% } else if
+                                                                                        ("CANCELLED".equals(ap.getStatus()))
+                                                                                        { %>
+                                                                                        <span class="badge bg-danger">Đã
+                                                                                            huỷ</span>
+                                                                                        <% } else { %>
+                                                                                            <span
+                                                                                                class="badge bg-secondary">
+                                                                                                <%= ap.getStatus() %>
+                                                                                            </span>
+                                                                                            <% } %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <% if (!"CANCELLED".equals(ap.getStatus()))
+                                                                                { %>
+                                                                                <button class="btn btn-sm btn-primary"
+                                                                                    onclick="switchToReschedule('<%= ap.getAppointmentId() %>')">Đổi
+                                                                                    lịch</button>
+                                                                                <button class="btn btn-sm btn-danger"
+                                                                                    onclick="switchToCancel('<%= ap.getAppointmentId() %>')">Huỷ
+                                                                                    lịch</button>
+                                                                                <% } %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% } %>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <!-- Tab 2: Đổi lịch -->
+                                                    <div class="tab-pane fade" id="rescheduleTabContent"
+                                                        role="tabpanel">
+                                                        <form id="rescheduleForm" method="post"
+                                                            action="<%=request.getContextPath()%>/CancelAppointmentServlet">
+                                                            <input type="hidden" name="reschedule" value="1" />
+                                                            <input type="hidden" name="doctorId"
+                                                                id="rescheduleDoctorId">
+                                                            <input type="hidden" name="serviceId"
+                                                                id="rescheduleServiceId">
+                                                            <div class="mb-3">
+                                                                <label>Chọn lịch hẹn cần đổi:</label>
+                                                                <select id="rescheduleAppointmentId"
+                                                                    name="appointmentId" class="form-select" required
+                                                                    onchange="onRescheduleAppointmentChange()">
+                                                                    <% for (Appointment ap : appointments) { if
+                                                                        (!"CANCELLED".equals(ap.getStatus())) { %>
+                                                                        <option value="<%= ap.getAppointmentId() %>"
+                                                                            data-doctor-id="<%= ap.getDoctorId() %>"
+                                                                            data-service-id="<%= ap.getServiceId() %>">
+                                                                            <%= ap.getPatientName() %> - <%=
+                                                                                    ap.getWorkDate() %>
+                                                                                    <%= ap.getStartTime() %>
+                                                                        </option>
+                                                                        <% } } %>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label>Chọn ngày mới:</label>
+                                                                <input type="date" id="rescheduleDatePicker"
+                                                                    name="workDate" class="form-control" required
+                                                                    onchange="if(this.value) updateStaffSlots(getSelectedDoctorId(), this.value, 'rescheduleSlotGrid')">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label>Chọn ca khám mới:</label>
+                                                                <div class="time-slot-grid" id="rescheduleSlotGrid">
+                                                                </div>
+                                                                <input type="hidden" name="slotId"
+                                                                    id="rescheduleSlotId">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label>Lý do đổi lịch:</label>
+                                                                <textarea name="reason" class="form-control" rows="3"
+                                                                    required></textarea>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <button type="submit" class="btn btn-primary">Xác nhận
+                                                                    đổi lịch</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <!-- Tab 3: Huỷ lịch -->
+                                                    <div class="tab-pane fade" id="cancelTabContent" role="tabpanel">
+                                                        <form id="cancelForm" method="post"
+                                                            action="<%=request.getContextPath()%>/CancelAppointmentServlet">
+                                                            <div class="mb-3">
+                                                                <label>Chọn lịch hẹn cần huỷ:</label>
+                                                                <select id="cancelAppointmentId" name="appointmentId"
+                                                                    class="form-select" required>
+                                                                    <% for (Appointment ap : appointments) { if
+                                                                        (!"CANCELLED".equals(ap.getStatus())) { %>
+                                                                        <option value="<%= ap.getAppointmentId() %>">
+                                                                            <%= ap.getPatientName() %> - <%=
+                                                                                    ap.getWorkDate() %>
+                                                                                    <%= ap.getStartTime() %>
+                                                                        </option>
+                                                                        <% } } %>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label>Lý do huỷ lịch:</label>
+                                                                <select name="cancelReason" class="form-select"
+                                                                    required>
+                                                                    <option value="">Chọn lý do huỷ</option>
+                                                                    <option value="Bận việc">Bận việc</option>
+                                                                    <option value="Không còn nhu cầu">Không còn nhu cầu
+                                                                    </option>
+                                                                    <option value="Khác">Khác</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label>Ghi chú thêm:</label>
+                                                                <textarea name="cancelNote" class="form-control"
+                                                                    rows="2"></textarea>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <button type="submit" class="btn btn-danger">Xác nhận
+                                                                    huỷ lịch</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <script
+                                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                                            <script>
+                                                function updateStaffSlots(doctorId, workDate, containerId) {
+                                                    console.log('updateStaffSlots:', { doctorId, workDate, containerId });
+                                                    if (!doctorId || !workDate) return;
+                                                    var url = '/CancelAppointmentServlet?action=getSlots&doctorId=' + doctorId + '&workDate=' + workDate;
+                                                    fetch(url)
+                                                        .then(res => res.json())
+                                                        .then(slots => {
+                                                            var html = '';
+                                                            slots.forEach(slot => {
+                                                                var slotClass = 'time-slot';
+                                                                var statusText = '';
+                                                                var clickHandler = '';
+                                                                if (slot.isBooked) {
+                                                                    slotClass += ' booked';
+                                                                    statusText = '<small class="text-danger">Đã ñã được đặt</small>';
+                                                                } else if (slot.isPast) {
+                                                                    slotClass += ' past';
+                                                                    statusText = '<small class="text-secondary">Đã quá giờ khám</small>';
+                                                                } else {
+                                                                    clickHandler = 'onclick="selectStaffSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\')"';
+                                                                    statusText = '<small class="text-success">Còn trống</small>';
+                                                                }
+                                                                html += '<div class="' + slotClass + '" ' + clickHandler + '>' +
+                                                                    '<strong>' + slot.startTime + ' - ' + slot.endTime + '</strong><br>' +
+                                                                    statusText +
+                                                                    '</div>';
+                                                            });
+                                                            document.getElementById(containerId).innerHTML = html;
+                                                        });
+                                                }
+                                                function selectStaffSlot(slotId, startTime, endTime) {
+                                                    // Kiểm tra nếu slot đã được đặt
+                                                    if (event.currentTarget.classList.contains('booked')) {
+                                                        alert('Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác!');
+                                                        return;
+                                                    }
+                                                    if (event.currentTarget.classList.contains('past')) {
+                                                        alert('Khung giờ này đã quá thời gian khám!');
+                                                        return;
+                                                    }
+                                                    // Set giá trị vào hidden input
+                                                    document.getElementById('rescheduleSlotId').value = slotId;
+
+                                                    // Highlight selected time slot
+                                                    document.querySelectorAll('.time-slot:not(.booked)').forEach(slot => slot.classList.remove('selected'));
+                                                    event.currentTarget.classList.add('selected');
+                                                }
+                                                function getSelectedDoctorId() {
+                                                    var select = document.getElementById('rescheduleAppointmentId');
+                                                    if (!select) return '';
+                                                    var selectedOption = select.options[select.selectedIndex];
+                                                    return selectedOption ? selectedOption.getAttribute('data-doctor-id') : '';
+                                                }
+                                                function switchToReschedule(appointmentId) {
+                                                    var tab = new bootstrap.Tab(document.getElementById('reschedule-tab'));
+                                                    tab.show();
+                                                    var select = document.getElementById('rescheduleAppointmentId');
+                                                    if (select) {
+                                                        select.value = appointmentId;
+                                                        onRescheduleAppointmentChange();
+                                                        // Nếu đã chọn ngày mới thì render luôn ca khám
+                                                        var workDate = document.getElementById('rescheduleDatePicker').value;
+                                                        var doctorId = document.getElementById('rescheduleDoctorId').value;
+                                                        if (workDate && doctorId) {
+                                                            updateStaffSlots(doctorId, workDate, 'rescheduleSlotGrid');
+                                                        }
+                                                    }
+                                                }
+                                                function switchToCancel(appointmentId) {
+                                                    var tab = new bootstrap.Tab(document.getElementById('cancel-tab'));
+                                                    tab.show();
+                                                    document.getElementById('cancelAppointmentId').value = appointmentId;
+                                                }
+                                                function onRescheduleAppointmentChange() {
+                                                    var select = document.getElementById('rescheduleAppointmentId');
+                                                    console.log('[DEBUG] onRescheduleAppointmentChange - select:', select);
+                                                    if (!select) return; // Nếu không có select thì thoát luôn, tránh lỗi
+                                                    var selectedOption = select.options[select.selectedIndex];
+                                                    console.log('[DEBUG] selectedOption:', selectedOption);
+                                                    var doctorId = selectedOption.getAttribute('data-doctor-id') || '';
+                                                    var serviceId = selectedOption.getAttribute('data-service-id') || '';
+                                                    console.log('[DEBUG] doctorId:', doctorId, 'serviceId:', serviceId);
+                                                    document.getElementById('rescheduleDoctorId').value = doctorId;
+                                                    document.getElementById('rescheduleServiceId').value = serviceId;
+                                                    document.getElementById('rescheduleDatePicker').value = '';
+                                                    document.getElementById('rescheduleSlotGrid').innerHTML = '';
+                                                }
+                                                // Gọi khi trang load để set giá trị ban đầu
+                                                window.addEventListener('DOMContentLoaded', function () {
+                                                    onRescheduleAppointmentChange();
+                                                });
+
+
+                                                ///
+
+                                                function updateSchedules(selectedDate, doctorId, tabType) {
+                                                    var url = '${pageContext.request.contextPath}/BookingPageServlet?ajax=true&doctorId=' + doctorId + '&workDate=' + selectedDate;
+
+                                                    // Hiển thị container và loading
+                                                    document.getElementById('timeSlotsContainer_' + tabType + '_' + doctorId).style.display = 'block';
+                                                    document.getElementById('timeSlots_' + tabType + '_' + doctorId).innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải khung giờ...</div>';
+
+                                                    fetch(url)
+                                                        .then(function (response) {
+                                                            return response.json();
+                                                        })
+                                                        .then(function (slots) {
+                                                            console.log('Dữ liệu khung giờ trả về:', slots);
+
+                                                            var timeSlotsDiv = document.getElementById('timeSlots_' + tabType + '_' + doctorId);
+                                                            var html = '';
+
+                                                            if (slots.length === 0) {
+                                                                html = '<div class="alert alert-warning">Không có khung giờ nào khả dụng cho ngày này</div>';
+                                                            } else {
+                                                                slots.forEach(function (slot) {
+                                                                    var slotClass = 'time-slot';
+                                                                    var clickHandler = '';
+                                                                    var statusText = '';
+
+                                                                    if (slot.isBooked) {
+                                                                        slotClass += ' booked';
+                                                                        statusText = '<small class="text-muted">Đã được đặt</small>';
+                                                                    } else if (slot.isPast) {
+                                                                        slotClass += ' past';
+                                                                        statusText = '<small class="text-secondary">Đã quá giờ khám</small>';
+                                                                    } else {
+                                                                        clickHandler = 'onclick="selectTimeSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\', ' + doctorId + ', \'' + tabType + '\')"';
+                                                                        statusText = '<small class="text-success">Còn trống</small>';
+                                                                    }
+
+                                                                    html += '<div class="' + slotClass + '" ' + clickHandler + '>' +
+                                                                        '<strong>' + slot.startTime + ' - ' + slot.endTime + '</strong><br>' +
+                                                                        statusText +
+                                                                        '</div>';
+                                                                });
+                                                            }
+
+                                                            timeSlotsDiv.innerHTML = html;
+                                                        })
+                                                        .catch(function (error) {
+                                                            console.error('Error loading timeslots:', error);
+                                                            document.getElementById('timeSlots_' + tabType + '_' + doctorId).innerHTML = '<div class="alert alert-danger">Có lỗi khi tải khung giờ</div>';
+                                                        });
+                                                }
+                                            </script>
                                         </body>
 
                                         </html>

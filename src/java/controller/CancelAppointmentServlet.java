@@ -63,10 +63,21 @@ public class CancelAppointmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+                //call ra để xử lý render lịch hẹn
+        String action = request.getParameter("action");
+        if ("getSlots".equals(action)) {
+            handleGetTimeSlotsForStaff(request, response);
+            return;
+        }
         try {
             // Lấy danh sách lịch hẹn từ DAO với thông tin chi tiết
             List<model.Appointment> appointments = new dao.AppointmentDAO().getAllAppointmentsWithDetails();
-            
+            System.out.println("[DEBUG] appointments size: " + (appointments != null ? appointments.size() : "null"));
+            if (appointments != null) {
+                for (model.Appointment ap : appointments) {
+                    System.out.println("[DEBUG] Appointment: id=" + ap.getAppointmentId() + ", status=" + ap.getStatus() + ", doctorId=" + ap.getDoctorId());
+                }
+            }
             // Lấy danh sách bác sĩ
             List<Doctors> doctors = DoctorDAO.getAllDoctors();
             System.out.println("[DEBUG] Số lượng bác sĩ: " + doctors.size());
@@ -91,8 +102,57 @@ public class CancelAppointmentServlet extends HttpServlet {
         }
         
         // Forward sang JSP
-        request.getRequestDispatcher("jsp/staff/staff_quanlylichhen.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/staff/staff_quanlylichhen.jsp").forward(request, response);
     } 
+
+    /**
+     * Endpoint lấy danh sách slot cho staff đổi lịch (có logic che slot đã qua giờ bắt đầu + 10 phút)
+     */
+    private void handleGetTimeSlotsForStaff(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            String doctorIdParam = request.getParameter("doctorId");
+            String workDate = request.getParameter("workDate");
+            System.out.println("[DEBUG] getSlots doctorIdParam: " + doctorIdParam + ", workDate: " + workDate);
+            if (doctorIdParam == null || doctorIdParam.trim().isEmpty() || workDate == null || workDate.trim().isEmpty()) {
+                System.out.println("[DEBUG] getSlots thiếu doctorId hoặc workDate");
+                response.getWriter().write("[]");
+                return;
+            }
+            int doctorId = Integer.parseInt(doctorIdParam);
+            java.time.LocalDate localDate = java.time.LocalDate.parse(workDate);
+            java.time.LocalDate today = java.time.LocalDate.now();
+            java.time.LocalTime now = java.time.LocalTime.now();
+            // Lấy slot trống bằng TimeSlotDAO (tái sử dụng code)
+            java.util.List<model.TimeSlot> availableSlots = dao.TimeSlotDAO.getAvailableSlotsByDoctorAndDate(doctorId, workDate);
+            System.out.println("[DEBUG] availableSlots: " + (availableSlots != null ? availableSlots.size() : "null"));
+            java.util.List<Integer> bookedSlotIds = dao.AppointmentDAO.getBookedSlots(doctorId, localDate);
+            System.out.println("[DEBUG] bookedSlotIds: " + bookedSlotIds);
+            StringBuilder json = new StringBuilder();
+            json.append("[");
+            for (int i = 0; i < availableSlots.size(); i++) {
+                model.TimeSlot slot = availableSlots.get(i);
+                boolean isBooked = bookedSlotIds.contains(slot.getSlotId());
+                boolean isPast = localDate.equals(today) && slot.getStartTime().plusMinutes(10).isBefore(now); // xử lý thêm + thêm 10p để render ra lịch 
+                if (i > 0) json.append(",");
+                json.append("{");
+                json.append("\"slotId\":").append(slot.getSlotId()).append(",");
+                json.append("\"startTime\":\"").append(slot.getStartTime()).append("\",");
+                json.append("\"endTime\":\"").append(slot.getEndTime()).append("\",");
+                json.append("\"isBooked\":").append(isBooked).append(",");
+                json.append("\"isPast\":").append(isPast);
+                json.append("}");
+            }
+            json.append("]");
+            response.getWriter().write(json.toString());
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Exception in getSlots: " + e.getMessage());
+            e.printStackTrace();
+            response.getWriter().write("[]");
+        }
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -114,33 +174,15 @@ public class CancelAppointmentServlet extends HttpServlet {
             try {
                 int appointmentId = Integer.parseInt(idStr);
                 if (rescheduleFlag != null) {
-                    // Xử lý ĐỔI LỊCH
-                    String doctorIdStr = request.getParameter("doctorId");
-                    String serviceIdStr = request.getParameter("serviceId");
                     String slotIdStr = request.getParameter("slotId");
                     String workDate = request.getParameter("workDate");
-                    String reason = request.getParameter("reason");
-
-                    int doctorId = doctorIdStr != null ? Integer.parseInt(doctorIdStr) : 0;
-                    int serviceId = serviceIdStr != null ? Integer.parseInt(serviceIdStr) : 0;
-                    int slotId = slotIdStr != null ? Integer.parseInt(slotIdStr) : 0;
-
-                    // Update appointment (giả sử có hàm updateAppointmentForReschedule)
-                    success = dao.AppointmentDAO.updateAppointmentForReschedule(appointmentId, doctorId, serviceId, slotId, workDate, reason);
-
+//                    boolean success = false;
+                    if (slotIdStr != null && workDate != null) {
+                        int slotId = Integer.parseInt(slotIdStr);
+                        success = dao.AppointmentDAO.updateAppointmentForReschedule(appointmentId, workDate, slotId);
+                    }
                     if (success) {
-                        // Lấy thông tin chi tiết appointment mới
-                        model.Appointment ap = dao.AppointmentDAO.getAppointmentWithPatientInfo(appointmentId);
-                        String[] emails = dao.AppointmentDAO.getEmailsFromAppointment(appointmentId);
-                        String patientEmail = emails[0];
-                        String patientName = ap != null && ap.getPatientName() != null ? ap.getPatientName() : "Khách hàng";
-                        String dateTime = ap != null && ap.getWorkDate() != null ? ap.getWorkDate().toString() : "";
-                        if (ap != null && ap.getStartTime() != null) dateTime += " " + ap.getStartTime().toString();
-                        String service = ap != null && ap.getServiceName() != null ? ap.getServiceName() : "";
-
-                        // Gửi email thông báo đổi lịch
-                        utils.EmailService.sendRescheduleAppointmentEmail(patientEmail, patientName, dateTime, service, reason);
-                        message = "Đổi lịch thành công và đã gửi thông báo cho bệnh nhân.";
+                        message = "Đổi lịch thành công.";
                     } else {
                         message = "Không thể đổi lịch. Vui lòng thử lại.";
                     }

@@ -352,7 +352,9 @@
                 </div>
                 <div class="dropdown_list">n
                     <a href="${pageContext.request.contextPath}/StaffBookingServlet">Đặt lịch mới</a>
-                    <a href="${pageContext.request.contextPath}/CancelAppointmentServlet">Xem lịch hẹn</a>
+                    <a href="${pageContext.request.contextPath}/CancelAppointmentServlet">Xem huỷ lịch hẹn</a>
+                    <a href="${pageContext.request.contextPath}/RescheduleAppointmentServlet">Đổi  lịch hẹn</a>
+                    
                     <a href="#">Lịch tái khám</a>
                 </div>
             </div>
