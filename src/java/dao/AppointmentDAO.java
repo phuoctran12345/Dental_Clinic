@@ -21,6 +21,8 @@ import java.util.List;
 import model.Appointment;
 import model.SlotReservation;
 import static utils.DBContext.getConnection;
+import model.TimeSlot;
+import dao.TimeSlotDAO;
 
 /**
  * AppointmentDAO - Data Access Object for Appointment table
@@ -52,7 +54,7 @@ public class AppointmentDAO {
     /**
      * Lấy tất cả appointments
      */
-    public List<Appointment> getAll() throws SQLException {
+    public  List<Appointment> getAll() {
         List<Appointment> appointments = new ArrayList<>();
         try {
             conn = DBContext.getConnection();
@@ -488,7 +490,8 @@ public class AppointmentDAO {
         return list;
     }
 
-    /*-------------------------------------------------------------*/
+    //*-------------------------------------------------------------*
+
     public List<Appointment> getAppointmentsByUserId(int userId) throws SQLException {
         List<Appointment> appointments = new ArrayList<>();
 
@@ -546,6 +549,30 @@ public class AppointmentDAO {
 
     public static boolean isSlotAvailable(int doctorId, LocalDate workDate, int slotId) {
         try {
+            //========================================================
+            // ✅ KIỂM TRA THỜI GIAN REAL-TIME
+            java.time.LocalDate currentDate = java.time.LocalDate.now();
+            java.time.LocalTime currentTime = java.time.LocalTime.now();
+            
+            // Nếu là ngày trong quá khứ
+            if (workDate.isBefore(currentDate)) {
+                System.out.println("❌ Slot " + slotId + " không khả dụng: Ngày trong quá khứ (" + workDate + " < " + currentDate + ")");
+                return false;
+            }
+            
+            // Nếu là ngày hôm nay, kiểm tra thời gian
+            if (workDate.equals(currentDate)) {
+                // Lấy thông tin thời gian của slot
+                TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
+                TimeSlot timeSlot = timeSlotDAO.getTimeSlotById(slotId);
+                
+                if (timeSlot != null && timeSlot.getStartTime().isBefore(currentTime)) {
+                    System.out.println("❌ Slot " + slotId + " không khả dụng: Đã qua thời gian (" + timeSlot.getStartTime() + " < " + currentTime + ")");
+                    return false;
+                }
+            }
+            
+            // Kiểm tra slot đã được đặt chưa
             Connection conn = DBContext.getConnection();
             String sql = "SELECT COUNT(*) FROM Appointment WHERE doctor_id = ? AND work_date = ? AND slot_id = ? AND status = 'BOOKED' AND patient_id IS NOT NULL";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -558,9 +585,47 @@ public class AppointmentDAO {
                 available = rs.getInt(1) == 0;
             }
             conn.close();
+            
+            if (!available) {
+                System.out.println("❌ Slot " + slotId + " không khả dụng: Đã được đặt");
+            } else {
+                System.out.println("✅ Slot " + slotId + " khả dụng");
+            }
+            
             return available;
         } catch (Exception e) {
+            System.err.println("❌ Lỗi kiểm tra slot availability: " + e.getMessage());
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * ✅ HÀM MỚI: Kiểm tra slot có hết hạn không (đã qua thời gian)
+     */
+    public static boolean isSlotExpired(int slotId, LocalDate workDate) {
+        try {
+            java.time.LocalDate currentDate = java.time.LocalDate.now();
+            java.time.LocalTime currentTime = java.time.LocalTime.now();
+            
+            // Nếu là ngày trong quá khứ
+            if (workDate.isBefore(currentDate)) {
+                return true;
+            }
+            
+            // Nếu là ngày hôm nay, kiểm tra thời gian
+            if (workDate.equals(currentDate)) {
+                TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
+                TimeSlot timeSlot = timeSlotDAO.getTimeSlotById(slotId);
+                
+                if (timeSlot != null && timeSlot.getStartTime().isBefore(currentTime)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi kiểm tra slot expired: " + e.getMessage());
             return false;
         }
     }
@@ -1913,4 +1978,236 @@ public class AppointmentDAO {
         }
         return lastId;
     }
+
+    // 🆕 METHOD: Lấy danh sách appointments theo bác sĩ và ngày
+    public static List<Appointment> getAppointmentsByDoctorAndDate(int doctorId, String workDate) throws SQLException {
+        List<Appointment> appointments = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBContext.getConnection();
+            String sql = """
+                SELECT a.*, 
+                       p.full_name as patient_name, 
+                       p.phone as patient_phone,
+                       p.email as patient_email,
+                       d.full_name as doctor_name, 
+                       d.specialty as doctor_specialty,
+                       d.email as doctor_email,
+                       ts.start_time, 
+                       ts.end_time,
+                       s.service_name,
+                       s.price as service_price
+                FROM Appointment a 
+                LEFT JOIN Patients p ON a.patient_id = p.patient_id
+                LEFT JOIN Doctors d ON a.doctor_id = d.doctor_id
+                LEFT JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+                LEFT JOIN Bills b ON b.patient_id = a.patient_id 
+                    AND b.appointment_date = a.work_date 
+                    AND b.doctor_id = a.doctor_id
+                LEFT JOIN Services s ON b.service_id = s.service_id
+                WHERE a.doctor_id = ? AND a.work_date = ? AND a.status = 'BOOKED'
+                ORDER BY ts.start_time ASC
+            """;
+
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, doctorId);
+            ps.setString(2, workDate);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Appointment appointment = mapResultSetToAppointmentWithDetails(rs);
+                appointment.setPatientPhone(rs.getString("patient_phone"));
+                appointment.setPatientEmail(rs.getString("patient_email"));
+                appointment.setDoctorEmail(rs.getString("doctor_email"));
+                
+                String serviceName = rs.getString("service_name");
+                if (serviceName != null) {
+                    appointment.setServiceName(serviceName);
+                } else {
+                    appointment.setServiceName("Chưa có dịch vụ");
+                }
+
+                appointments.add(appointment);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, ps, conn);
+        }
+        return appointments;
+    }
+
+    // 🆕 METHOD: Cập nhật appointment với thông tin mới (static version)
+    public static boolean updateAppointmentStatic(Appointment appointment) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DBContext.getConnection();
+            String sql = """
+                UPDATE Appointment 
+                SET patient_id = ?, doctor_id = ?, slot_id = ?, work_date = ?, 
+                    reason = ?, status = ?, note = ?, updated_at = GETDATE()
+                WHERE appointment_id = ?
+            """;
+
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, appointment.getPatientId());
+            ps.setLong(2, appointment.getDoctorId());
+            ps.setInt(3, appointment.getSlotId());
+            ps.setString(4, appointment.getWorkDate().toString());
+            ps.setString(5, appointment.getReason());
+            ps.setString(6, appointment.getStatus());
+            ps.setString(7, appointment.getNote());
+            ps.setInt(8, appointment.getAppointmentId());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            close(null, ps, conn);
+        }
+    }
+
+    /**
+     * Lấy tất cả lịch hẹn với đầy đủ thông tin (bệnh nhân, bác sĩ, dịch vụ, giờ...)
+     */
+    public List<Appointment> getAllAppointmentsWithDetails() {
+        List<Appointment> appointments = new ArrayList<>();
+        try {
+            conn = DBContext.getConnection();
+            String sql = """
+                SELECT a.*, 
+                       p.full_name as patient_name, p.phone as patient_phone,
+                       u1.email as patient_email,
+                       d.full_name as doctor_name, d.specialty as doctor_specialty,
+                       u2.email as doctor_email,
+                       ts.start_time, ts.end_time,
+                       s.service_name
+                FROM Appointment a
+                LEFT JOIN Patients p ON a.patient_id = p.patient_id
+                LEFT JOIN users u1 ON p.user_id = u1.user_id
+                LEFT JOIN Doctors d ON a.doctor_id = d.doctor_id
+                LEFT JOIN users u2 ON d.user_id = u2.user_id
+                LEFT JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+                LEFT JOIN Bills b ON b.patient_id = a.patient_id 
+                    AND b.appointment_date = a.work_date 
+                    AND b.doctor_id = a.doctor_id
+                LEFT JOIN Services s ON b.service_id = s.service_id
+                ORDER BY a.work_date DESC, ts.start_time ASC
+            """;
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Appointment appointment = mapResultSetToAppointmentWithDetails(rs);
+                // Set thêm các thông tin phụ
+                appointment.setPatientPhone(rs.getString("patient_phone"));
+                appointment.setServiceName(rs.getString("service_name") != null ? rs.getString("service_name") : "Chưa có dịch vụ");
+                appointment.setDoctorSpecialty(rs.getString("doctor_specialty"));
+                appointment.setPatientEmail(rs.getString("patient_email"));
+                appointment.setDoctorEmail(rs.getString("doctor_email"));
+                appointments.add(appointment);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return appointments;
+    }
+
+    /**
+     * Đổi lịch hẹn: cập nhật service_id, work_date, slot_id, reason cho appointmentId (KHÔNG đổi doctorId)
+     */
+    public static boolean rescheduleAppointment(int appointmentId, int serviceId, String newDate, int newSlotId, String reason) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBContext.getConnection();
+            // Nếu có cột service_id trong bảng Appointment
+            String sql = "UPDATE Appointment SET service_id = ?, work_date = ?, slot_id = ?, reason = ? WHERE appointment_id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, serviceId);
+            ps.setString(2, newDate);
+            ps.setInt(3, newSlotId);
+            ps.setString(4, reason);
+            ps.setInt(5, appointmentId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+    }
+
+    /**
+     * Đổi lịch hẹn: cập nhật doctor_id, service_id, slot_id, work_date, reason cho appointmentId
+     */
+    public static boolean updateAppointmentForReschedule(int appointmentId, int doctorId, int serviceId, int slotId, String workDate, String reason) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBContext.getConnection();
+            String sql = "UPDATE Appointment SET doctor_id = ?, service_id = ?, slot_id = ?, work_date = ?, reason = ? WHERE appointment_id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, doctorId);
+            ps.setInt(2, serviceId);
+            ps.setInt(3, slotId);
+            ps.setString(4, workDate);
+            ps.setString(5, reason);
+            ps.setInt(6, appointmentId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+    }
+    
+    /**
+ * Lấy danh sách slot còn trống cho bác sĩ trong ngày, loại trừ slot của appointmentId (nếu có)
+ */
+public static List<TimeSlot> getAvailableSlots(int doctorId, String date, int appointmentId) {
+    List<TimeSlot> availableSlots = new ArrayList<>();
+    try {
+        // Lấy tất cả slot
+        List<TimeSlot> allSlots = TimeSlotDAO.getAllTimeSlots();
+        // Lấy các slot đã được đặt (trừ appointmentId hiện tại)
+        String sql = "SELECT slot_id FROM Appointment WHERE doctor_id = ? AND work_date = ? AND status != 'CANCELLED' AND appointment_id != ?";
+        Connection conn = DBContext.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, doctorId);
+        ps.setString(2, date);
+        ps.setInt(3, appointmentId);
+        ResultSet rs = ps.executeQuery();
+        List<Integer> bookedSlotIds = new ArrayList<>();
+        while (rs.next()) {
+            bookedSlotIds.add(rs.getInt("slot_id"));
+        }
+        conn.close();
+        // Lọc ra các slot chưa bị đặt
+        for (TimeSlot slot : allSlots) {
+            if (!bookedSlotIds.contains(slot.getSlotId())) {
+                availableSlots.add(slot);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return availableSlots;
+}
+
+
 }

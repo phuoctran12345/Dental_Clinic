@@ -350,10 +350,10 @@
                     <span>Quản lý lịch hẹn</span>
                     <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                 </div>
-                <div class="dropdown_list">
+                <div class="dropdown_list">n
                     <a href="${pageContext.request.contextPath}/StaffBookingServlet">Đặt lịch mới</a>
-                    <a href="#">Xem lịch hẹn</a>
-                    <a href="#">Lịch điều trị</a>
+                    <a href="${pageContext.request.contextPath}/CancelAppointmentServlet">Xem lịch hẹn</a>
+                    <a href="#">Lịch tái khám</a>
                 </div>
             </div>
 

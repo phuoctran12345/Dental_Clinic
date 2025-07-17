@@ -729,6 +729,37 @@ public class DoctorScheduleDAO {
         return schedules;
     }
 
+    /**
+     * 🆕 Xóa lịch nghỉ theo bác sĩ và ngày
+     */
+    public boolean deleteScheduleByDoctorAndDate(long doctorId, java.sql.Date workDate) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                String sql = "DELETE FROM DoctorSchedule WHERE doctor_id = ? AND work_date = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setLong(1, doctorId);
+                ps.setDate(2, workDate);
+                int rowsAffected = ps.executeUpdate();
+                System.out.println("[DEBUG] Xóa lịch nghỉ: doctorId=" + doctorId + ", workDate=" + workDate + ", rowsAffected=" + rowsAffected);
+                return rowsAffected > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error in deleteScheduleByDoctorAndDate: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+        return false;
+    }
+
     // Test main method
     public static void main(String[] args) {
         try {

@@ -40,6 +40,7 @@ import java.sql.Time;
 import java.sql.Date;
 import java.util.Map;
 import java.util.HashMap;
+import java.time.LocalTime;
 
 /**
  *
@@ -529,19 +530,25 @@ public class BookingPageServlet extends HttpServlet {
             // Lấy thông tin TimeSlot từ các slot_id thực tế
             List<TimeSlot> availableSlots = TimeSlotDAO.getTimeSlotsByIds(actualTimeSlotIds);
             System.out.println("Available time slots: " + availableSlots.size());
-            
+
+            LocalDate today = LocalDate.now();
+            LocalTime now = LocalTime.now();
+
             StringBuilder json = new StringBuilder();
             json.append("[");
             for (int i = 0; i < availableSlots.size(); i++) {
                 TimeSlot slot = availableSlots.get(i);
                 boolean isBooked = bookedSlotIds.contains(slot.getSlotId());
-                
+                // đã qua giờ khám
+                // Sửa logic: slot đã qua nếu giờ bắt đầu < thời điểm hiện tại
+                boolean isPast = localDate.equals(today) && slot.getStartTime().plusMinutes(10).isBefore(now);
                 if (i > 0) json.append(",");
                 json.append("{");
                 json.append("\"slotId\":").append(slot.getSlotId()).append(",");
                 json.append("\"startTime\":\"").append(slot.getStartTime()).append("\",");
                 json.append("\"endTime\":\"").append(slot.getEndTime()).append("\",");
-                json.append("\"isBooked\":").append(isBooked);
+                json.append("\"isBooked\":").append(isBooked).append(",");
+                json.append("\"isPast\":").append(isPast);
                 json.append("}");
             }
             json.append("]");

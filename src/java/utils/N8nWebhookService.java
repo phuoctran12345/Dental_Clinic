@@ -790,4 +790,181 @@ public class N8nWebhookService {
             e.printStackTrace();
         }
     }
+
+    // 🆕 METHOD: Gửi email thông báo chuyển lịch hẹn
+    public static void sendAppointmentRescheduleNotification(
+            String patientEmail,
+            String patientName,
+            String originalDoctorEmail,
+            String originalDoctorName,
+            String newDoctorEmail,
+            String newDoctorName,
+            String appointmentDate,
+            String appointmentTime,
+            String serviceName,
+            String appointmentId,
+            String reason
+    ) {
+        try {
+            if (patientEmail == null || patientEmail.trim().isEmpty() || !isValidEmail(patientEmail)) {
+                System.out.println("❌ Patient email không hợp lệ: " + patientEmail);
+                return;
+            }
+
+            URL url = new URL(WEBHOOK_URL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setDoOutput(true);
+
+            String jsonInputString = String.format(
+                "{" +
+                "\"type\":\"appointment_reschedule\"," +
+                "\"to\":\"%s\"," +
+                "\"patientEmail\":\"%s\"," +
+                "\"patientName\":\"%s\"," +
+                "\"originalDoctorEmail\":\"%s\"," +
+                "\"originalDoctorName\":\"%s\"," +
+                "\"newDoctorEmail\":\"%s\"," +
+                "\"newDoctorName\":\"%s\"," +
+                "\"appointmentDate\":\"%s\"," +
+                "\"appointmentTime\":\"%s\"," +
+                "\"serviceName\":\"%s\"," +
+                "\"appointmentId\":\"%s\"," +
+                "\"reason\":\"%s\"," +
+                "\"clinicName\":\"Phòng khám Nha khoa DentalClinic\"," +
+                "\"clinicAddress\":\"FPT University Đà Nẵng\"," +
+                "\"clinicPhone\":\"0936929382\"," +
+                "\"timestamp\":\"%s\"" +
+                "}",
+                patientEmail.trim(),
+                patientEmail.trim(),
+                escapeJson(patientName),
+                originalDoctorEmail != null ? originalDoctorEmail.trim() : "",
+                escapeJson(originalDoctorName),
+                newDoctorEmail != null ? newDoctorEmail.trim() : "",
+                escapeJson(newDoctorName),
+                appointmentDate,
+                appointmentTime,
+                escapeJson(serviceName),
+                appointmentId,
+                escapeJson(reason),
+                java.time.LocalDateTime.now().toString()
+            );
+
+            System.out.println("🔄 === GỬI THÔNG BÁO CHUYỂN LỊCH HẸN ===");
+            System.out.println("📧 Email bệnh nhân: " + patientEmail);
+            System.out.println("👤 Tên bệnh nhân: " + patientName);
+            System.out.println("👨‍⚕️ Bác sĩ cũ: " + originalDoctorName);
+            System.out.println("👨‍⚕️ Bác sĩ mới: " + newDoctorName);
+            System.out.println("📅 Ngày khám: " + appointmentDate);
+            System.out.println("⏰ Thời gian: " + appointmentTime);
+            System.out.println("🏥 Dịch vụ: " + serviceName);
+            System.out.println("📝 Lý do: " + reason);
+            System.out.println("🔗 Webhook URL: " + WEBHOOK_URL);
+
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int code = con.getResponseCode();
+            System.out.println("📨 N8N reschedule response: " + code);
+            
+            if (code == 200) {
+                System.out.println("✅ Đã gửi thông báo chuyển lịch hẹn thành công!");
+            } else {
+                System.out.println("⚠️ N8N reschedule webhook trả về code: " + code);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi gửi thông báo chuyển lịch hẹn: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // 🆕 METHOD: Gửi email thông báo hủy lịch hẹn
+    public static void sendAppointmentCancellationNotification(
+            String patientEmail,
+            String patientName,
+            String doctorEmail,
+            String doctorName,
+            String appointmentDate,
+            String appointmentTime,
+            String serviceName,
+            String appointmentId,
+            String reason
+    ) {
+        try {
+            if (patientEmail == null || patientEmail.trim().isEmpty() || !isValidEmail(patientEmail)) {
+                System.out.println("❌ Patient email không hợp lệ: " + patientEmail);
+                return;
+            }
+
+            URL url = new URL(WEBHOOK_URL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setDoOutput(true);
+
+            String jsonInputString = String.format(
+                "{" +
+                "\"type\":\"appointment_cancellation\"," +
+                "\"to\":\"%s\"," +
+                "\"patientEmail\":\"%s\"," +
+                "\"patientName\":\"%s\"," +
+                "\"doctorEmail\":\"%s\"," +
+                "\"doctorName\":\"%s\"," +
+                "\"appointmentDate\":\"%s\"," +
+                "\"appointmentTime\":\"%s\"," +
+                "\"serviceName\":\"%s\"," +
+                "\"appointmentId\":\"%s\"," +
+                "\"reason\":\"%s\"," +
+                "\"clinicName\":\"Phòng khám Nha khoa DentalClinic\"," +
+                "\"clinicAddress\":\"FPT University Đà Nẵng\"," +
+                "\"clinicPhone\":\"0936929382\"," +
+                "\"timestamp\":\"%s\"" +
+                "}",
+                patientEmail.trim(),
+                patientEmail.trim(),
+                escapeJson(patientName),
+                doctorEmail != null ? doctorEmail.trim() : "",
+                escapeJson(doctorName),
+                appointmentDate,
+                appointmentTime,
+                escapeJson(serviceName),
+                appointmentId,
+                escapeJson(reason),
+                java.time.LocalDateTime.now().toString()
+            );
+
+            System.out.println("❌ === GỬI THÔNG BÁO HỦY LỊCH HẸN ===");
+            System.out.println("📧 Email bệnh nhân: " + patientEmail);
+            System.out.println("👤 Tên bệnh nhân: " + patientName);
+            System.out.println("👨‍⚕️ Bác sĩ: " + doctorName);
+            System.out.println("📅 Ngày khám: " + appointmentDate);
+            System.out.println("⏰ Thời gian: " + appointmentTime);
+            System.out.println("🏥 Dịch vụ: " + serviceName);
+            System.out.println("📝 Lý do hủy: " + reason);
+            System.out.println("🔗 Webhook URL: " + WEBHOOK_URL);
+
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int code = con.getResponseCode();
+            System.out.println("📨 N8N cancellation response: " + code);
+            
+            if (code == 200) {
+                System.out.println("✅ Đã gửi thông báo hủy lịch hẹn thành công!");
+            } else {
+                System.out.println("⚠️ N8N cancellation webhook trả về code: " + code);
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Lỗi gửi thông báo hủy lịch hẹn: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

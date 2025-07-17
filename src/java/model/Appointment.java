@@ -20,6 +20,7 @@ public class Appointment {
     
     private String patientName;
     private String patientPhone;
+    private String patientEmail; // 🆕 Thêm email bệnh nhân
     private Date patientDateOfBirth;
     private String patientGender;
     private String serviceName;
@@ -31,6 +32,7 @@ public class Appointment {
     private String timeSlot;
     private String note;
     private Integer relativeId; // Người thân
+    private String doctorEmail; // 🆕 Thêm email bác sĩ
     
 
     public Appointment() {
@@ -321,4 +323,21 @@ public class Appointment {
         this.bookedByUserId = bookedByUserId;
     }
 
+    // 🆕 Getter/Setter cho patientEmail
+    public String getPatientEmail() {
+        return patientEmail;
+    }
+
+    public void setPatientEmail(String patientEmail) {
+        this.patientEmail = patientEmail;
+    }
+
+    // 🆕 Getter/Setter cho doctorEmail
+    public String getDoctorEmail() {
+        return doctorEmail;
+    }
+
+    public void setDoctorEmail(String doctorEmail) {
+        this.doctorEmail = doctorEmail;
+    }
 }

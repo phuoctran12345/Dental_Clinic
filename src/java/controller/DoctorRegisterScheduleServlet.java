@@ -111,14 +111,21 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     long doctorId = Long.parseLong(request.getParameter("doctor_id"));
     Date workDate = Date.valueOf(request.getParameter("work_date"));
     String requestType = request.getParameter("request_type");
+    
+    // Lấy thêm tham số mới
+    String leaveType = request.getParameter("leaveType");
+    String reason = request.getParameter("reason");
+    
     DoctorSchedule schedule = new DoctorSchedule();
     schedule.setDoctorId(doctorId);
     schedule.setWorkDate(workDate);
+    
     if ("leave".equals(requestType)) {
         // Đăng ký nghỉ phép cho bác sĩ fulltime
         schedule.setSlotId((Integer) null); // nghỉ phép
         schedule.setStatus("pending");
-        System.out.println("[DEBUG] Đăng ký nghỉ phép cho doctorId=" + doctorId + ", workDate=" + workDate);
+        System.out.println("[DEBUG] Đăng ký nghỉ phép cho doctorId=" + doctorId + ", workDate=" + workDate + ", leaveType=" + leaveType + ", reason=" + reason);
+        
     } else {
         // Đăng ký ca làm cho bác sĩ parttime
         String slotIdParam = request.getParameter("slot_id");

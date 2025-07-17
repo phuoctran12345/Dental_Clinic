@@ -189,6 +189,15 @@ public class Doctors {
         return doctor_id;
     }
 
+    // Thêm thuộc tính imageUrl cho JSP compatibility
+    public String getImageUrl() {
+        if (this.avatar != null && !this.avatar.isEmpty()) {
+            return this.avatar;
+        } else {
+            return "/images/default-doctor.png"; // Đường dẫn ảnh mặc định
+        }
+    }
+
     @Override
     public String toString() {
         return "Doctor{" +

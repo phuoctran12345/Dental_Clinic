@@ -334,4 +334,179 @@ public class EmailService {
         // Ở đây tôi dùng cách đơn giản: kiểm tra email config
         return FROM_EMAIL.contains("lechitrung1810") || FROM_EMAIL.equals("test@example.com");
     }
+
+    /**
+     * Gửi email thông báo huỷ lịch hẹn
+     */
+    public static boolean sendCancelAppointmentEmail(String toEmail, String patientName, String dateTime, String service, String reason, String note) {
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", SMTP_HOST);
+            props.put("mail.smtp.port", SMTP_PORT);
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            props.put("mail.smtp.ssl.trust", SMTP_HOST);
+            props.put("mail.smtp.localhost", "localhost");
+            props.put("mail.smtp.localhost.address", "127.0.0.1");
+            props.put("mail.debug", "false");
+
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, FROM_PASSWORD.trim());
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("Thông báo huỷ lịch hẹn - Hệ thống Quản lý Bệnh viện");
+
+            String emailContent = createCancelAppointmentEmailContent(patientName, dateTime, service, reason, note);
+            message.setContent(emailContent, "text/html; charset=utf-8");
+
+            Transport.send(message);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static String createCancelAppointmentEmailContent(String patientName, String dateTime, String service, String reason, String note) {
+        return "<!DOCTYPE html>" +
+                "<html lang='vi'>" +
+                "<head>" +
+                "    <meta charset='UTF-8'>" +
+                "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "    <title>Thông báo huỷ lịch hẹn</title>" +
+                "    <style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+                "        .container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+                "        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+                "        .cancel-box { background: white; border: 2px dashed #ef4444; border-radius: 10px; padding: 20px; text-align: center; margin: 20px 0; }" +
+                "        .cancel-title { font-size: 24px; font-weight: bold; color: #ef4444; }" +
+                "        .info-table { width: 100%; margin: 16px 0; border-collapse: collapse; }" +
+                "        .info-table td { padding: 6px 0; }" +
+                "        .reason { color: #b91c1c; font-weight: bold; }" +
+                "        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+                "    </style>" +
+                "</head>" +
+                "<body>" +
+                "    <div class='container'>" +
+                "        <div class='header'>" +
+                "            <h1>🏥 Hệ thống Quản lý Bệnh viện</h1>" +
+                "            <p>Thông báo huỷ lịch hẹn</p>" +
+                "        </div>" +
+                "        <div class='content'>" +
+                "            <h2>Xin chào <span style='color:#6366f1;'>" + patientName + "</span>!</h2>" +
+                "            <div class='cancel-box'>" +
+                "                <div class='cancel-title'>Lịch hẹn của bạn đã bị huỷ</div>" +
+                "                <table class='info-table'>" +
+                "                    <tr><td><b>Thời gian:</b></td><td>" + dateTime + "</td></tr>" +
+                "                    <tr><td><b>Dịch vụ:</b></td><td>" + service + "</td></tr>" +
+                (reason != null && !reason.isEmpty() ? "<tr><td><b>Lý do huỷ:</b></td><td class='reason'>" + reason + "</td></tr>" : "") +
+                (note != null && !note.isEmpty() ? "<tr><td><b>Ghi chú:</b></td><td>" + note + "</td></tr>" : "") +
+                "                </table>" +
+                "                <p style='color:#ef4444; margin-top:12px;'>Nếu có thắc mắc vui lòng liên hệ phòng khám.</p>" +
+                "            </div>" +
+                "            <p>Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi.</p>" +
+                "            <p>Trân trọng,<br><strong>Đội ngũ Hệ thống Quản lý Bệnh viện</strong></p>" +
+                "        </div>" +
+                "        <div class='footer'>" +
+                "            <p>Email này được gửi tự động, vui lòng không trả lời.</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+    }
+
+    /**
+     * Gửi email thông báo đổi lịch hẹn
+     */
+    public static boolean sendRescheduleAppointmentEmail(String toEmail, String patientName, String dateTime, String service, String reason) {
+        try {
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", SMTP_HOST);
+            props.put("mail.smtp.port", SMTP_PORT);
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            props.put("mail.smtp.ssl.trust", SMTP_HOST);
+            props.put("mail.smtp.localhost", "localhost");
+            props.put("mail.smtp.localhost.address", "127.0.0.1");
+            props.put("mail.debug", "false");
+
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, FROM_PASSWORD.trim());
+                }
+            });
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject("Thông báo đổi lịch hẹn - Hệ thống Quản lý Bệnh viện");
+
+            String emailContent = createRescheduleAppointmentEmailContent(patientName, dateTime, service, reason);
+            message.setContent(emailContent, "text/html; charset=utf-8");
+
+            Transport.send(message);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static String createRescheduleAppointmentEmailContent(String patientName, String dateTime, String service, String reason) {
+        return "<!DOCTYPE html>" +
+                "<html lang='vi'>" +
+                "<head>" +
+                "    <meta charset='UTF-8'>" +
+                "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "    <title>Thông báo đổi lịch hẹn</title>" +
+                "    <style>" +
+                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+                "        .container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                "        .header { background: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+                "        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+                "        .reschedule-box { background: white; border: 2px dashed #6366f1; border-radius: 10px; padding: 20px; text-align: center; margin: 20px 0; }" +
+                "        .reschedule-title { font-size: 24px; font-weight: bold; color: #6366f1; }" +
+                "        .info-table { width: 100%; margin: 16px 0; border-collapse: collapse; }" +
+                "        .info-table td { padding: 6px 0; }" +
+                "        .reason { color: #0ea5e9; font-weight: bold; }" +
+                "        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+                "    </style>" +
+                "</head>" +
+                "<body>" +
+                "    <div class='container'>" +
+                "        <div class='header'>" +
+                "            <h1>🏥 Hệ thống Quản lý Bệnh viện</h1>" +
+                "            <p>Thông báo đổi lịch hẹn</p>" +
+                "        </div>" +
+                "        <div class='content'>" +
+                "            <h2>Xin chào <span style='color:#6366f1;'>" + patientName + "</span>!</h2>" +
+                "            <div class='reschedule-box'>" +
+                "                <div class='reschedule-title'>Lịch hẹn của bạn đã được đổi</div>" +
+                "                <table class='info-table'>" +
+                "                    <tr><td><b>Thời gian mới:</b></td><td>" + dateTime + "</td></tr>" +
+                "                    <tr><td><b>Dịch vụ:</b></td><td>" + service + "</td></tr>" +
+                (reason != null && !reason.isEmpty() ? "<tr><td><b>Lý do đổi:</b></td><td class='reason'>" + reason + "</td></tr>" : "") +
+                "                </table>" +
+                "                <p style='color:#6366f1; margin-top:12px;'>Nếu có thắc mắc vui lòng liên hệ phòng khám.</p>" +
+                "            </div>" +
+                "            <p>Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi.</p>" +
+                "            <p>Trân trọng,<br><strong>Đội ngũ Hệ thống Quản lý Bệnh viện</strong></p>" +
+                "        </div>" +
+                "        <div class='footer'>" +
+                "            <p>Email này được gửi tự động, vui lòng không trả lời.</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+    }
 } 

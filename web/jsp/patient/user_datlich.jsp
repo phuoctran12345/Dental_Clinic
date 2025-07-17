@@ -124,6 +124,23 @@
                                         font-size: 12px;
                                     }
 
+                                    .time-slot.past {
+                                        background: #cfd2d6;
+                                        color: #555;
+                                        border-color: #bbb;
+                                        cursor: not-allowed;
+                                        opacity: 0.85;
+                                        position: relative;
+                                        font-weight: 500;
+                                    }
+
+                                    .time-slot.past:hover {
+                                        background: #cfd2d6;
+                                        color: #555;
+                                        border-color: #bbb;
+                                        transform: none;
+                                    }
+
                                     /* Tab styles cho modal */
                                     .nav-tabs .nav-link {
                                         border: none;
@@ -720,6 +737,9 @@
                                                         if (slot.isBooked) {
                                                             slotClass += ' booked';
                                                             statusText = '<small class="text-muted">Đã được đặt</small>';
+                                                        } else if (slot.isPast) {
+                                                            slotClass += ' past';
+                                                            statusText = '<small class="text-secondary">Đã quá giờ khám</small>';
                                                         } else {
                                                             clickHandler = 'onclick="selectTimeSlot(' + slot.slotId + ', \'' + slot.startTime + '\', \'' + slot.endTime + '\', ' + doctorId + ', \'' + tabType + '\')"';
                                                             statusText = '<small class="text-success">Còn trống</small>';

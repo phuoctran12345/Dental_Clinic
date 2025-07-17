@@ -44,6 +44,78 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.type}}",
+              "operation": "equal",
+              "value2": "appointment_reschedule"
+            }
+          ]
+        }
+      },
+      "name": "IF Đổi Bác Sĩ",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [0, 200],
+      "id": "if-reschedule"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.body.patientEmail}}",
+        "subject": "=Thông báo đổi bác sĩ cho lịch hẹn {{ $json.body.appointmentId }}",
+        "message": "=Kính gửi {{ $json.body.patientName }},<br><br>Lịch hẹn của bạn vào ngày {{ $json.body.appointmentDate }} lúc {{ $json.body.appointmentTime }} đã được chuyển sang bác sĩ <b>{{ $json.body.newDoctorName }}</b>.<br>Lý do: {{ $json.body.reason }}<br><br>Thông tin bác sĩ mới:<br>- Họ tên: {{ $json.body.newDoctorName }}<br>- Email: {{ $json.body.newDoctorEmail }}<br><br>Vui lòng kiểm tra lại lịch hẹn trên hệ thống hoặc liên hệ phòng khám nếu cần hỗ trợ.<br><br>Trân trọng!<br>Phòng khám Nha khoa DentalClinic",
+        "options": { "appendAttribution": false }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [200, 200],
+      "id": "send-reschedule-email",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vmipyVUkATcNUeD9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.type}}",
+              "operation": "equal",
+              "value2": "appointment_cancellation"
+            }
+          ]
+        }
+      },
+      "name": "IF Hủy Lịch",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [0, 400],
+      "id": "if-cancel"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.body.patientEmail}}",
+        "subject": "=Thông báo hủy lịch hẹn {{ $json.body.appointmentId }}",
+        "message": "=Kính gửi {{ $json.body.patientName }},<br><br>Lịch hẹn của bạn vào ngày {{ $json.body.appointmentDate }} lúc {{ $json.body.appointmentTime }} đã bị hủy.<br>Lý do: {{ $json.body.reason }}<br><br>Vui lòng liên hệ phòng khám nếu cần đặt lại lịch hoặc hỗ trợ thêm.<br><br>Trân trọng!<br>Phòng khám Nha khoa DentalClinic",
+        "options": { "appendAttribution": false }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [200, 400],
+      "id": "send-cancel-email",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vmipyVUkATcNUeD9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "jsCode": "// TRUY CẬP DATA TỪ WEBHOOK NODE TRỰC TIẾP\nconst webhookData = $('Webhook').first().json.body;\n\n// Log chi tiết để debug\nconsole.log('📥 RAW WEBHOOK DATA:', JSON.stringify(webhookData, null, 2));\nconsole.log('🔍 startDateTime from webhook:', webhookData.startDateTime);\nconsole.log('🔍 endDateTime from webhook:', webhookData.endDateTime);\n\n// KIỂM TRA và SỬ DỤNG TRỰC TIẾP startDateTime/endDateTime từ Java\nif (!webhookData.startDateTime || !webhookData.endDateTime) {\n  console.error('❌ MISSING DATETIME:', {\n    startDateTime: webhookData.startDateTime,\n    endDateTime: webhookData.endDateTime\n  });\n  throw new Error('Missing startDateTime or endDateTime from Java backend');\n}\n\n// SỬ DỤNG TRỰC TIẾP datetime từ Java (đã có timezone +07:00)\nlet startDateTime = webhookData.startDateTime;\nlet endDateTime = webhookData.endDateTime;\n\nconsole.log('✅ USING JAVA DATETIME DIRECTLY:');\nconsole.log('   Start:', startDateTime);\nconsole.log('   End:', endDateTime);\n\n// Tạo calendar event với datetime từ Java\nconst calendarEvent = {\n  summary: webhookData.eventTitle || `🦷 ${webhookData.serviceName} - ${webhookData.userName}`,\n  description: `🏥 THÔNG TIN CUỘC HẸN CHI TIẾT\\n\\n📋 Dịch vụ: ${webhookData.serviceName || 'N/A'}\\n👤 Bệnh nhân: ${webhookData.userName || 'N/A'}\\n📞 Số điện thoại: ${webhookData.userPhone || 'N/A'}\\n👨‍⚕️ Bác sĩ phụ trách: ${webhookData.doctorName || 'N/A'}\\n\\n📅 Ngày khám: ${webhookData.appointmentDate || 'N/A'}\\n⏰ Giờ khám: ${webhookData.appointmentTime || 'N/A'}\\n📍 Địa điểm: ${webhookData.location || 'FPT University Đà Nẵng'}\\n\\n💰 THÔNG TIN THANH TOÁN\\n💵 Số tiền: ${webhookData.formattedAmount || webhookData.billAmount || 'N/A'}\\n🧾 Mã hóa đơn: ${webhookData.billId || 'N/A'}\\n📦 Mã đơn hàng: ${webhookData.orderId || 'N/A'}\\n\\n🏥 THÔNG TIN PHÒNG KHÁM\\n🏢 Tên: ${webhookData.clinicName || 'Phòng khám Nha khoa'}\\n📍 Địa chỉ: ${webhookData.clinicAddress || 'FPT University Đà Nẵng'}\\n📞 Hotline: ${webhookData.clinicPhone || '0936929382'}\\n\\n📝 LƯU Ý QUAN TRỌNG:\\n• Vui lòng đến trước giờ hẹn 15 phút\\n• Mang theo CCCD/CMND và sổ khám bệnh (nếu có)\\n• Liên hệ hotline nếu cần thay đổi lịch hẹn\\n\\n✅ Lịch hẹn này đã được xác nhận và thanh toán thành công!`,\n  start: {\n    dateTime: startDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  end: {\n    dateTime: endDateTime,\n    timeZone: 'Asia/Ho_Chi_Minh'\n  },\n  location: webhookData.location || webhookData.clinicAddress || 'FPT University Đà Nẵng',\n  attendees: webhookData.attendees || [\n    { email: webhookData.userEmail },\n    { email: webhookData.doctorEmail }\n  ]\n};\n\nconsole.log('📅 FINAL CALENDAR EVENT:', JSON.stringify(calendarEvent, null, 2));\nconsole.log('🎯 DATETIME VERIFICATION:');\nconsole.log('   📅 Java sent startDateTime:', webhookData.startDateTime);\nconsole.log('   📅 Calendar will use startDateTime:', calendarEvent.start.dateTime);\nconsole.log('   📅 Java sent endDateTime:', webhookData.endDateTime);\nconsole.log('   📅 Calendar will use endDateTime:', calendarEvent.end.dateTime);\n\nreturn [{ json: calendarEvent }];"
       },
       "type": "n8n-nodes-base.code",

@@ -121,4 +121,3 @@ public class DoctorAppointmentsServlet extends HttpServlet {
         
     }
 }
-

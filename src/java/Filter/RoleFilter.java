@@ -113,7 +113,8 @@ public class RoleFilter implements Filter {
             "/UpdateStaffInfoServlet",
             "/ChangePasswordServlet",
             "/AvatarServlet",
-            "/LogoutServlet"
+            "/LogoutServlet",
+            "/CancelAppointmentServlet"
         )));
         
         // 👨‍💼 MANAGER - Quản lý

@@ -28,7 +28,7 @@ public class TimeSlotDAO {
         conn = DBContext.getConnection();
     }
 
-    public List<TimeSlot> getAllTimeSlots() {
+    public static List<TimeSlot> getAllTimeSlots() {
         List<TimeSlot> allSlots = new ArrayList<>();
         String sql = "SELECT * FROM TimeSlot ORDER BY start_time";
         
@@ -262,5 +262,50 @@ public class TimeSlotDAO {
             e.printStackTrace();
         }
         return timeSlots;
+    }
+
+    // ================================================
+    // 🆕 METHOD: Lấy danh sách slot trống theo bác sĩ và ngày
+    public static List<TimeSlot> getAvailableSlotsByDoctorAndDate(int doctorId, String workDate) {
+        List<TimeSlot> availableSlots = new ArrayList<>();
+        
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = """
+                SELECT ts.* FROM TimeSlot ts
+                WHERE ts.slot_id IN (
+                    SELECT ds.slot_id FROM DoctorSchedule ds 
+                    WHERE ds.doctor_id = ? AND ds.work_date = ?
+                    AND ds.status = 'Confirmed'
+                )
+                AND ts.slot_id NOT IN (
+                    SELECT a.slot_id FROM Appointment a 
+                    WHERE a.doctor_id = ? AND a.work_date = ?
+                    AND a.status = 'BOOKED'
+                )
+                ORDER BY ts.start_time
+            """;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, doctorId);
+                ps.setString(2, workDate);
+                ps.setInt(3, doctorId);
+                ps.setString(4, workDate);
+                
+                ResultSet rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    TimeSlot slot = new TimeSlot();
+                    slot.setSlotId(rs.getInt("slot_id"));
+                    slot.setStartTime(rs.getTime("start_time").toLocalTime());
+                    slot.setEndTime(rs.getTime("end_time").toLocalTime());
+                    availableSlots.add(slot);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Lỗi lấy slot trống: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return availableSlots;
     }
 }

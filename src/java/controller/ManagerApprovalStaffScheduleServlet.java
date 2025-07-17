@@ -40,7 +40,7 @@ public class ManagerApprovalStaffScheduleServlet extends HttpServlet {
         }
         try {
             // Lấy danh sách staff requests chờ phê duyệt
-            List<StaffSchedule> pendingStaffRequests = staffScheduleDAO.getPendingRequests();
+            List<StaffSchedule> pendingStaffRequests = staffScheduleDAO.getPendingRequests();        
             // Đảm bảo mỗi StaffSchedule có employmentType và slotId
             for (StaffSchedule s : pendingStaffRequests) {
                 if (s.getEmploymentType() == null || s.getEmploymentType().isEmpty()) {

@@ -331,7 +331,7 @@
                             <div class="row" id="servicesContainer">
                                 <c:forEach var="service" items="${services}">
                                     <div class="col-lg-4 col-md-6 mb-4 service-item" data-category="${service.category}"
-                                        data-name="${service.serviceName}">
+                                        data-name="${service.serviceName}" data-service-id="${service.serviceId}">
                                         <div class="card service-card h-100">
                                             <c:choose>
                                                 <c:when test="${not empty service.image}">
@@ -569,12 +569,11 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-1"></i>Đóng
                         </button>
-                        <button type="button" class="btn btn-outline-primary" onclick="bookServiceWithDoctor()">
-                            <i class="fas fa-user-md me-1"></i>Chọn bác sĩ trước
-                        </button>
+                   
                         <button type="button" class="btn btn-success" onclick="bookServiceDirect()">
-                            <i class="fas fa-calendar-plus me-1"></i>Chọn bác sĩ và đặt lịch
+                            <i class="fas fa-calendar-plus me-1"></i> Đặt lịch khám ngayyy
                         </button>
+                    
                     `;
                                     })
                                     .catch(error => {
@@ -589,21 +588,21 @@
                             }
 
                             function bookService() {
-                                bookServiceWithDoctor();
+                                bookServiceDirect();
                             }
 
+
+
+
+
                             function bookServiceDirect() {
-                                if (currentServiceId) {
-                                    // THAY ĐỔI: Chuyển đến trang chọn bác sĩ thay vì thanh toán trực tiếp
-                                    window.location.href = 'BookingPageServlet?serviceId=' + currentServiceId;
-                                }
+                                // Chuyển đến trang đặt lịch
+                                window.location.href = 'BookingPageServlet';
                             }
 
                             function bookServiceWithDoctor() {
-                                if (currentServiceId) {
-                                    // Redirect to booking page to select doctor first
-                                    window.location.href = 'BookingPageServlet?serviceId=' + currentServiceId;
-                                }
+                                // Redirect to booking page
+                                window.location.href = 'BookingPageServlet';
                             }
 
                             // Initialize tooltips if needed

@@ -2042,5 +2042,97 @@ public class DoctorDAO {
         return appointments;
     }
 
-  
+    // 🆕 METHOD: Lấy danh sách bác sĩ cùng chuyên khoa có lịch trống
+    public static List<Doctors> getAvailableDoctorsBySpecialty(String specialty, int excludeDoctorId, String workDate) {
+        List<Doctors> availableDoctors = new ArrayList<>();
+        
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = """
+                SELECT DISTINCT d.*, u.email as doctor_email
+                FROM Doctors d
+                INNER JOIN users u ON d.user_id = u.user_id
+                INNER JOIN DoctorSchedule ds ON d.doctor_id = ds.doctor_id
+                WHERE d.specialty = ? 
+                AND d.doctor_id != ? 
+                AND d.status = 'Active'
+                AND ds.work_date = ?
+                AND ds.status = 'Confirmed'
+                AND NOT EXISTS (
+                    SELECT 1 FROM Appointment a 
+                    WHERE a.doctor_id = d.doctor_id 
+                    AND a.work_date = ? 
+                    AND a.status = 'BOOKED'
+                )
+                ORDER BY d.full_name
+            """;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, specialty);
+                ps.setInt(2, excludeDoctorId);
+                ps.setString(3, workDate);
+                ps.setString(4, workDate);
+                
+                ResultSet rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    Doctors doctor = new Doctors();
+                    doctor.setDoctor_id(rs.getInt("doctor_id"));
+                    doctor.setFull_name(rs.getString("full_name"));
+                    doctor.setPhone(rs.getString("phone"));
+                    doctor.setAddress(rs.getString("address"));
+                    doctor.setDate_of_birth(rs.getDate("date_of_birth"));
+                    doctor.setGender(rs.getString("gender"));
+                    doctor.setSpecialty(rs.getString("specialty"));
+                    doctor.setLicense_number(rs.getString("license_number"));
+                    doctor.setCreated_at(rs.getDate("created_at"));
+                    doctor.setUserEmail(rs.getString("doctor_email")); // Thêm email
+                    
+                    availableDoctors.add(doctor);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Lỗi lấy danh sách bác sĩ thay thế: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return availableDoctors;
+    }
+
+    // 🆕 METHOD: Lấy thông tin bác sĩ theo ID với email
+    public static Doctors getDoctorByIdWithEmail(int doctorId) {
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = """
+                SELECT d.*, u.email as doctor_email
+                FROM Doctors d
+                INNER JOIN users u ON d.user_id = u.user_id
+                WHERE d.doctor_id = ?
+            """;
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, doctorId);
+                ResultSet rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    Doctors doctor = new Doctors();
+                    doctor.setDoctor_id(rs.getInt("doctor_id"));
+                    doctor.setFull_name(rs.getString("full_name"));
+                    doctor.setPhone(rs.getString("phone"));
+                    doctor.setAddress(rs.getString("address"));
+                    doctor.setDate_of_birth(rs.getDate("date_of_birth"));
+                    doctor.setGender(rs.getString("gender"));
+                    doctor.setSpecialty(rs.getString("specialty"));
+                    doctor.setLicense_number(rs.getString("license_number"));
+                    doctor.setCreated_at(rs.getDate("created_at"));
+                    doctor.setUserEmail(rs.getString("doctor_email")); // Thêm email
+                    
+                    return doctor;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Lỗi lấy thông tin bác sĩ: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
 }
